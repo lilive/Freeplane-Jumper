@@ -1,15 +1,22 @@
 // @ExecutionModes({on_single_node="/main_menu/edit/find"})
 
 import groovy.swing.SwingBuilder
+import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension
-import java.awt.FlowLayout
+import java.awt.Rectangle
 import java.awt.Font
 import javax.swing.BoxLayout
 import java.awt.Component
 import java.awt.GridBagConstraints as GBC
-import java.awt.event.*
+import java.awt.event.ActionEvent
+import java.awt.event.MouseEvent
+import java.awt.event.MouseAdapter
+import java.awt.event.KeyEvent
+import java.awt.event.WindowEvent
+import java.awt.event.WindowAdapter
 import java.lang.IllegalArgumentException
 import java.util.regex.PatternSyntaxException
 import javax.swing.AbstractAction
@@ -313,7 +320,6 @@ class TargetModel extends DefaultListModel<Target>{
         update( newCandidates )
         if( G.gui ){
             G.initCandidatesJListSelection()
-            G.gui.pack()
         }
     }
 
@@ -483,21 +489,48 @@ class G {
     static String highlightColor = "#FFFFAA"
     static private int candidatesFontSize = 0
     static private Font candidatesFont
-    static private int patternFontSize = 0
     static private int patternMinFontSize
 
     /**
-     * Reset the global variables.
+     * Init the global variables.
+     * Try to load them from a previous file settings.
+     */
+    static Rectangle init( node, c ){
+
+        clear()
+        
+        this.node = node
+        this.c = c
+
+        Rectangle guiRect = loadSettings()
+        
+        isTargetsDefined = false
+        historyIdx = history.size()
+        
+        targetsOptions = []
+        targetsOptions << new TargetsOption( ALL_NODES, "Whole map", KeyEvent.VK_M,
+                                            "Search in the whole map" )
+        targetsOptions << new TargetsOption( SIBLINGS, "Siblings", KeyEvent.VK_S,
+                                            "Search in the siblings of the selected node" )
+        targetsOptions << new TargetsOption( DESCENDANTS, "Descendants", KeyEvent.VK_D,
+                                            "Search in the descendants of the selected node" )
+        targetsOptions << new TargetsOption( SIBLINGS_AND_DESCENDANTS, "Siblings and descendants", KeyEvent.VK_A,
+                                            "Search in the siblings of the selected node, and their descendants" )
+
+        return guiRect
+    }
+
+    /**
+     * Clear some global variables.
      * This is needed because they are persistant between script calls
      */
-    static void reset(){
+    static void clear(){
+        
+        if( gui ) return
         
         node = null
         c = null
-        
-        if( gui ) gui.dispose()
         gui = null
-        
         patternTF = null
         scrollPane = null
         candidatesJList = null
@@ -505,17 +538,60 @@ class G {
         candidates = null
         showNodesLevelCB = null
         removeClonesCB = null
-
         candidatesFont = null
+    }
+
+    static void saveSettings(){
         
-        isTargetsDefined = false
-        historyIdx = history.size()
+        File file = getSettingsFile()
         
-        targetsOptions = []
-        targetsOptions << new TargetsOption( ALL_NODES, "Whole map", KeyEvent.VK_M, "Search in the whole map" )
-        targetsOptions << new TargetsOption( SIBLINGS, "Siblings", KeyEvent.VK_S, "Search in the siblings of the selected node" )
-        targetsOptions << new TargetsOption( DESCENDANTS, "Descendants", KeyEvent.VK_D, "Search in the descendants of the selected node" )
-        targetsOptions << new TargetsOption( SIBLINGS_AND_DESCENDANTS, "Siblings and descendants", KeyEvent.VK_A, "Search in the siblings of the selected node, and their descendants" )
+        Rectangle rect = new Rectangle()
+        if( gui ) rect = gui.getBounds()
+        
+        def builder = new JsonBuilder()
+        builder{
+            targetsType        targetsType
+            isShowNodesLevel   isShowNodesLevel
+            isRemoveClones     isRemoveClones
+            highlightColor     highlightColor
+            candidatesFontSize candidatesFontSize
+            history            history
+            searchOptions      searchOptions
+            guiRect{
+                x      rect.x
+                y      rect.y
+                width  rect.width
+                height rect.height
+            }
+        }
+        file.write( builder.toPrettyString() )
+    }
+    
+    static Rectangle loadSettings(){
+        
+        File file = getSettingsFile()
+        if( ! file.exists() ) return
+
+        Rectangle rect = new Rectangle()
+        try{
+            def settings = new JsonSlurper().parseText( file.text )
+            targetsType        = settings.targetsType        ?: targetsType
+            isShowNodesLevel   = settings.isShowNodesLevel   ?: isShowNodesLevel
+            isRemoveClones     = settings.isRemoveClones     ?: isRemoveClones
+            highlightColor     = settings.highlightColor     ?: highlightColor
+            candidatesFontSize = settings.candidatesFontSize ?: candidatesFontSize
+            history            = settings.history            ?: history
+            if( settings.searchOptions ) searchOptions = new SearchOptions( settings.searchOptions )
+            rect.x             = settings.guiRect?.x         ?: 0
+            rect.y             = settings.guiRect?.y         ?: 0
+            rect.width         = settings.guiRect?.width     ?: 0
+            rect.height        = settings.guiRect?.height    ?: 0
+        } catch( Exception e){
+            LogUtils.warn( "QuickSearch: unable to load the settings")
+        }
+
+        if( rect.width > 0 ) return rect
+        else return null
     }
 
     static void initTargets(){
@@ -614,15 +690,12 @@ class G {
         if( candidatesFontSize < min ) candidatesFontSize = min
         if( candidatesFontSize > max ) candidatesFontSize = max
         patternMinFontSize = size
-        if( patternFontSize == 0 ) patternFontSize = size
-        if( patternFontSize < patternMinFontSize ) patternFontSize = patternMinFontSize
-        if( patternFontSize > max ) patternFontSize = max
     }
         
     static void setFontSize( int size ){
 
         candidatesFontSize = size
-        patternFontSize = size
+        int patternFontSize = size
         if( patternFontSize < patternMinFontSize ) patternFontSize = patternMinFontSize
         
         if( ! candidatesFont ) return
@@ -642,6 +715,10 @@ class G {
         return candidatesFont
     }
 
+    private static File getSettingsFile(){
+        File file = new File( c.getUserDirectory().toString() + File.separator + 'lilive_quicksearch.json' )
+    }
+    
     private static void updateTargets(){
         isTargetsDefined = true
         
@@ -752,7 +829,6 @@ class G {
                 public void windowClosed( WindowEvent event ){
                     c.select( target )
                     c.centerOnNode( target )
-                    reset()
                 }
             }
         )
@@ -954,8 +1030,7 @@ def createGUI(){
             title: "Quick search",
             modal: true,
             owner: ui.frame,
-            defaultCloseOperation: JFrame.DISPOSE_ON_CLOSE,
-            pack: true
+            defaultCloseOperation: JFrame.DISPOSE_ON_CLOSE
         ){
             borderLayout()
             panel(
@@ -1167,35 +1242,74 @@ def createGUI(){
         new AbstractAction(){
             @Override public void actionPerformed( ActionEvent e ){
                 G.gui.dispose()
-                G.reset()
             }
         }
     )
 }
 
-G.reset()
-G.node = node
-G.c = c
+void setGuiLocation( gui, fpFrame, Rectangle rect, Dimension minSize ){
+
+    if( rect ){
+        
+        // Be sure the rect is over the Freeplane frame
+        
+        Rectangle fpBounds = fpFrame.getBounds()
+        Rectangle bounds = fpBounds.createIntersection( rect )
+
+        // Corrections if rect is too small
+        if( bounds.width  < minSize.width  ) bounds.width  = minSize.width
+        if( bounds.height < minSize.height ) bounds.height = minSize.height
+
+        // Corrections if rect right bottom corner is outside the Freeplane frame
+        if( bounds.x + bounds.width > fpBounds.x + fpBounds.width )
+            bounds.x = fpBounds.x + fpBounds.width - bounds.width
+        if( bounds.y + bounds.height > fpBounds.y + fpBounds.height )
+            bounds.y = fpBounds.y + fpBounds.height - bounds.height
+
+        // Corrections if the Freeplane frame is smaller than minSize
+        if( bounds.x < 0 ) bounds.x = 0
+        if( bounds.y < 0 ) bounds.y = 0
+
+        // Place the GUI
+        gui.setBounds( bounds )
+        
+    } else{
+
+        // If no location is provided, center the GUI over the Freeplane frame
+        gui.setLocationRelativeTo( fpFrame )
+        
+    }
+}
+
+Rectangle guiRect = G.init( node, c )
 G.candidates = new TargetModel()
 
 // Create the GUI
 createGUI()
-
-// Set the width for the node list, when it's empty
-// (meaning that its JScrollPane is at the width defined by the JTextField)
 G.gui.pack()
-def dim1 = G.scrollPane.getSize()
-def dim2 = G.scrollPane.getPreferredSize()
-dim2.width = dim1.width
-G.scrollPane.setPreferredSize( dim2 )
+
+// Set the width if the node list, before to populate it
+Dimension emptySize = G.scrollPane.getSize()
+Dimension prefferedSize = G.scrollPane.getPreferredSize()
+prefferedSize.width = emptySize.width
+G.scrollPane.setPreferredSize( prefferedSize )
 
 // Populate the nodes list
 G.initTargets()
 
-// Display the GUI
+// Build the GUI
 G.gui.pack()
-Dimension size = G.gui.getSize()
-G.gui.setMinimumSize( size )
-G.gui.setLocationRelativeTo( ui.frame )
+
+// Set the GUI minimal size
+Dimension minGuiSize = G.gui.getSize()
+G.gui.setMinimumSize( minGuiSize )
+
+// Place the GUI at its previous location if possible
+setGuiLocation( G.gui, ui.frame, guiRect, minGuiSize )
+
+// Display the GUI
 G.gui.visible = true
 
+// Cleanup after GUI close
+G.saveSettings()
+G.clear()
