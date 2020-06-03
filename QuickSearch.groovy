@@ -1,40 +1,62 @@
 // @ExecutionModes({on_single_node="/main_menu/edit/find"})
 
-import groovy.swing.SwingBuilder
+/*
+Provide a search box that filter the nodes as the user type the search terms.
+
+The search may use plain text or regular expressions, it can be either case
+sensitive or insensitive, the words can be searched in any order.
+
+Hover the question mark icon to display the usage instructions.
+
+This script need the write file permission because it save the settings
+in the Freeplane user directory. The name of the file is lilive_quicksearch.json
+
+author: lilive
+*/
+
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
+import groovy.swing.SwingBuilder
 import java.awt.BorderLayout
 import java.awt.Color
-import java.awt.Dimension
-import java.awt.Rectangle
-import java.awt.Font
-import javax.swing.BoxLayout
 import java.awt.Component
+import java.awt.Dimension
+import java.awt.Font
+import java.awt.Graphics2D
 import java.awt.GridBagConstraints as GBC
+import java.awt.Image
+import java.awt.Rectangle
 import java.awt.event.ActionEvent
-import java.awt.event.MouseEvent
-import java.awt.event.MouseAdapter
 import java.awt.event.KeyEvent
-import java.awt.event.WindowEvent
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import java.awt.image.BufferedImage
 import java.lang.IllegalArgumentException
+import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 import javax.swing.AbstractAction
 import javax.swing.ActionMap
+import javax.swing.BorderFactory
+import javax.swing.BoxLayout
 import javax.swing.DefaultListModel
+import javax.swing.Icon
+import javax.swing.ImageIcon
+import javax.swing.JColorChooser
 import javax.swing.JComponent
 import javax.swing.JFrame
 import javax.swing.JLabel
 import javax.swing.JList
-import javax.swing.JColorChooser
 import javax.swing.JSeparator
 import javax.swing.KeyStroke
 import javax.swing.ListCellRenderer
+import javax.swing.UIManager
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
+import org.freeplane.api.Node
 import org.freeplane.core.util.HtmlUtils
 import org.freeplane.core.util.LogUtils
-import org.freeplane.api.Node
 
 // A node that can be found
 class Target {
@@ -303,14 +325,14 @@ class TargetModel extends DefaultListModel<Target>{
         if( options.isSplitPattern && ! options.isSearchFromStart ){
             patterns = (ArrayList<String>)( pattern.trim().split( /\s+/ ) )
         } else {
-            patterns = [ pattern.trim() ]
+            patterns = [ pattern ]
         }
         
         patterns.removeAll{ ! it } // To be sure there is no empty elements
 
         // Filter the nodes
         if( patterns ){
-            if( options.isRegexSearch ) regexFilter( patterns, newCandidates, options )
+            regexFilter( patterns, newCandidates, options )
         } else {
             // Remove all previous highlighting is the pattern contains nothing
             newCandidates.each{ it.unhighlight() }
@@ -331,6 +353,7 @@ class TargetModel extends DefaultListModel<Target>{
             for( p : patterns ){
                 // Convert a pattern to case insensitive regex
                 String exp = p
+                if( ! options.isRegexSearch) exp = Pattern.quote( exp )
                 if( options.isSearchFromStart ) exp = "^$exp"
                 if( ! options.isCaseSensitiveSearch ) exp = "(?i)$exp"
                 def regex = ~/$exp/
@@ -916,7 +939,7 @@ def createCaseSensitiveSearchCB( swing ){
             G.candidates.filter( G.patternTF.text, G.searchOptions )
         },
         focusable: false,
-        toolTipText: "Check to make the difference between uppercase and lowercase letters"
+        toolTipText: "<html>Check to make the difference between<br>uppercase and lowercase letters</html>"
     )
 }
 
@@ -932,7 +955,7 @@ def createSearchFromStartCB( swing ){
             G.candidates.filter( G.patternTF.text, G.searchOptions )
         },
         focusable: false,
-        toolTipText: "Check to find only nodes where the search string is at the beginning of the node"
+        toolTipText: "<html>Check to find only nodes where the search string<br>is at the beginning of the node</html>"
     )
 }
 
@@ -947,8 +970,8 @@ def createSplitPatternCB( swing ){
             G.candidates.filter( G.patternTF.text, G.searchOptions )
         },
         focusable: false,
-        toolTipText: "If checked, the search string is split into words (or smaller regular expressions). " +
-          "A node is considering to match if it contains all of them, in any order."
+        toolTipText: "<html>If checked, the search string is split into words (or smaller regular expressions).<br>" +
+          "A node is considering to match if it contains all of them, in any order.</html>"
     )
 }
 
@@ -958,7 +981,7 @@ def createHighlightColorButton( swing ){
         borderPainted: false,
         background: Color.decode( G.highlightColor ),
         focusable: false,
-        toolTipText: "Click to choose the color that highlight the text that match the pattern in the results listing",
+        toolTipText: "<html>Click to choose the color that highlight the text<br>that match the pattern in the results listing</html>",
         actionPerformed: {
             e ->
             Color color = JColorChooser.showDialog( G.gui, "Choose a color", Color.decode( G.highlightColor ) )
@@ -995,6 +1018,55 @@ def createCandidatesFontSizeSlider( swing, int fontSize, int minFontSize, int ma
         slider.setPreferredSize( size )
     }
     return component
+}
+
+def getHelpText(){
+    return """<html>
+        <br/>
+        <p><b><u>Usage</u></b></p>
+        <p>
+          - <b>Type</b> the text to search<br/>
+          - The node list updates to show only the nodes that contains the text<br/>
+          - With the <b>&lt;up&gt;</b> and <b>&lt;down&gt;</b> arrow keys, select a node<br/>then press <b>&lt;enter&gt;</b> to jump to it<br/>
+          - You can also select a node with a mouse click<br/>
+        </p>
+        <br/>
+        <p><b><u>Shortcuts</u></b></p>
+        <p>
+          You can use a keyboard shortcut to toggle each search option.<br/>
+          Each option as a single letter keyboard shortcut.<br/>
+          Press the <b>&lt;Alt&gt;</b> key to reveal the associated letters in the options names.<br/>
+          Keep &lt;Alt&gt; pressed then press a letter shortcut to toggle the option.<br/>
+          (the shortcuts also work with the <b>&lt;Ctrl&gt;</b> key)
+        </p>
+        <br/>
+        <p><b><u>History</u></b></p>
+        <p>
+          Press <b>&lt;Alt-Up&gt;</b> and <b>&lt;Alt-Down&gt;</b> to navigate in the search history<br/>
+          (&lt;Ctrl-Up&gt; and &lt;Ctrl-Down&gt; also works)
+        </p>
+        <br/>
+      </html>"""
+}
+
+/**
+ * Get a small question mark icon from the theme
+ */
+ImageIcon getQuestionMarkIcon( int width )
+{
+    // We can't simply call icon.getImage().getScaledInstance() because some themes (ie Nimbus)
+    // do not return a suitable icon.getImage(). That's why we paint the icon.
+    Icon srcIcon = UIManager.getIcon("OptionPane.questionIcon")
+    int w = srcIcon.getIconWidth()
+    int h = srcIcon.getIconHeight()
+    BufferedImage bufferedImage = new BufferedImage( w, h, BufferedImage.TYPE_INT_ARGB )
+    Graphics2D g = bufferedImage.createGraphics()
+    srcIcon.paintIcon( null, g, 0, 0 );
+    g.dispose()
+    h = h / (float)w * width
+    w = width
+    ImageIcon icon = new ImageIcon( bufferedImage.getScaledInstance( w, h, Image.SCALE_SMOOTH ) )
+    return icon
 }
 
 def createGUI(){
@@ -1039,7 +1111,7 @@ def createGUI(){
             ){
                 gridBagLayout()
                 int y = 0
-                
+
                 widget(
                     G.patternTF,
                     constraints: gbc( gridx:0, gridy:y++, fill:GBC.HORIZONTAL, weightx:1, weighty:0 )
@@ -1100,12 +1172,20 @@ def createGUI(){
                     ){
                         gridLayout( rows:5, columns:1 )
                         label( "<html><b>Display</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
-                        widget( G.showNodesLevelCB, alignmentX: Component.LEFT_ALIGNMENT )
-                        widget( G.removeClonesCB, alignmentX: Component.LEFT_ALIGNMENT )
-                        widget( fontSizeSpinner, alignmentX: Component.LEFT_ALIGNMENT )
-                        widget( highlightColorButton, alignmentX: Component.LEFT_ALIGNMENT )
+                        widget( G.showNodesLevelCB)
+                        widget( G.removeClonesCB )
+                        widget( fontSizeSpinner )
+                        widget( highlightColorButton )
                     }
-                    panel( constraints: gbc( gridx:x++, gridy:0, weightx:1 ) )
+                    panel( constraints: gbc( gridx:x++, gridy:0, weightx:1, fill:GBC.BOTH ) ){
+                        borderLayout()
+                        label(
+                            icon: getQuestionMarkIcon( 18 ),
+                            toolTipText: getHelpText(),
+                            constraints:BorderLayout.SOUTH,
+                            horizontalAlignment: JLabel.RIGHT 
+                        )
+                    }
                 }
             }
         }
@@ -1186,14 +1266,6 @@ def createGUI(){
                                 break
                             case KeyEvent.VK_PAGE_UP:
                                 G.offsetSelectedCandidate(-10)
-                                e.consume()
-                                break
-                            case KeyEvent.VK_HOME:
-                                G.setSelectedCandidate( 0 )
-                                e.consume()
-                                break
-                            case KeyEvent.VK_END:
-                                G.setSelectedCandidate( G.candidates.getSize() - 1 )
                                 e.consume()
                                 break
                         }
