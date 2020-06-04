@@ -34,6 +34,7 @@ import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.awt.image.BufferedImage
 import java.lang.IllegalArgumentException
+import java.util.regex.Matcher
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 import javax.swing.AbstractAction
@@ -58,6 +59,140 @@ import org.freeplane.api.Node
 import org.freeplane.core.util.HtmlUtils
 import org.freeplane.core.util.LogUtils
 
+/**
+ * Integer interval between start (included) and end (excluded)
+ */
+class Interval {
+    
+    int start
+    int end
+    
+    Interval( int start, int end ){
+        if( end <= start ) throw new IllegalArgumentException("end must be greater or equal to start")
+        this.start = start
+        this.end = end
+    }
+
+    String toString(){
+        return "[start:${start}, end:${end}]"
+    }
+
+    /**
+     * Check if interval intersect with another one.
+     */
+    boolean doesIntersect( Interval other ){
+        if( start <= other.start ) return ( other.start < end )
+        else return ( start < other.end )
+    }
+
+    /**
+     * Return the intersection with another Interval.
+     * @return The intersection, null if the invervals do not intersect.
+     */
+    Interval getIntersection( Interval other ){
+        if( start <= other.start ){
+            if( other.start >= end ) return null
+            return new Interval( other.start, Math.min( end, other.end ) )
+        } else {
+            if( start >= other.end ) return null
+            return new Interval( start, Math.min( end, other.end ) )
+        }
+    }
+
+    /**
+     * Do the union with another Interval.
+     * Do nothing if the 2 intervals are separated.
+     */
+    void union( Interval other ){
+        if( start <= other.start ){
+            if( other.start > end ) return
+            end = Math.max( end, other.end )
+        } else {
+            if( start > other.end ) return
+            start = other.start
+            end = Math.max( end, other.end )
+        }
+    }
+}
+
+/**
+ * Ranges of characters to highlight in a string.
+ */
+class Highlight {
+
+    private ArrayList<Interval> parts // The substring indices to highlight
+    // (each interval goes from the first char to highlight to the last char + 1)
+
+    int start = Integer.MAX_VALUE // The start of the leftmost Interval
+    int end   = -1                // The end of the rightmost Interval
+    
+    Highlight(){
+        parts = new ArrayList<Interval>()
+    }
+    Highlight( int start, int end ){
+        parts = [ new Interval( start, end ) ]
+        this.start = start
+        this.end = end
+    }
+    Highlight( Interval part ){
+        parts = [ part ]
+        start = part.start
+        end = part.end
+    }
+    Highlight( ArrayList<Interval> parts ){
+        this.parts = new ArrayList<Interval>()
+        parts.each{ add( it ) }
+    }
+
+    Highlight( Highlight other ){
+        parts = other.parts.clone()
+        start = other.start
+        end   = other.end
+    }
+
+    ArrayList<Interval> getParts(){
+        return Collections.unmodifiableList( parts )
+    }
+
+    boolean equals( Highlight other ){
+        return parts == other.parts
+    }
+    
+    /**
+     * Add another substring to highlight, take care to join overlapping intervals.
+     */
+    void add( int start, int end ){
+        add( new Interval( start, end ) )
+    }
+
+    /**
+     * Add another substring to highlight, take care to join overlapping intervals.
+     */
+    void add( Interval part ){
+        parts.removeAll{
+            if( ! part.doesIntersect( it ) ) return false
+            part.union( it )
+            return true
+        }
+        parts << part
+        if( part.start < start ) start = part.start
+        if( part.end   > end   ) end   = part.end
+    }
+
+    int size(){
+        return parts.size()
+    }
+
+    /**
+     * Return a new object with all the intervals sorted by start
+     */
+    Highlight sorted(){
+        Highlight s = new Highlight( this )
+        s.parts = s.parts.sort{ it.start }
+        return s
+    }
+}
+
 // A node that can be found
 class Target {
 
@@ -69,9 +204,7 @@ class Target {
     // displayText format
     static private int maxDisplayLengthBase = 200 // Maximum displayText length, including indentation
     private int maxDisplayLength = 200            // Maximum displayText length, without indentation
-    private boolean highlight                     // Do we highlight displayText ?
-    private int highlightStart = 0                // First highlighted character index
-    private int highlightEnd = 0                  // Last highlighted character index + 1
+    private Highlight highlightParts              // Parts to highlight
     private String highlightColor                 // Last highlighted character index + 1
     private boolean showLevel                     // Do we indent displayText according to level ?
     private int minLevel                          // Minimal level to consider for indentation
@@ -97,26 +230,26 @@ class Target {
     }
 
     /**
-     * Highlight a part of the node text.
+     * Highlight some substrings of the node text.
      *
-     * The displayText will be an html string that display the highlighted part with bold,
+     * The displayText will be an html string that display the highlighted part with color,
      * show some text before and some text after, and add ellispis if the whole node
      * text don't fit in maxDisplayLength characters.
      *
-     * @param start Index of the first character to highlight
-     * @param end Index of the last character to highlight + 1
      * @return true is these parameters change the display
      */
-    boolean highlight( int start, int end  ){
-        if( start < 0 ) throw new IllegalArgumentException("start must be greater or equal to 0")
-        if( end > text.length() ) throw new IllegalArgumentException("end must be lower or equal to text length")
-        if( end <= start ) throw new IllegalArgumentException("end must be greater or equal to start")
+    boolean highlight( Highlight parts ){
+
+        if( parts.size() == 0 ) return unhighlight()
         
-        if( highlight && start == highlightStart && end == highlightEnd ) return false
+        if( parts.start < 0 ) throw new IllegalArgumentException("start must be greater or equal to 0")
+        if( parts.end > text.length() ) throw new IllegalArgumentException("end must be lower or equal to text length")
         
-        highlight = true
-        highlightStart = start
-        highlightEnd = end
+        if( highlightParts && parts.equals( highlightParts ) ) return false
+
+        // Sort needed by updateHighlightedDisplayText()
+        highlightParts = parts.sorted()
+
         displayTextInvalidated = true
 
         return true
@@ -128,8 +261,8 @@ class Target {
      * @return true is this change the display
      */
     boolean unhighlight(){
-        if( ! highlight ) return false
-        highlight = false
+        if( ! highlightParts ) return false
+        highlightParts = null
         displayTextInvalidated = true
         return true
     }
@@ -152,14 +285,14 @@ class Target {
     boolean setHighlightColor( String color ){
         if( color == highlightColor ) return false
         highlightColor = color
-        displayTextInvalidated = true
+        if( highlightParts ) displayTextInvalidated = true
         return true
     }
 
     private void updateDisplayText(){
         if( indentationInvalidated ) updateIndentation()
         if( displayTextInvalidated ){
-            if( highlight ) updateHighlightedDisplayText()
+            if( highlightParts ) updateHighlightedDisplayText()
             else updateBaseDisplayText()
         }
     }
@@ -178,70 +311,61 @@ class Target {
     }
     
     /**
-     * Create the highlighted text to display, according to
-     * highlightStart and highlightEnd.
+     * Create the highlighted text to display, according to highlightParts
      */
     private void updateHighlightedDisplayText(){
 
-        int start = highlightStart
-        int end = highlightEnd
+        int start = highlightParts.start
+        int end = highlightParts.end
         int length = end - start
         
         if( start < 0 || end > text.length() || length <= 0 ){
             LogUtils.warn( "Impossible to highlight node text." )
             updateBaseDisplayText()
+            return
         }
 
         int before = 15 // how much characters to display before the highlighted part ?
         
         // index of the 1rst char to display, "before" chars before the highlighted part
-        int i1 = start - before
-        if( i1 < 0 ){
-            // There is less than "before" chars between the beginning of the text and the highlighted part
-            // Fix the error
-            before += i1
-            i1 = 0
-        } else if( i1 < 5 ){
-            // There is less than 5 chars between the beginning of the text and the first displayed char.
-            // This chars will be replaced by an ellipsis "... " which take 4 chars. It's not worth it.
-            // Better to display the actual chars.
-            before += i1
-            i1 = 0
-        }
-
-        // index of the 1rst char of the highlighted part
-        int i2 = i1 + before
-        
-        // index of the 1rst char after the highlighted part
-        int i3 = i2 + length
+        start -= before
+        if( start < 5 ) start = 0
 
         // index of the last displayed char + 1
-        int i4 = i1 + maxDisplayLength
-        if( i4 > text.length() ) i4 = text.length()
+        end = start + maxDisplayLength
+        if( end > text.length() ) end = text.length()
 
-        // be sure we don't pass the end of the text for the highlighted part
-        if( i3 > i4 ) i3 = i4
-
-        if( i1 > 0 && i4 - i1 < 80 ){
-            int d = 80 - ( i4 - i1 )
-            i1 -= d
-            if( i1 < 0 ) i1 = 0
+        length = end - start
+        
+        // if we display the end of the text, perhaps we can display some text before
+        if( start > 0 && length < 80 ){
+            start -= 80 - length
+            if( start < 5 ) start = 0
         }
         
-        // Create the 3 parts of the displayed text
-        def beforePart = text.substring( i1, i2 )
-        def highlightedPart = text.substring( i2, i3 )
-        def afterPart = text.substring( i3, i4 )
+        // Get the highlighted text to display
+        Interval displayed = new Interval( start, end )
+        int i = start
+        String style = "style='background-color:$highlightColor;'"
+        displayText = ""
+        highlightParts.getParts().each{
+            Interval itv = it.getIntersection( displayed )
+            if( ! itv ) return
+            if( itv.start > i )
+                displayText += HtmlUtils.toHTMLEscapedText( text.substring( i, itv.start ) )
+            String t = HtmlUtils.toHTMLEscapedText( text.substring( itv.start, itv.end ) )
+            displayText += "<font $style>$t</font>"
+            i = itv.end
+        }
+        if( i < end )
+            displayText += HtmlUtils.toHTMLEscapedText( text.substring( i, end ) )
 
-        // Show ellispis for the 1rst part
-        if( i1 > 0 ) beforePart = "... " + beforePart[4..-1]
-        if( i4 < text.length() ) afterPart += " ..."
+        // Add ellispis if needed
+        if( start > 0 ) displayText = "... " + displayText
+        if( end < text.length() ) displayText += " ..."
 
-        beforePart = HtmlUtils.toHTMLEscapedText( beforePart )
-        highlightedPart = HtmlUtils.toHTMLEscapedText( highlightedPart )
-        afterPart = HtmlUtils.toHTMLEscapedText( afterPart )
-
-        displayText = "<html>$indentation$beforePart<font style='background-color:$highlightColor;'>$highlightedPart</font>$afterPart</html>"
+        // Add indentation and <html>
+        displayText = "<html>$indentation$displayText</html>"
         
         displayTextInvalidated = false
     }
@@ -348,32 +472,55 @@ class TargetModel extends DefaultListModel<Target>{
     private void regexFilter( ArrayList<String> patterns, ArrayList<Target> candidates, SearchOptions options ){
 
         boolean oneValidRegex = false
+        ArrayList<Pattern> regexps = []
 
+        // Convert patterns to regex
         try {
-            for( p : patterns ){
-                // Convert a pattern to case insensitive regex
-                String exp = p
+            regexps = patterns.collect{
+                String exp = it
                 if( ! options.isRegexSearch) exp = Pattern.quote( exp )
                 if( options.isSearchFromStart ) exp = "^$exp"
                 if( ! options.isCaseSensitiveSearch ) exp = "(?i)$exp"
-                def regex = ~/$exp/
+                Pattern regex = ~/$exp/
                 oneValidRegex = true
-                // Remove all the nodes that don't match the regex
-                candidates.removeAll{
-                    def matcher = ( it.text =~ regex )
-                    if( matcher.find() && matcher.end() > matcher.start() ){
-                        // Set the highlighted part of the node text to highlight
-                        it.highlight( matcher.start(), matcher.end() )
-                        return false
-                    } else {
-                        return true
-                    }
-                }
+                regex
             }
         } catch (PatternSyntaxException e) {}
 
-        // Remove all previous highlighting is the pattern contains only invalid regex
-        if( ! oneValidRegex ) candidates.each{ it.unhighlight() }
+        // Keep all candidates and remove all previous highlighting
+        // if the pattern contains only invalid regex
+        if( ! oneValidRegex ){
+            candidates.each{ it.unhighlight() }
+            return
+        }
+
+        // Remove all the candidates that don't match the regex
+        // Set the highlighted parts for the others
+        candidates.removeAll{
+            candidate ->
+            
+            ArrayList<Matcher> matchers = []
+            boolean discard = regexps.any{
+                // Look for a regex that don't match
+                Matcher matcher = ( candidate.text =~ it )
+                if( ! matcher.find() || matcher.end() <= matcher.start() ) return true
+                matchers << matcher
+                return false
+            }
+            
+            if( ! discard ){
+                // Create the highlight
+                ArrayList<Interval> parts = []
+                matchers.each{
+                    parts << new Interval( it.start(), it.end() )
+                    while( it.find() && it.end() > it.start() )
+                        parts << new Interval( it.start(), it.end() )
+                }
+                candidate.highlight( new Highlight( parts ) )
+            }
+
+            discard
+        }
     }
 
     private void update( ArrayList<Target> newCandidates ){
