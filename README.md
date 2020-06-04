@@ -24,7 +24,7 @@ Hover the question mark icon to display the usage instructions.
 
 ## Installation
 
-Download the script and put it in the scripts subdirectory of the Freeplane homedir (open it via Menu > Tools > Open user directory).
+[Download QuickSearch.groovy](../../releases) and put it in the scripts subdirectory of the Freeplane homedir (open it via Menu > Tools > Open user directory).
 
 At Menu > Tools > Preferences > Scripts:
 - Set "script execution enabled" to Yes
