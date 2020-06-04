@@ -1,6 +1,7 @@
 # QuickSearch for Freeplane
 
 This script for Freeplane provide a search box that filter the nodes as the user type the search terms.
+
 The goal is to provide a quick way to search for nodes, fully keyboard driven.
 
 ## Features
@@ -31,6 +32,7 @@ At Menu > Tools > Preferences > Scripts:
 - Set "script execution enabled" to Yes
 - Check "Permit file read operations"
 - Check "Permit file write operations"
+
 (This script need the file permissions because it save its settings in the Freeplane user directory. The name of the file is lilive_quicksearch.json.)
 
 Restart Freeplane.
