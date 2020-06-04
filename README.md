@@ -1,6 +1,7 @@
 # QuickSearch for Freeplane
 
-This Freeplane script provide a search box that filter the nodes as the user type the search terms.
+This script for Freeplane provide a search box that filter the nodes as the user type the search terms.
+The goal is to provide a quick way to search for nodes, fully keyboard driven.
 
 ## Features
 
