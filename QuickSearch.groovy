@@ -41,18 +41,23 @@ import javax.swing.AbstractAction
 import javax.swing.ActionMap
 import javax.swing.BorderFactory
 import javax.swing.BoxLayout
+import javax.swing.ButtonGroup
 import javax.swing.DefaultListModel
 import javax.swing.Icon
 import javax.swing.ImageIcon
+import javax.swing.InputMap
 import javax.swing.JButton
 import javax.swing.JCheckBox
 import javax.swing.JColorChooser
 import javax.swing.JComponent
+import javax.swing.JDialog
 import javax.swing.JFrame
 import javax.swing.JLabel
 import javax.swing.JList
 import javax.swing.JRadioButton
+import javax.swing.JScrollPane
 import javax.swing.JSeparator
+import javax.swing.JSlider
 import javax.swing.JTextField
 import javax.swing.KeyStroke
 import javax.swing.ListCellRenderer
@@ -62,6 +67,7 @@ import javax.swing.event.DocumentListener
 import org.freeplane.api.Node
 import org.freeplane.core.util.HtmlUtils
 import org.freeplane.core.util.LogUtils
+import org.freeplane.plugin.script.proxy.Proxy
 
 /**
  * Integer interval between start (included) and end (excluded)
@@ -379,7 +385,7 @@ class Target {
      * add an ellipsis if the whole node text don't fit in maxDisplayLength characters.
      */
     private void updateBaseDisplayText(){
-        def t = text
+        String t = text
         if( t.length() > maxDisplayLength ) t = t.substring( 0, maxDisplayLength - 4 ) + " ..."
         t = HtmlUtils.toHTMLEscapedText( t )
         displayText = "<html>$indentation$t</html>"
@@ -598,7 +604,7 @@ class TargetsOption {
     int type
     String text
     int mnemonic
-    def radioButton
+    JRadioButton radioButton
     String toolTip
     TargetsOption( int type, String text, int mnemonic, String toolTip ){
         this.type = type
@@ -619,14 +625,14 @@ class SearchOptions {
 // (to make them visible from inner classes, I don't find another way.
 class G {
     
-    static def node
-    static def c
-    static def gui
-    static def patternTF
-    static def scrollPane
-    static def candidatesJList
-    static def resultLbl
-    static def candidates
+    static Node node
+    static Proxy.Controller c
+    static JDialog gui
+    static JTextField patternTF
+    static JScrollPane scrollPane
+    static JList candidatesJList
+    static JLabel resultLbl
+    static TargetModel candidates
 
     static ArrayList<String> history = []
     static int historyIdx = 0
@@ -635,20 +641,20 @@ class G {
     
     static boolean isShowNodesLevel = false
     static int minNodeLevel = 1
-    static def showNodesLevelCB
+    static JCheckBox showNodesLevelCB
     static int showNodesLevelCBMnemonic = KeyEvent.VK_V
     
     static boolean isRemoveClones = true
-    static def removeClonesCB
+    static JCheckBox removeClonesCB
     static int removeClonesCBMnemonic = KeyEvent.VK_C
     
-    static def regexSearchCB
+    static JCheckBox regexSearchCB
     static int regexSearchCBMnemonic = KeyEvent.VK_R
-    static def caseSensitiveSearchCB
+    static JCheckBox caseSensitiveSearchCB
     static int caseSensitiveSearchCBMnemonic = KeyEvent.VK_I
-    static def searchFromStartCB
+    static JCheckBox searchFromStartCB
     static int searchFromStartCBMnemonic = KeyEvent.VK_B
-    static def splitPatternCB
+    static JCheckBox splitPatternCB
     static int splitPatternCBMnemonic = KeyEvent.VK_U
     static SearchOptions searchOptions = new SearchOptions()
     
@@ -722,7 +728,7 @@ class G {
         Rectangle rect = new Rectangle()
         if( gui ) rect = gui.getBounds()
         
-        def builder = new JsonBuilder()
+        JsonBuilder builder = new JsonBuilder()
         builder{
             targetsType        targetsType
             isShowNodesLevel   isShowNodesLevel
@@ -748,7 +754,7 @@ class G {
 
         Rectangle rect = new Rectangle()
         try{
-            def settings = new JsonSlurper().parseText( file.text )
+            JsonSlurper settings = new JsonSlurper().parseText( file.text )
             targetsType        = settings.targetsType        ?: targetsType
             isShowNodesLevel   = settings.isShowNodesLevel   ?: isShowNodesLevel
             isRemoveClones     = settings.isRemoveClones     ?: isRemoveClones
@@ -793,7 +799,7 @@ class G {
 
     static void updateResultLabel( int numDisplayed, int numFound, int numTotal ){
         if( ! resultLbl ) return
-        def text = "<html><b>${numFound}</b> nodes found amoung <b>${numTotal}</b> scanned."
+        String text = "<html><b>${numFound}</b> nodes found amoung <b>${numTotal}</b> scanned."
         if( numDisplayed < numFound ) text += " Only ${numDisplayed} results are displayed."
         text += "<html>"
         resultLbl.text = text
@@ -817,7 +823,7 @@ class G {
      */
     static void initCandidatesJListSelection(){
         if( ! candidates ) return
-        def selectIdx = candidates.findIndexOf{ it.id == node.id }
+        int selectIdx = candidates.findIndexOf{ it.id == node.id }
         if( selectIdx < 0 ) selectIdx = 0
         setSelectedCandidate( selectIdx )
     }
@@ -896,7 +902,7 @@ class G {
     private static void updateTargets(){
         isTargetsDefined = true
         
-        def nodes
+        ArrayList<Node> nodes
         switch( targetsType ){
             case ALL_NODES:
                 nodes = getAllNodes()
@@ -938,7 +944,7 @@ class G {
     
     private static ArrayList<Node> getSiblingsAndDescendantsNodes(){
         if( ! node.parent ) return getDescendantsNodes()
-        def nodes = []
+        ArrayList<Node> nodes = []
         node.parent.children.each{ nodes += it.findAll() }
         return nodes
     }
@@ -953,8 +959,8 @@ class G {
         // Compare 2 nodes by level than by ID
         Comparator firstClone = {
             a, b ->
-            def d1 = a.getNodeLevel( true )
-            def d2 = b.getNodeLevel( true )
+            int d1 = a.getNodeLevel( true )
+            int d2 = b.getNodeLevel( true )
             if( d1 < d2 ) return -1
             if( d1 > d2 ) return 1
             if( a.id < b.id ) return -1
@@ -962,16 +968,16 @@ class G {
             return 0
         }
         
-        def cloneIDs = []
-        def result = []
+        ArrayList<String> cloneIDs = []
+        ArrayList<Node> result = []
         nodes.each{
             node ->
-            def clones = node.getNodesSharingContent().collect()
+            ArrayList<Node> clones = node.getNodesSharingContent().collect()
             if( clones.size() > 0 ){
                 clones << node
                 clones.sort( firstClone )
-                def first = clones[0]
-                def id = first.id
+                Node first = clones[0]
+                String id = first.id
                 if( id in cloneIDs ) return
                 cloneIDs << id
                 result << first
@@ -1145,7 +1151,7 @@ class GuiManager {
     }
 
     static JComponent createCandidatesFontSizeSlider( swing, int fontSize, int minFontSize, int maxFontSize ){
-        def slider = swing.slider(
+        JSlider slider = swing.slider(
             value: fontSize,
             minimum: minFontSize,
             maximum: maxFontSize,
@@ -1156,7 +1162,7 @@ class GuiManager {
                 G.setFontSize( e.source.value )
             }
         )
-        def component = swing.hbox(
+        JComponent component = swing.hbox(
             border: swing.emptyBorder( 0, 0, 4, 0 ),
             constraints: BorderLayout.WEST
         ){
@@ -1221,9 +1227,9 @@ class GuiManager {
         return icon
     }
 
-    static def createGUI( ui ){
+    static JDialog createGUI( ui ){
         
-        def swing = new SwingBuilder()
+        SwingBuilder swing = new SwingBuilder()
 
         Font font = swing.label().getFont()
         int fontSize = font.getSize()
@@ -1241,10 +1247,10 @@ class GuiManager {
         G.caseSensitiveSearchCB = createCaseSensitiveSearchCB( swing )
         G.searchFromStartCB = createSearchFromStartCB( swing )
         G.splitPatternCB = createSplitPatternCB( swing )
-        def highlightColorButton = createHighlightColorButton( swing )
-        def fontSizeSpinner = createCandidatesFontSizeSlider( swing, G.candidatesFontSize, minFontSize, maxFontSize )
+        JButton highlightColorButton = createHighlightColorButton( swing )
+        JComponent fontSizeSlider = createCandidatesFontSizeSlider( swing, G.candidatesFontSize, minFontSize, maxFontSize )
 
-        def targetsGroup = swing.buttonGroup( id: 'classGroup' )
+        ButtonGroup targetsGroup = swing.buttonGroup( id: 'classGroup' )
         G.targetsOptions.each{
             it.radioButton = createTargetsOptionRadioButton( swing, targetsGroup, it )
         }
@@ -1326,7 +1332,7 @@ class GuiManager {
                             label( "<html><b>Display</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
                             widget( G.showNodesLevelCB)
                             widget( G.removeClonesCB )
-                            widget( fontSizeSpinner )
+                            widget( fontSizeSlider )
                             widget( highlightColorButton )
                         }
                         panel(
@@ -1397,7 +1403,7 @@ class GuiManager {
                                     e.consume()
                                     break
                                 default:
-                                    def option = G.targetsOptions.find{ it.mnemonic == key }
+                                    TargetsOption option = G.targetsOptions.find{ it.mnemonic == key }
                                     if( option ){
                                         option.radioButton.selected = true
                                         G.setTargetsType( option.type )
@@ -1460,8 +1466,8 @@ class GuiManager {
         }
 
         // Set Esc key to close the script
-        def onEscPressID = "onEscPress"
-        def inputMap = G.gui.getRootPane().getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT )
+        String onEscPressID = "onEscPress"
+        InputMap inputMap = G.gui.getRootPane().getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT )
         inputMap.put( KeyStroke.getKeyStroke( KeyEvent.VK_ESCAPE, 0 ), onEscPressID )
         G.gui.getRootPane().getActionMap().put(
             onEscPressID,
@@ -1508,7 +1514,7 @@ class GuiManager {
     }
 }
 
-Rectangle guiRect = G.init( node, c )
+Rectangle guiPreviousBounds = G.init( node, c )
 G.candidates = new TargetModel()
 
 // Create the GUI
@@ -1532,7 +1538,7 @@ Dimension minGuiSize = G.gui.getSize()
 G.gui.setMinimumSize( minGuiSize )
 
 // Place the GUI at its previous location if possible
-GuiManager.setGuiLocation( G.gui, ui.frame, guiRect, minGuiSize )
+GuiManager.setGuiLocation( G.gui, ui.frame, guiPreviousBounds, minGuiSize )
 
 // Display the GUI
 G.gui.visible = true
