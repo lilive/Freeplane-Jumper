@@ -44,12 +44,16 @@ import javax.swing.BoxLayout
 import javax.swing.DefaultListModel
 import javax.swing.Icon
 import javax.swing.ImageIcon
+import javax.swing.JButton
+import javax.swing.JCheckBox
 import javax.swing.JColorChooser
 import javax.swing.JComponent
 import javax.swing.JFrame
 import javax.swing.JLabel
 import javax.swing.JList
+import javax.swing.JRadioButton
 import javax.swing.JSeparator
+import javax.swing.JTextField
 import javax.swing.KeyStroke
 import javax.swing.ListCellRenderer
 import javax.swing.UIManager
@@ -911,6 +915,7 @@ class G {
                 minNodeLevel = node.getNodeLevel( true )
                 break
         }
+        if( minNodeLevel < 1 ) minNodeLevel = 1
         if( isRemoveClones ) nodes = removeClones( nodes )
         candidates.setTargets(
             nodes.collect{ new Target( it, isShowNodesLevel, minNodeLevel, highlightColor ) },
@@ -918,20 +923,20 @@ class G {
         )
     }
 
-    private static def getAllNodes(){
+    private static ArrayList<Node> getAllNodes(){
         return c.findAll()
     }
     
-    private static def getSiblingsNodes(){
+    private static ArrayList<Node> getSiblingsNodes(){
         if( node.parent ) return node.parent.children
         else return [ node ]
     }
     
-    private static def getDescendantsNodes(){
+    private static ArrayList<Node> getDescendantsNodes(){
         return node.findAll()
     }
     
-    private static def getSiblingsAndDescendantsNodes(){
+    private static ArrayList<Node> getSiblingsAndDescendantsNodes(){
         if( ! node.parent ) return getDescendantsNodes()
         def nodes = []
         node.parent.children.each{ nodes += it.findAll() }
@@ -943,7 +948,7 @@ class G {
      * If a node has some clones, keep the one at the minimal level
      * with the minimal ID
      */
-    private static def removeClones( nodes ){
+    private static ArrayList<Node> removeClones( ArrayList<Node> nodes ){
 
         // Compare 2 nodes by level than by ID
         Comparator firstClone = {
@@ -1003,500 +1008,503 @@ class G {
             }
         )
     }
-
-
 }
 
-// A text field to enter the search terms
-def createPatternTextField( swing ){
-    return swing.textField(
-        font: G.candidatesFont,
-        focusable: true
-    )
-}
+class GuiManager {
 
-// A list of the nodes that match the search terms
-def createCandidatesJList( swing ){
-    return swing.list(
-        model: G.candidates,
-        visibleRowCount: 20,
-        cellRenderer: new TargetCellRenderer(),
-        focusable: false
-    )
-}
-
-def createShowNodesLevelCB( swing ){
-    return swing.checkBox(
-        text: "Show nodes level",
-        selected: G.isShowNodesLevel,
-        mnemonic: G.showNodesLevelCBMnemonic,
-        actionPerformed: { e -> G.setLevelDisplay( e.source.selected ) },
-        focusable: false,
-        toolTipText: "Indent the results accordingly to the nodes level in the map"
-    )
-}
-
-def createRemoveClonesCB( swing ){
-    return swing.checkBox(
-        text: "Keep only one clone",
-        selected: G.isRemoveClones,
-        mnemonic: G.removeClonesCBMnemonic,
-        actionPerformed: { e -> G.setClonesDisplay( e.source.selected ) },
-        focusable: false,
-        toolTipText: "Uncheck to display also the clones in the results"
-    )
-}
-
-def createTargetsOptionRadioButton( swing, group, TargetsOption option ){
-    return swing.radioButton(
-        id: option.type.toString(),
-        text: option.text,
-        buttonGroup: group,
-        selected: G.targetsType == option.type,
-        mnemonic: option.mnemonic,
-        actionPerformed: { e -> G.setTargetsType( e.source.name as int ) },
-        focusable: false,
-        toolTipText: option.toolTip
-    )
-}
-
-def createRegexSearchCB( swing ){
-    return swing.checkBox(
-        text: "Use regular expressions",
-        selected: G.searchOptions.isRegexSearch,
-        mnemonic: G.regexSearchCBMnemonic,
-        actionPerformed: {
-            e ->
-            G.searchOptions.isRegexSearch = e.source.selected
-            G.candidates.filter( G.patternTF.text, G.searchOptions )
-        },
-        focusable: false,
-        toolTipText: "Check to use the search string as a regular expression"
-    )
-}
-
-def createCaseSensitiveSearchCB( swing ){
-    return swing.checkBox(
-        text: "Case sensitive search",
-        selected: G.searchOptions.isCaseSensitiveSearch,
-        mnemonic: G.caseSensitiveSearchCBMnemonic,
-        actionPerformed: {
-            e ->
-            G.searchOptions.isCaseSensitiveSearch = e.source.selected
-            G.candidates.filter( G.patternTF.text, G.searchOptions )
-        },
-        focusable: false,
-        toolTipText: "<html>Check to make the difference between<br>uppercase and lowercase letters</html>"
-    )
-}
-
-def createSearchFromStartCB( swing ){
-    return swing.checkBox(
-        text: "Search at beginning of nodes",
-        selected: G.searchOptions.isSearchFromStart,
-        mnemonic: G.searchFromStartCBMnemonic,
-        actionPerformed: {
-            e ->
-            G.searchOptions.isSearchFromStart = e.source.selected
-            G.splitPatternCB.enabled = ! e.source.selected
-            G.candidates.filter( G.patternTF.text, G.searchOptions )
-        },
-        focusable: false,
-        toolTipText: "<html>Check to find only nodes where the search string<br>is at the beginning of the node</html>"
-    )
-}
-
-def createSplitPatternCB( swing ){
-    return swing.checkBox(
-        text: "Multiple pattern",
-        selected: G.searchOptions.isSplitPattern,
-        mnemonic: G.splitPatternCBMnemonic,
-        actionPerformed: {
-            e ->
-            G.searchOptions.isSplitPattern = e.source.selected
-            G.candidates.filter( G.patternTF.text, G.searchOptions )
-        },
-        focusable: false,
-        toolTipText: "<html>If checked, the search string is split into words (or smaller regular expressions).<br>" +
-          "A node is considering to match if it contains all of them, in any order.</html>"
-    )
-}
-
-def createHighlightColorButton( swing ){
-    return swing.button(
-        text: "Highlight color",
-        borderPainted: false,
-        background: Color.decode( G.highlightColor ),
-        focusable: false,
-        toolTipText: "<html>Click to choose the color that highlight the text<br>that match the pattern in the results listing</html>",
-        actionPerformed: {
-            e ->
-            Color color = JColorChooser.showDialog( G.gui, "Choose a color", Color.decode( G.highlightColor ) )
-            e.source.background = color
-            G.highlightColor = String.format( "#%06x", Integer.valueOf( color.getRGB() & 0x00FFFFFF ) )
-            G.candidates.setHighlightColor( G.highlightColor )
-        }
-    )
-}
-
-def createCandidatesFontSizeSlider( swing, int fontSize, int minFontSize, int maxFontSize ){
-    def slider = swing.slider(
-        value: fontSize,
-        minimum: minFontSize,
-        maximum: maxFontSize,
-        focusable: false,
-        stateChanged: {
-            e ->
-            if( e.source.getValueIsAdjusting() ) return
-            G.setFontSize( e.source.value )
-        }
-    )
-    def component = swing.hbox(
-        border: swing.emptyBorder( 0, 0, 4, 0 ),
-        constraints: BorderLayout.WEST
-    ){
-        label( "Font size" )
-        hstrut()
-        widget( slider )
+    // A text field to enter the search terms
+    static JTextField createPatternTextField( swing ){
+        return swing.textField(
+            font: G.candidatesFont,
+            focusable: true
+        )
     }
-    Dimension size = slider.getPreferredSize()
-    if( size ){
-        size.width = size.width / 2
-        slider.setPreferredSize( size )
+
+    // A list of the nodes that match the search terms
+    static JList createCandidatesJList( swing ){
+        return swing.list(
+            model: G.candidates,
+            visibleRowCount: 20,
+            cellRenderer: new TargetCellRenderer(),
+            focusable: false
+        )
     }
-    return component
-}
 
-def getHelpText(){
-    return """<html>
-        <br/>
-        <p><b><u>Usage</u></b></p>
-        <p>
-          - <b>Type</b> the text to search<br/>
-          - The node list updates to show only the nodes that contains the text<br/>
-          - With the <b>&lt;up&gt;</b> and <b>&lt;down&gt;</b> arrow keys, select a node<br/>then press <b>&lt;enter&gt;</b> to jump to it<br/>
-          - You can also select a node with a mouse click<br/>
-        </p>
-        <br/>
-        <p><b><u>Shortcuts</u></b></p>
-        <p>
-          You can use a keyboard shortcut to toggle each search option.<br/>
-          Each option as a single letter keyboard shortcut.<br/>
-          Press the <b>&lt;Alt&gt;</b> key to reveal the associated letters in the options names.<br/>
-          Keep &lt;Alt&gt; pressed then press a letter shortcut to toggle the option.<br/>
-          (the shortcuts also work with the <b>&lt;Ctrl&gt;</b> key)
-        </p>
-        <br/>
-        <p><b><u>History</u></b></p>
-        <p>
-          Press <b>&lt;Alt-Up&gt;</b> and <b>&lt;Alt-Down&gt;</b> to navigate in the search history<br/>
-          (&lt;Ctrl-Up&gt; and &lt;Ctrl-Down&gt; also works)
-        </p>
-        <br/>
-      </html>"""
-}
-
-/**
- * Get a small question mark icon from the theme
- */
-ImageIcon getQuestionMarkIcon( int width )
-{
-    // We can't simply call icon.getImage().getScaledInstance() because some themes (ie Nimbus)
-    // do not return a suitable icon.getImage(). That's why we paint the icon.
-    Icon srcIcon = UIManager.getIcon("OptionPane.questionIcon")
-    int w = srcIcon.getIconWidth()
-    int h = srcIcon.getIconHeight()
-    BufferedImage bufferedImage = new BufferedImage( w, h, BufferedImage.TYPE_INT_ARGB )
-    Graphics2D g = bufferedImage.createGraphics()
-    srcIcon.paintIcon( null, g, 0, 0 );
-    g.dispose()
-    h = h / (float)w * width
-    w = width
-    ImageIcon icon = new ImageIcon( bufferedImage.getScaledInstance( w, h, Image.SCALE_SMOOTH ) )
-    return icon
-}
-
-def createGUI(){
-    
-    def swing = new SwingBuilder()
-
-    Font font = swing.label().getFont()
-    int fontSize = font.getSize()
-    int minFontSize = font.getSize() - 6
-    int maxFontSize = font.getSize() + 12
-    G.candidatesFont = new Font( font )
-    G.initFontSize( fontSize, minFontSize, maxFontSize )
-    G.setFontSize( G.candidatesFontSize  )
-    
-    G.patternTF = createPatternTextField( swing )
-    G.candidatesJList = createCandidatesJList( swing )
-    G.showNodesLevelCB = createShowNodesLevelCB( swing )
-    G.removeClonesCB = createRemoveClonesCB( swing )
-    G.regexSearchCB = createRegexSearchCB( swing )
-    G.caseSensitiveSearchCB = createCaseSensitiveSearchCB( swing )
-    G.searchFromStartCB = createSearchFromStartCB( swing )
-    G.splitPatternCB = createSplitPatternCB( swing )
-    highlightColorButton = createHighlightColorButton( swing )
-    fontSizeSpinner = createCandidatesFontSizeSlider( swing, G.candidatesFontSize, minFontSize, maxFontSize )
-
-    def targetsGroup = swing.buttonGroup( id: 'classGroup' )
-    G.targetsOptions.each{
-        it.radioButton = createTargetsOptionRadioButton( swing, targetsGroup, it )
+    static JCheckBox createShowNodesLevelCB( swing ){
+        return swing.checkBox(
+            text: "Show nodes level",
+            selected: G.isShowNodesLevel,
+            mnemonic: G.showNodesLevelCBMnemonic,
+            actionPerformed: { e -> G.setLevelDisplay( e.source.selected ) },
+            focusable: false,
+            toolTipText: "Indent the results accordingly to the nodes level in the map"
+        )
     }
-    
-    swing.build{
-        G.gui = dialog(
-            title: "Quick search",
-            modal: true,
-            owner: ui.frame,
-            defaultCloseOperation: JFrame.DISPOSE_ON_CLOSE
+
+    static JCheckBox createRemoveClonesCB( swing ){
+        return swing.checkBox(
+            text: "Keep only one clone",
+            selected: G.isRemoveClones,
+            mnemonic: G.removeClonesCBMnemonic,
+            actionPerformed: { e -> G.setClonesDisplay( e.source.selected ) },
+            focusable: false,
+            toolTipText: "Uncheck to display also the clones in the results"
+        )
+    }
+
+    static JRadioButton createTargetsOptionRadioButton( swing, group, TargetsOption option ){
+        return swing.radioButton(
+            id: option.type.toString(),
+            text: option.text,
+            buttonGroup: group,
+            selected: G.targetsType == option.type,
+            mnemonic: option.mnemonic,
+            actionPerformed: { e -> G.setTargetsType( e.source.name as int ) },
+            focusable: false,
+            toolTipText: option.toolTip
+        )
+    }
+
+    static JCheckBox createRegexSearchCB( swing ){
+        return swing.checkBox(
+            text: "Use regular expressions",
+            selected: G.searchOptions.isRegexSearch,
+            mnemonic: G.regexSearchCBMnemonic,
+            actionPerformed: {
+                e ->
+                G.searchOptions.isRegexSearch = e.source.selected
+                G.candidates.filter( G.patternTF.text, G.searchOptions )
+            },
+            focusable: false,
+            toolTipText: "Check to use the search string as a regular expression"
+        )
+    }
+
+    static JCheckBox createCaseSensitiveSearchCB( swing ){
+        return swing.checkBox(
+            text: "Case sensitive search",
+            selected: G.searchOptions.isCaseSensitiveSearch,
+            mnemonic: G.caseSensitiveSearchCBMnemonic,
+            actionPerformed: {
+                e ->
+                G.searchOptions.isCaseSensitiveSearch = e.source.selected
+                G.candidates.filter( G.patternTF.text, G.searchOptions )
+            },
+            focusable: false,
+            toolTipText: "<html>Check to make the difference between<br>uppercase and lowercase letters</html>"
+        )
+    }
+
+    static JCheckBox createSearchFromStartCB( swing ){
+        return swing.checkBox(
+            text: "Search at beginning of nodes",
+            selected: G.searchOptions.isSearchFromStart,
+            mnemonic: G.searchFromStartCBMnemonic,
+            actionPerformed: {
+                e ->
+                G.searchOptions.isSearchFromStart = e.source.selected
+                G.splitPatternCB.enabled = ! e.source.selected
+                G.candidates.filter( G.patternTF.text, G.searchOptions )
+            },
+            focusable: false,
+            toolTipText: "<html>Check to find only nodes where the search string<br>is at the beginning of the node</html>"
+        )
+    }
+
+    static JCheckBox createSplitPatternCB( swing ){
+        return swing.checkBox(
+            text: "Multiple pattern",
+            selected: G.searchOptions.isSplitPattern,
+            mnemonic: G.splitPatternCBMnemonic,
+            actionPerformed: {
+                e ->
+                G.searchOptions.isSplitPattern = e.source.selected
+                G.candidates.filter( G.patternTF.text, G.searchOptions )
+            },
+            focusable: false,
+            toolTipText: "<html>If checked, the search string is split into words (or smaller regular expressions).<br>" +
+                "A node is considering to match if it contains all of them, in any order.</html>"
+        )
+    }
+
+    static JButton createHighlightColorButton( swing ){
+        return swing.button(
+            text: "Highlight color",
+            borderPainted: false,
+            background: Color.decode( G.highlightColor ),
+            focusable: false,
+            toolTipText: "<html>Click to choose the color that highlight the text<br>that match the pattern in the results listing</html>",
+            actionPerformed: {
+                e ->
+                Color color = JColorChooser.showDialog( G.gui, "Choose a color", Color.decode( G.highlightColor ) )
+                e.source.background = color
+                G.highlightColor = String.format( "#%06x", Integer.valueOf( color.getRGB() & 0x00FFFFFF ) )
+                G.candidates.setHighlightColor( G.highlightColor )
+            }
+        )
+    }
+
+    static JComponent createCandidatesFontSizeSlider( swing, int fontSize, int minFontSize, int maxFontSize ){
+        def slider = swing.slider(
+            value: fontSize,
+            minimum: minFontSize,
+            maximum: maxFontSize,
+            focusable: false,
+            stateChanged: {
+                e ->
+                if( e.source.getValueIsAdjusting() ) return
+                G.setFontSize( e.source.value )
+            }
+        )
+        def component = swing.hbox(
+            border: swing.emptyBorder( 0, 0, 4, 0 ),
+            constraints: BorderLayout.WEST
         ){
-            borderLayout()
-            panel(
-                border: emptyBorder( 4 ),
-                constraints:BorderLayout.CENTER
+            label( "Font size" )
+            hstrut()
+            widget( slider )
+        }
+        Dimension size = slider.getPreferredSize()
+        if( size ){
+            size.width = size.width / 2
+            slider.setPreferredSize( size )
+        }
+        return component
+    }
+
+    static String getHelpText(){
+        return """<html>
+            <br/>
+            <p><b><u>Usage</u></b></p>
+            <p>
+              - <b>Type</b> the text to search<br/>
+              - The node list updates to show only the nodes that contains the text<br/>
+              - With the <b>&lt;up&gt;</b> and <b>&lt;down&gt;</b> arrow keys, select a node<br/>then press <b>&lt;enter&gt;</b> to jump to it<br/>
+              - You can also select a node with a mouse click<br/>
+            </p>
+            <br/>
+            <p><b><u>Shortcuts</u></b></p>
+            <p>
+              You can use a keyboard shortcut to toggle each search option.<br/>
+              Each option as a single letter keyboard shortcut.<br/>
+              Press the <b>&lt;Alt&gt;</b> key to reveal the associated letters in the options names.<br/>
+              Keep &lt;Alt&gt; pressed then press a letter shortcut to toggle the option.<br/>
+              (the shortcuts also work with the <b>&lt;Ctrl&gt;</b> key)
+            </p>
+            <br/>
+            <p><b><u>History</u></b></p>
+            <p>
+              Press <b>&lt;Alt-Up&gt;</b> and <b>&lt;Alt-Down&gt;</b> to navigate in the search history<br/>
+              (&lt;Ctrl-Up&gt; and &lt;Ctrl-Down&gt; also works)
+            </p>
+            <br/>
+          </html>"""
+    }
+
+    /**
+     * Get a small question mark icon from the theme
+     */
+    static ImageIcon getQuestionMarkIcon( int width )
+    {
+        // We can't simply call icon.getImage().getScaledInstance() because some themes (ie Nimbus)
+        // do not return a suitable icon.getImage(). That's why we paint the icon.
+        Icon srcIcon = UIManager.getIcon("OptionPane.questionIcon")
+        int w = srcIcon.getIconWidth()
+        int h = srcIcon.getIconHeight()
+        BufferedImage bufferedImage = new BufferedImage( w, h, BufferedImage.TYPE_INT_ARGB )
+        Graphics2D g = bufferedImage.createGraphics()
+        srcIcon.paintIcon( null, g, 0, 0 );
+        g.dispose()
+        h = h / (float)w * width
+        w = width
+        ImageIcon icon = new ImageIcon( bufferedImage.getScaledInstance( w, h, Image.SCALE_SMOOTH ) )
+        return icon
+    }
+
+    static def createGUI( ui ){
+        
+        def swing = new SwingBuilder()
+
+        Font font = swing.label().getFont()
+        int fontSize = font.getSize()
+        int minFontSize = font.getSize() - 6
+        int maxFontSize = font.getSize() + 12
+        G.candidatesFont = new Font( font )
+        G.initFontSize( fontSize, minFontSize, maxFontSize )
+        G.setFontSize( G.candidatesFontSize  )
+        
+        G.patternTF = createPatternTextField( swing )
+        G.candidatesJList = createCandidatesJList( swing )
+        G.showNodesLevelCB = createShowNodesLevelCB( swing )
+        G.removeClonesCB = createRemoveClonesCB( swing )
+        G.regexSearchCB = createRegexSearchCB( swing )
+        G.caseSensitiveSearchCB = createCaseSensitiveSearchCB( swing )
+        G.searchFromStartCB = createSearchFromStartCB( swing )
+        G.splitPatternCB = createSplitPatternCB( swing )
+        def highlightColorButton = createHighlightColorButton( swing )
+        def fontSizeSpinner = createCandidatesFontSizeSlider( swing, G.candidatesFontSize, minFontSize, maxFontSize )
+
+        def targetsGroup = swing.buttonGroup( id: 'classGroup' )
+        G.targetsOptions.each{
+            it.radioButton = createTargetsOptionRadioButton( swing, targetsGroup, it )
+        }
+    
+        swing.build{
+            G.gui = dialog(
+                title: "Quick search",
+                modal: true,
+                owner: ui.frame,
+                defaultCloseOperation: JFrame.DISPOSE_ON_CLOSE
             ){
-                gridBagLayout()
-                int y = 0
-
-                widget(
-                    G.patternTF,
-                    constraints: gbc( gridx:0, gridy:y++, fill:GBC.HORIZONTAL, weightx:1, weighty:0 )
-                )
-
-                G.scrollPane = scrollPane(
-                    constraints: gbc( gridx:0, gridy:y++, fill:GBC.BOTH, weighty:1 )
-                ){
-                    widget( G.candidatesJList )
-                }
-
-                G.resultLbl = label(
-                    border: emptyBorder( 4, 0, 8, 0 ),
-                    constraints: gbc( gridx:0, gridy:y++, weighty:0, anchor:GBC.LINE_START, fill:GBC.HORIZONTAL )
-                )
-
-                separator(
-                    constraints: gbc( gridx:0, gridy:y++, fill:GBC.HORIZONTAL )
-                )
-                
+                borderLayout()
                 panel(
-                    constraints: gbc( gridx:0, gridy:y++, fill:GBC.HORIZONTAL, weighty:0 )
+                    border: emptyBorder( 4 ),
+                    constraints:BorderLayout.CENTER
                 ){
                     gridBagLayout()
-                    int x = 0
-                    panel(
-                        border: emptyBorder( 0, 0, 0, 32 ),
-                        // border: titledBorder( "Nodes to search" ),
-                        constraints: gbc( gridx:x++, gridy:0, fill:GBC.BOTH, weightx:0 )
-                    ){
-                        boxLayout( axis: BoxLayout.PAGE_AXIS )
-                        label( "<html><b>Nodes to search</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
-                        G.targetsOptions.each{ widget( it.radioButton ) }
-                    }
-                    separator(
-                        orientation:JSeparator.VERTICAL,
-                        constraints: gbc( gridx:x++, gridy:0, fill:GBC.VERTICAL )
+                    int y = 0
+
+                    widget(
+                        G.patternTF,
+                        constraints: gbc( gridx:0, gridy:y++, fill:GBC.HORIZONTAL, weightx:1, weighty:0 )
                     )
-                    panel(
-                        border: emptyBorder( 0, 8, 0, 32 ),
-                        // border: titledBorder( "Pattern options" ),
-                        constraints: gbc( gridx:x++, gridy:0, fill:GBC.BOTH, weightx:0 )
+
+                    G.scrollPane = scrollPane(
+                        constraints: gbc( gridx:0, gridy:y++, fill:GBC.BOTH, weighty:1 )
                     ){
-                        boxLayout( axis: BoxLayout.PAGE_AXIS )
-                        label( "<html><b>Search pattern options</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
-                        widget( G.regexSearchCB  )
-                        widget( G.caseSensitiveSearchCB )
-                        widget( G.searchFromStartCB )
-                        widget( G.splitPatternCB )
+                        widget( G.candidatesJList )
                     }
-                    separator(
-                        orientation:JSeparator.VERTICAL,
-                        constraints: gbc( gridx:x++, gridy:0, fill:GBC.VERTICAL )
+
+                    G.resultLbl = label(
+                        border: emptyBorder( 4, 0, 8, 0 ),
+                        constraints: gbc( gridx:0, gridy:y++, weighty:0, anchor:GBC.LINE_START, fill:GBC.HORIZONTAL )
                     )
+
+                    separator(
+                        constraints: gbc( gridx:0, gridy:y++, fill:GBC.HORIZONTAL )
+                    )
+                    
                     panel(
-                        border: emptyBorder( 0, 8, 0, 0 ),
-                        constraints: gbc( gridx:x++, gridy:0, weightx:0 )
+                        constraints: gbc( gridx:0, gridy:y++, fill:GBC.HORIZONTAL, weighty:0 )
                     ){
-                        gridLayout( rows:5, columns:1 )
-                        label( "<html><b>Display</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
-                        widget( G.showNodesLevelCB)
-                        widget( G.removeClonesCB )
-                        widget( fontSizeSpinner )
-                        widget( highlightColorButton )
-                    }
-                    panel( constraints: gbc( gridx:x++, gridy:0, weightx:1, fill:GBC.BOTH ) ){
-                        borderLayout()
-                        label(
-                            icon: getQuestionMarkIcon( 18 ),
-                            toolTipText: getHelpText(),
-                            constraints:BorderLayout.SOUTH,
-                            horizontalAlignment: JLabel.RIGHT 
+                        gridBagLayout()
+                        int x = 0
+                        panel(
+                            border: emptyBorder( 0, 0, 0, 32 ),
+                            // border: titledBorder( "Nodes to search" ),
+                            constraints: gbc( gridx:x++, gridy:0, fill:GBC.BOTH, weightx:0 )
+                        ){
+                            boxLayout( axis: BoxLayout.PAGE_AXIS )
+                            label( "<html><b>Nodes to search</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
+                            G.targetsOptions.each{ widget( it.radioButton ) }
+                        }
+                        separator(
+                            orientation:JSeparator.VERTICAL,
+                            constraints: gbc( gridx:x++, gridy:0, fill:GBC.VERTICAL )
                         )
+                        panel(
+                            border: emptyBorder( 0, 8, 0, 32 ),
+                            // border: titledBorder( "Pattern options" ),
+                            constraints: gbc( gridx:x++, gridy:0, fill:GBC.BOTH, weightx:0 )
+                        ){
+                            boxLayout( axis: BoxLayout.PAGE_AXIS )
+                            label( "<html><b>Search pattern options</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
+                            widget( G.regexSearchCB  )
+                            widget( G.caseSensitiveSearchCB )
+                            widget( G.searchFromStartCB )
+                            widget( G.splitPatternCB )
+                        }
+                        separator(
+                            orientation:JSeparator.VERTICAL,
+                            constraints: gbc( gridx:x++, gridy:0, fill:GBC.VERTICAL )
+                        )
+                        panel(
+                            border: emptyBorder( 0, 8, 0, 16 ),
+                            constraints: gbc( gridx:x++, gridy:0, weightx:0 )
+                        ){
+                            gridLayout( rows:5, columns:1 )
+                            label( "<html><b>Display</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
+                            widget( G.showNodesLevelCB)
+                            widget( G.removeClonesCB )
+                            widget( fontSizeSpinner )
+                            widget( highlightColorButton )
+                        }
+                        panel(
+                            constraints: gbc( gridx:x++, gridy:0, weightx:1, fill:GBC.BOTH )
+                        ){
+                            borderLayout()
+                            label(
+                                icon: getQuestionMarkIcon( 18 ),
+                                toolTipText: getHelpText(),
+                                constraints:BorderLayout.SOUTH,
+                                horizontalAlignment: JLabel.RIGHT 
+                            )
+                        }
                     }
                 }
             }
+
+            // Add key listeners to the text field, to navigate the nodes list while editing the search term
+            G.patternTF.addKeyListener(
+                new java.awt.event.KeyAdapter(){
+
+                    // Keys to choose a node in the nodes list
+                    @Override public void keyPressed(KeyEvent e){
+                        int key = e.getKeyCode()
+                        if( e.isControlDown() || e.isAltDown() ){
+                            switch( key ){
+                                case G.historyPreviousKey:
+                                    G.selectPreviousPattern()
+                                    e.consume()
+                                    break
+                                case G.historyNextKey:
+                                    G.selectNextPattern()
+                                    e.consume()
+                                    break
+                                case G.showNodesLevelCBMnemonic:
+                                    G.showNodesLevelCB.selected = ! G.showNodesLevelCB.selected
+                                    G.setLevelDisplay( G.showNodesLevelCB.selected )
+                                    e.consume()
+                                    break
+                                case G.removeClonesCBMnemonic:
+                                    G.removeClonesCB.selected = ! G.removeClonesCB.selected
+                                    G.setClonesDisplay( G.removeClonesCB.selected )
+                                    e.consume()
+                                    break
+                                case G.regexSearchCBMnemonic:
+                                    G.regexSearchCB.selected = ! G.regexSearchCB.selected
+                                    G.searchOptions.isRegexSearch = G.regexSearchCB.selected
+                                    G.candidates.filter( G.patternTF.text, G.searchOptions )
+                                    e.consume()
+                                    break
+                                case G.caseSensitiveSearchCBMnemonic:
+                                    G.caseSensitiveSearchCB.selected = ! G.caseSensitiveSearchCB.selected
+                                    G.searchOptions.isCaseSensitiveSearch = G.caseSensitiveSearchCB.selected
+                                    G.candidates.filter( G.patternTF.text, G.searchOptions )
+                                    e.consume()
+                                    break
+                                case G.searchFromStartCBMnemonic:
+                                    G.searchFromStartCB.selected = ! G.searchFromStartCB.selected
+                                    G.searchOptions.isSearchFromStart = G.searchFromStartCB.selected
+                                    G.splitPatternCB.enabled = ! G.searchFromStartCB.selected
+                                    G.candidates.filter( G.patternTF.text, G.searchOptions )
+                                    e.consume()
+                                    break
+                                case G.splitPatternCBMnemonic:
+                                    G.splitPatternCB.selected = ! G.splitPatternCB.selected
+                                    G.searchOptions.isSplitPattern = G.splitPatternCB.selected
+                                    G.candidates.filter( G.patternTF.text, G.searchOptions )
+                                    e.consume()
+                                    break
+                                default:
+                                    def option = G.targetsOptions.find{ it.mnemonic == key }
+                                    if( option ){
+                                        option.radioButton.selected = true
+                                        G.setTargetsType( option.type )
+                                        e.consume()
+                                    }
+                            }
+                        } else {
+                            switch( key ){
+                                case KeyEvent.VK_DOWN:
+                                    G.offsetSelectedCandidate(1)
+                                    e.consume()
+                                    break
+                                case KeyEvent.VK_UP:
+                                    G.offsetSelectedCandidate(-1)
+                                    e.consume()
+                                    break
+                                case KeyEvent.VK_PAGE_DOWN:
+                                    G.offsetSelectedCandidate(10)
+                                    e.consume()
+                                    break
+                                case KeyEvent.VK_PAGE_UP:
+                                    G.offsetSelectedCandidate(-10)
+                                    e.consume()
+                                    break
+                            }
+                        }
+                    }
+
+                    // ENTER to jump to the selected node
+                    @Override public void keyReleased(KeyEvent e){
+                        int key = e.getKeyCode()
+                        if( key == KeyEvent.VK_ENTER ) G.jumpToSelectedCandidate()
+                    }
+                }
+            )
+
+            // Trigger the node list filtering each time the text field content change
+            G.patternTF.getDocument().addDocumentListener(
+                new DocumentListener() {
+                    @Override public void changedUpdate(DocumentEvent e) {
+                        G.candidates.filter( G.patternTF.text, G.searchOptions )
+                    }
+                    @Override public void removeUpdate(DocumentEvent e) {
+                        G.candidates.filter( G.patternTF.text, G.searchOptions )
+                    }
+                    @Override public void insertUpdate(DocumentEvent e) {
+                        G.candidates.filter( G.patternTF.text, G.searchOptions )
+                    }
+                }
+            )
+
+            // Jump to a node clicked in the nodes list
+            G.candidatesJList.addMouseListener(
+                new MouseAdapter(){
+                    @Override public void mouseClicked(MouseEvent e){
+                        G.jumpToSelectedCandidate()
+                    }
+                }
+            )
         }
 
-        // Add key listeners to the text field, to navigate the nodes list while editing the search term
-        G.patternTF.addKeyListener(
-            new java.awt.event.KeyAdapter(){
-
-                // Keys to choose a node in the nodes list
-                @Override public void keyPressed(KeyEvent e){
-                    int key = e.getKeyCode()
-                    if( e.isControlDown() || e.isAltDown() ){
-                        switch( key ){
-                            case G.historyPreviousKey:
-                                G.selectPreviousPattern()
-                                e.consume()
-                                break
-                            case G.historyNextKey:
-                                G.selectNextPattern()
-                                e.consume()
-                                break
-                            case G.showNodesLevelCBMnemonic:
-                                G.showNodesLevelCB.selected = ! G.showNodesLevelCB.selected
-                                G.setLevelDisplay( G.showNodesLevelCB.selected )
-                                e.consume()
-                                break
-                            case G.removeClonesCBMnemonic:
-                                G.removeClonesCB.selected = ! G.removeClonesCB.selected
-                                G.setClonesDisplay( G.removeClonesCB.selected )
-                                e.consume()
-                                break
-                            case G.regexSearchCBMnemonic:
-                                G.regexSearchCB.selected = ! G.regexSearchCB.selected
-                                G.searchOptions.isRegexSearch = G.regexSearchCB.selected
-                                G.candidates.filter( G.patternTF.text, G.searchOptions )
-                                e.consume()
-                                break
-                            case G.caseSensitiveSearchCBMnemonic:
-                                G.caseSensitiveSearchCB.selected = ! G.caseSensitiveSearchCB.selected
-                                G.searchOptions.isCaseSensitiveSearch = G.caseSensitiveSearchCB.selected
-                                G.candidates.filter( G.patternTF.text, G.searchOptions )
-                                e.consume()
-                                break
-                            case G.searchFromStartCBMnemonic:
-                                G.searchFromStartCB.selected = ! G.searchFromStartCB.selected
-                                G.searchOptions.isSearchFromStart = G.searchFromStartCB.selected
-                                G.splitPatternCB.enabled = ! G.searchFromStartCB.selected
-                                G.candidates.filter( G.patternTF.text, G.searchOptions )
-                                e.consume()
-                                break
-                            case G.splitPatternCBMnemonic:
-                                G.splitPatternCB.selected = ! G.splitPatternCB.selected
-                                G.searchOptions.isSplitPattern = G.splitPatternCB.selected
-                                G.candidates.filter( G.patternTF.text, G.searchOptions )
-                                e.consume()
-                                break
-                            default:
-                                def option = G.targetsOptions.find{ it.mnemonic == key }
-                                if( option ){
-                                    option.radioButton.selected = true
-                                    G.setTargetsType( option.type )
-                                    e.consume()
-                                }
-                        }
-                    } else {
-                        switch( key ){
-                            case KeyEvent.VK_DOWN:
-                                G.offsetSelectedCandidate(1)
-                                e.consume()
-                                break
-                            case KeyEvent.VK_UP:
-                                G.offsetSelectedCandidate(-1)
-                                e.consume()
-                                break
-                            case KeyEvent.VK_PAGE_DOWN:
-                                G.offsetSelectedCandidate(10)
-                                e.consume()
-                                break
-                            case KeyEvent.VK_PAGE_UP:
-                                G.offsetSelectedCandidate(-10)
-                                e.consume()
-                                break
-                        }
-                    }
-                }
-
-                // ENTER to jump to the selected node
-                @Override public void keyReleased(KeyEvent e){
-                    int key = e.getKeyCode()
-                    if( key == KeyEvent.VK_ENTER ) G.jumpToSelectedCandidate()
-                }
-            }
-        )
-
-        // Trigger the node list filtering each time the text field content change
-        G.patternTF.getDocument().addDocumentListener(
-            new DocumentListener() {
-                @Override public void changedUpdate(DocumentEvent e) {
-                    G.candidates.filter( G.patternTF.text, G.searchOptions )
-                }
-                @Override public void removeUpdate(DocumentEvent e) {
-                    G.candidates.filter( G.patternTF.text, G.searchOptions )
-                }
-                @Override public void insertUpdate(DocumentEvent e) {
-                    G.candidates.filter( G.patternTF.text, G.searchOptions )
-                }
-            }
-        )
-
-        // Jump to a node clicked in the nodes list
-        G.candidatesJList.addMouseListener(
-            new MouseAdapter(){
-                @Override public void mouseClicked(MouseEvent e){
-                    G.jumpToSelectedCandidate()
+        // Set Esc key to close the script
+        def onEscPressID = "onEscPress"
+        def inputMap = G.gui.getRootPane().getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT )
+        inputMap.put( KeyStroke.getKeyStroke( KeyEvent.VK_ESCAPE, 0 ), onEscPressID )
+        G.gui.getRootPane().getActionMap().put(
+            onEscPressID,
+            new AbstractAction(){
+                @Override public void actionPerformed( ActionEvent e ){
+                    G.gui.dispose()
                 }
             }
         )
     }
 
-    // Set Esc key to close the script
-    def onEscPressID = "onEscPress"
-    def inputMap = G.gui.getRootPane().getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT )
-    inputMap.put( KeyStroke.getKeyStroke( KeyEvent.VK_ESCAPE, 0 ), onEscPressID )
-    G.gui.getRootPane().getActionMap().put(
-        onEscPressID,
-        new AbstractAction(){
-            @Override public void actionPerformed( ActionEvent e ){
-                G.gui.dispose()
-            }
+    static void setGuiLocation( gui, fpFrame, Rectangle rect, Dimension minSize ){
+
+        if( rect ){
+            
+            // Be sure the rect is over the Freeplane frame
+            
+            Rectangle fpBounds = fpFrame.getBounds()
+            Rectangle bounds = fpBounds.createIntersection( rect )
+
+            // Corrections if rect is too small
+            if( bounds.width  < minSize.width  ) bounds.width  = minSize.width
+            if( bounds.height < minSize.height ) bounds.height = minSize.height
+
+            // Corrections if rect right bottom corner is outside the Freeplane frame
+            if( bounds.x + bounds.width > fpBounds.x + fpBounds.width )
+                bounds.x = fpBounds.x + fpBounds.width - bounds.width
+            if( bounds.y + bounds.height > fpBounds.y + fpBounds.height )
+                bounds.y = fpBounds.y + fpBounds.height - bounds.height
+
+            // Corrections if the Freeplane frame is smaller than minSize
+            if( bounds.x < 0 ) bounds.x = 0
+            if( bounds.y < 0 ) bounds.y = 0
+
+            // Place the GUI
+            gui.setBounds( bounds )
+            
+        } else{
+
+            // If no location is provided, center the GUI over the Freeplane frame
+            gui.setLocationRelativeTo( fpFrame )
+            
         }
-    )
-}
-
-void setGuiLocation( gui, fpFrame, Rectangle rect, Dimension minSize ){
-
-    if( rect ){
-        
-        // Be sure the rect is over the Freeplane frame
-        
-        Rectangle fpBounds = fpFrame.getBounds()
-        Rectangle bounds = fpBounds.createIntersection( rect )
-
-        // Corrections if rect is too small
-        if( bounds.width  < minSize.width  ) bounds.width  = minSize.width
-        if( bounds.height < minSize.height ) bounds.height = minSize.height
-
-        // Corrections if rect right bottom corner is outside the Freeplane frame
-        if( bounds.x + bounds.width > fpBounds.x + fpBounds.width )
-            bounds.x = fpBounds.x + fpBounds.width - bounds.width
-        if( bounds.y + bounds.height > fpBounds.y + fpBounds.height )
-            bounds.y = fpBounds.y + fpBounds.height - bounds.height
-
-        // Corrections if the Freeplane frame is smaller than minSize
-        if( bounds.x < 0 ) bounds.x = 0
-        if( bounds.y < 0 ) bounds.y = 0
-
-        // Place the GUI
-        gui.setBounds( bounds )
-        
-    } else{
-
-        // If no location is provided, center the GUI over the Freeplane frame
-        gui.setLocationRelativeTo( fpFrame )
-        
     }
 }
 
@@ -1504,7 +1512,7 @@ Rectangle guiRect = G.init( node, c )
 G.candidates = new TargetModel()
 
 // Create the GUI
-createGUI()
+GuiManager.createGUI( ui )
 G.gui.pack()
 
 // Set the width if the node list, before to populate it
@@ -1524,7 +1532,7 @@ Dimension minGuiSize = G.gui.getSize()
 G.gui.setMinimumSize( minGuiSize )
 
 // Place the GUI at its previous location if possible
-setGuiLocation( G.gui, ui.frame, guiRect, minGuiSize )
+GuiManager.setGuiLocation( G.gui, ui.frame, guiRect, minGuiSize )
 
 // Display the GUI
 G.gui.visible = true
