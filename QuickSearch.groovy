@@ -69,9 +69,7 @@ import org.freeplane.core.util.HtmlUtils
 import org.freeplane.core.util.LogUtils
 import org.freeplane.plugin.script.proxy.Proxy
 
-/**
- * Integer interval between start (included) and end (excluded)
- */
+// Integer interval between start (included) and end (excluded)
 class Interval {
     
     int start
@@ -87,9 +85,7 @@ class Interval {
         return "[start:${start}, end:${end}]"
     }
 
-    /**
-     * Check if interval intersect with another one.
-     */
+    // Check if interval intersect with another one.
     boolean doesIntersect( Interval other ){
         if( start <= other.start ) return ( other.start < end )
         else return ( start < other.end )
@@ -125,9 +121,7 @@ class Interval {
     }
 }
 
-/**
- * Ranges of characters to highlight in a string.
- */
+// Ranges of characters to highlight in a string.
 class Highlight {
 
     private ArrayList<Interval> parts // The substring indices to highlight
@@ -153,13 +147,23 @@ class Highlight {
         this.parts = new ArrayList<Interval>()
         parts.each{ add( it ) }
     }
-
     Highlight( Highlight other ){
         parts = other.parts.clone()
         start = other.start
         end   = other.end
     }
 
+    String toString(){
+        String s = "["
+        parts.each{ s += it.toString() }
+        s += "]"
+        return s
+    }
+    
+    boolean empty(){
+        return parts.size() == 0
+    }
+    
     ArrayList<Interval> getParts(){
         return Collections.unmodifiableList( parts )
     }
@@ -168,16 +172,12 @@ class Highlight {
         return parts == other.parts
     }
     
-    /**
-     * Add another substring to highlight, take care to join overlapping intervals.
-     */
+    // Add another substring to highlight, take care to join overlapping intervals.
     void add( int start, int end ){
         add( new Interval( start, end ) )
     }
 
-    /**
-     * Add another substring to highlight, take care to join overlapping intervals.
-     */
+    // Add another substring to highlight, take care to join overlapping intervals.
     void add( Interval part ){
         parts.removeAll{
             if( ! part.doesIntersect( it ) ) return false
@@ -193,9 +193,7 @@ class Highlight {
         return parts.size()
     }
 
-    /**
-     * Return a new object with all the intervals sorted by start
-     */
+    // Return a new object with all the intervals sorted by start
     Highlight sorted(){
         Highlight s = new Highlight( this )
         s.parts = s.parts.sort{ it.start }
@@ -203,19 +201,46 @@ class Highlight {
     }
 }
 
+// Handle the result of a search over a SNode
+class Match {
+    // Do the search succeed ?
+    boolean isMatch
+    // Do the node match at least one pattern ?
+    boolean isMatchOne
+    // The patterns that the node match
+    Set<Pattern> matches = new LinkedHashSet<Pattern>()
+    // The patterns that don't match
+    Set<Pattern> rejected = new LinkedHashSet<Pattern>()
+    // The succesfull matchers
+    ArrayList<Matcher> matchers = new ArrayList<Matcher>()
+}
+
+// Handle the result of a search over a stack (meaning a SNode and its ancestors)
+class StackMatch {
+    // Do the search succeed ?
+    boolean isMatch
+    // The patterns that the stack match
+    Set<Pattern> matches = new LinkedHashSet<Pattern>()
+}
+
 // A node that can be found
 class SNode {
 
-    Node node          // node in the map
-    String text        // node text (without html format)
-    String displayText // text to display in GUI
+    Node node               // node in the map
+    String text             // node text (without html format)
+    String displayText      // text to display in GUI
+    String shortDisplayText // text to display in GUI, short version
 
-    SNode parent               // The SNode for node.parent
-    SNodes children            // The SNodes for node.children
-    ArrayList<Pattern> matches // The patterns that the SNode match
+    SMap sMap          // A reference to the sMap
+    SNode parent       // The SNode for node.parent
+    SNodes children    // The SNodes for node.children
 
+    Match match                            // Result of the last search over this node
+    StackMatch stackMatch                  // Result of the last search over this node and its ancestors
     private int maxDisplayLength = 200     // Maximum displayText length, without indentation
-    private Highlight highlightParts       // Parts to highlight
+    private int maxShortDisplayLength = 15 // Maximum displayText length, without indentation, short version
+    private Highlight highlight            // Parts to highlight
+    private boolean highlightInvalidated   // Is highlight up to date ?
     private boolean displayTextInvalidated // Is displayText up to date ?
     
     SNode( Node node, SNode parent ){
@@ -224,30 +249,134 @@ class SNode {
         children = []
         if( parent ) parent.children << this
         text = node.plainText.replaceAll("\n", " ")
+        highlightInvalidated = true
         displayText = ""
         displayTextInvalidated = true
-        unhighlight()
     }
 
-    String toString() {
+    String toString(){
+        if( highlightInvalidated ) updateHighlight()
         if( displayTextInvalidated ) updateDisplayText()
         return displayText
     }
 
-    /**
-     * Level id of the node
-     */
+    private getShortDisplayText(){
+        if( highlightInvalidated ) updateHighlight()
+        if( displayTextInvalidated ) updateDisplayText()
+        return shortDisplayText
+    }
+
+    // Level id of the node
     String getId(){
         if( ! node ) return ""
         return node.id
     }
 
-    /**
-     * Level (depth) of the node
-     */
+    // Level (depth) of the node
     int getLevel(){
         if( ! node ) return 0
         return node.getNodeLevel( true )
+    }
+
+    void clearPreviousSearch(){
+        match = null
+        stackMatch = null
+        highlightInvalidated = true
+    }
+    
+    boolean search( Set<Pattern> regexps ){
+
+        if( stackMatch ) return stackMatch.isMatch
+        if( match ) throw new Exception( "Don't search a same node twice. Call clearPreviousSearch() between searches." )
+
+        singleSearch( regexps )
+        if( match.isMatchOne ){
+            stackSearch( regexps )
+            return stackMatch.isMatch
+        } else {
+            return false
+        }
+    }
+
+    private void singleSearch( Set<Pattern> regexps ){
+
+        if( match ) throw new Exception( "Do singleSearch() only once.")
+        
+        match = new Match() // handle the search results
+        
+        // Search all patterns
+        regexps.each{
+            Matcher matcher = ( text =~ it )
+            if( matcher.find() && matcher.end() > matcher.start() ){
+                match.matchers << matcher
+                match.matches << it
+                return true
+            } else {
+                match.rejected << it
+                return false
+            }
+        }
+        
+        match.isMatch = ( match.rejected.size() == 0 )
+        match.isMatchOne = ( match.matches.size() > 0 )
+    }
+        
+    private void stackSearch( Set<Pattern> regexps ){
+
+        if( stackMatch ) throw new Exception( "Do stackSearch() only once.")
+        if( ! match ) throw new Exception( "Do singleSearch() before stackSearch().")
+
+        int numPatterns = regexps.size()
+        stackMatch = new StackMatch()
+        stackMatch.matches = match.matches.clone()
+        stackMatch.isMatch = ( stackMatch.matches.size() == numPatterns )
+
+        SNode node = this
+        while( node = node.parent ){
+            if( ! node.match ) node.singleSearch()
+            if( ! stackMatch.isMatch ){
+                stackMatch.matches.addAll( node.match.matches )
+                stackMatch.isMatch = ( stackMatch.matches.size() == numPatterns )
+            }
+        }
+    }
+
+    private Set<Pattern> buildMatchesWithAncestors( Set<Pattern> regexps ){
+
+        if( match.isFullMatch){
+            match.matchesStack = match.matches
+            return match.matchesStack
+        }
+        
+        if( parent ){
+            match.matchesStack = match.matches.clone()
+            if( ! parent.match ) parent.search( regexps )
+            Set<Pattern> matches = parent.match.matchesStack
+            if( ! matches ) matches = parent.buildMatchesWithAncestors()
+            match.matchesStack.addAll( matches )
+        } else {
+            match.matchesStack = match.matches
+        }
+
+        return match.matchesStack
+    }
+
+    private void updateHighlight(){
+        if( match?.isMatchOne ) setHighlight( buildHightlight( match ) )
+        else setHighlight( null )
+    }
+    
+    // Create the highlight from the previous match
+    private Highlight buildHightlight( Match match ){
+        ArrayList<Interval> parts = []
+        match.matchers.each{
+            parts << new Interval( it.start(), it.end() )
+            while( it.find() && it.end() > it.start() )
+                parts << new Interval( it.start(), it.end() )
+        }
+
+        // Sort needed by getHighlightedText()
+        return new Highlight( parts ).sorted()
     }
 
     /**
@@ -256,73 +385,60 @@ class SNode {
      * The displayText will be an html string that display the highlighted part with color,
      * show some text before and some text after, and add ellispis if the whole node
      * text don't fit in maxDisplayLength characters.
-     *
-     * @return true is these parameters change the display
      */
-    boolean highlight( Highlight parts ){
+    private void setHighlight( Highlight hl ){
 
-        if( parts.size() == 0 ) return unhighlight()
+        highlightInvalidated = false
         
-        if( parts.start < 0 ) throw new IllegalArgumentException("start must be greater or equal to 0")
-        if( parts.end > text.length() ) throw new IllegalArgumentException("end must be lower or equal to text length")
+        if( ! hl || hl.empty() ){
+            if( highlight ) displayTextInvalidated = true
+            highlight = null
+            return
+        }
+            
+        if( hl.start < 0 ) throw new IllegalArgumentException("start must be greater or equal to 0")
+        if( hl.end > text.length() ) throw new IllegalArgumentException("end must be lower or equal to text length")
         
-        if( highlightParts && parts.equals( highlightParts ) ) return false
-
-        // Sort needed by updateHighlightedDisplayText()
-        highlightParts = parts.sorted()
-
+        if( highlight?.equals( hl ) ) return
+        highlight = hl
         displayTextInvalidated = true
-
-        return true
-    }
-
-    /**
-     * Set the displayText to show the beginning of the node text, and
-     * add an ellipsis if the whole node text don't fit in maxDisplayLength characters.
-     * @return true is this change the display
-     */
-    boolean unhighlight(){
-        if( ! highlightParts ) return false
-        highlightParts = null
-        displayTextInvalidated = true
-        return true
     }
 
     private void updateDisplayText(){
         if( displayTextInvalidated ){
-            if( highlightParts ) updateHighlightedDisplayText()
-            else updateBaseDisplayText()
+            if( highlight ){
+                displayText = getHighlightedText( maxDisplayLength, true )
+                displayText = "<html>${getAncestorsDisplayText()}$displayText</html>"
+                shortDisplayText = getHighlightedText( maxShortDisplayLength, false )
+            } else {
+                displayText = getUnhighlightedText( maxDisplayLength )
+                displayText = "<html>$displayText</html>"
+                shortDisplayText = getUnhighlightedText( maxShortDisplayLength )
+            }
+            displayTextInvalidated = false
         }
     }
 
-    /**
-     * Create the highlighted text to display, according to highlightParts
-     */
-    private void updateHighlightedDisplayText(){
+    // Create the highlighted text to display
+    private String getHighlightedText( int maxLength, boolean stripBeginning ){
 
-        int start = highlightParts.start
-        int end = highlightParts.end
-        int length = end - start
-        
-        if( start < 0 || end > text.length() || length <= 0 ){
-            LogUtils.warn( "Impossible to highlight node text." )
-            updateBaseDisplayText()
-            return
+        // index of the 1rst char to display
+        int start = 0
+        if( stripBeginning ){
+            int before = 15 // how much characters to display before the highlighted part ?
+            start = highlight.start
+            start -= before
+            if( start < 5 ) start = 0
         }
 
-        int before = 15 // how much characters to display before the highlighted part ?
-        
-        // index of the 1rst char to display, "before" chars before the highlighted part
-        start -= before
-        if( start < 5 ) start = 0
-
         // index of the last displayed char + 1
-        end = start + maxDisplayLength
+        int end = start + maxLength
         if( end > text.length() ) end = text.length()
 
-        length = end - start
+        int length = end - start
         
-        // if we display the end of the text, perhaps we can display some text before
+        // If we strip text at the beginning and display the end of the text,
+        // perhaps we can display some text before
         if( start > 0 && length < 80 ){
             start -= 80 - length
             if( start < 5 ) start = 0
@@ -332,8 +448,8 @@ class SNode {
         Interval displayed = new Interval( start, end )
         int i = start
         String style = "style='background-color:${G.highlightColor};'"
-        displayText = ""
-        highlightParts.getParts().each{
+        String displayText = ""
+        highlight.getParts().each{
             Interval itv = it.getIntersection( displayed )
             if( ! itv ) return
             if( itv.start > i )
@@ -349,23 +465,42 @@ class SNode {
         if( start > 0 ) displayText = "... " + displayText
         if( end < text.length() ) displayText += " ..."
 
-        // Add indentation and <html>
-        displayText = "<html>$displayText</html>"
-        
-        displayTextInvalidated = false
+        return displayText
     }
 
     /**
      * Update displayText to show the beginning of the node text, and
      * add an ellipsis if the whole node text don't fit in maxDisplayLength characters.
      */
-    private void updateBaseDisplayText(){
+    private String getUnhighlightedText( int maxLength ){
         String t = text
-        if( t.length() > maxDisplayLength ) t = t.substring( 0, maxDisplayLength - 4 ) + " ..."
-        t = HtmlUtils.toHTMLEscapedText( t )
-        displayText = "<html>$t</html>"
+        if( t.length() > maxLength ) t = t.substring( 0, maxLength - 4 ) + " ..."
+        return HtmlUtils.toHTMLEscapedText( t )
+    }
+
+    private String getAncestorsDisplayText(){
         
-        displayTextInvalidated = false
+        if( ! parent ) return ""
+        
+        String s = ""
+        boolean opened = false
+        SNode n = parent
+        
+        while( n?.parent ){
+            if( ! n.match || n.match.matches.size() == 0 ){
+                if( opened ) s = "»" + s
+                else s = "»</b> " + s
+                opened = true
+            } else {
+                if( n.displayTextInvalidated ) n.updateDisplayText()
+                if( ! opened ) s = "</b> " + s
+                s = "${n.getShortDisplayText()} <b>»" + s
+                opened = false
+            }
+            n = n.parent
+        }
+        if( opened ) s = "<b>" + s
+        return s
     }
 }
 
@@ -421,6 +556,7 @@ class SMap extends SNodes {
 
     private SNode addNode( Node node, SNode parent = null ){
         SNode sNode = new SNode( node, parent )
+        sNode.sMap = this
         this << sNode
         node.children.each{ addNode( it, sNode ) }
         return sNode
@@ -439,34 +575,34 @@ class SMap extends SNodes {
  *  GUI list in one shot, because it can be a lot of nodes and refresh the GUI
  *  one node after another was too slow)
  */
-class Targets extends DefaultListModel<SNode>{
+class Candidates extends DefaultListModel<SNode>{
     
-    private SNodes targets = []
     private SNodes candidates = []
-    private int numMax = 200
+    private SNodes results = []
+    private int numMax = 100
 
-    void set( SNodes targets, String pattern, SearchOptions options ){
-        this.targets = targets
+    void set( SNodes candidates, String pattern, SearchOptions options ){
+        this.candidates = candidates
         filter( pattern, options )
     }
     
     @Override
     SNode getElementAt( int idx ){
-        return candidates[ idx ]
+        return results[ idx ]
     }
     
     @Override
     int getSize(){
-        if( candidates ) return candidates.size()
+        if( results ) return results.size()
         else return 0
     }
 
     /**
-     * Call this to trigger the GUI update when the already displayed candidates
+     * Call this to trigger the GUI update when the already displayed results
      * must be redraw. For exemple when the highlight color change, or when
      * the font size change.
      */
-    void repaintCandidates(){
+    void repaintResults(){
         if( getSize() > 0) fireContentsChanged( this, 0, getSize() - 1 )
     }
     
@@ -477,39 +613,38 @@ class Targets extends DefaultListModel<SNode>{
      */
     void filter( String pattern, SearchOptions options ){
 
-        // Get all the nodes to search
-        SNodes newCandidates = targets.collect()
+        // Reset the search results for all nodes in the map
+        if( candidates ) candidates[0].sMap.each{ it.clearPreviousSearch() }
 
+        pattern = pattern.trim()
+        if( ! pattern ){
+            update( candidates  )
+            return
+        }
+        
         // Get the differents patterns
-        ArrayList<String> patterns
+        Set<String> patterns
         if( options.isSplitPattern && ! options.isSearchFromStart ){
-            patterns = (ArrayList<String>)( pattern.trim().split( /\s+/ ) )
+            patterns = (Set<String>)( pattern.split( /\s+/ ) )
         } else {
             patterns = [ pattern ]
         }
-        
-        patterns.removeAll{ ! it } // To be sure there is no empty elements
 
-        // Filter the nodes
-        if( patterns ){
-            regexFilter( patterns, newCandidates, options )
-        } else {
-            // Remove all previous highlighting is the pattern contains nothing
-            newCandidates.each{ it.unhighlight() }
-        }
+        // Get all the nodes that match the patterns
+        SNodes results = regexFilter( patterns, candidates, options )
 
-        // Update the GUI nodes list
-        update( newCandidates )
+        // Update the results
+        update( results )
     }
 
-    private void regexFilter( ArrayList<String> patterns, SNodes candidates, SearchOptions options ){
+    private SNodes regexFilter( Set<String> patterns, SNodes candidates, SearchOptions options ){
 
         boolean oneValidRegex = false
-        ArrayList<Pattern> regexps = []
+        Set<Pattern> regexps = []
 
         // Convert patterns to regex
         try {
-            regexps = patterns.collect{
+            regexps.addAll( patterns.collect{
                 String exp = it
                 if( ! options.isRegexSearch) exp = Pattern.quote( exp )
                 if( options.isSearchFromStart ) exp = "^$exp"
@@ -517,78 +652,41 @@ class Targets extends DefaultListModel<SNode>{
                 Pattern regex = ~/$exp/
                 oneValidRegex = true
                 regex
-            }
+            } )
         } catch (PatternSyntaxException e) {}
 
-        // Keep all candidates and remove all previous highlighting
-        // if the pattern contains only invalid regex
-        if( ! oneValidRegex ){
-            candidates.each{ it.unhighlight() }
-            return
-        }
-
-        // Remove all the candidates that don't match the regex
-        // Set the highlighted parts for the others
-        candidates.removeAll{
-            SNode candidate ->
-            
-            ArrayList<Matcher> matchers = []
-            boolean discard = regexps.any{
-                // Look for a regex that don't match
-                Matcher matcher = ( candidate.text =~ it )
-                if( ! matcher.find() || matcher.end() <= matcher.start() ) return true
-                matchers << matcher
-                return false
+        // Keep all candidates if the pattern contains only invalid regex
+        if( ! oneValidRegex ) return candidates
+        
+        // Get the candidates that match the regex
+        // Don't get more than numMax results, but be sure that
+        // the currently selected node is searched
+        SNodes results = new SNodes()
+        boolean maxReached = false
+        candidates.each{
+            if( ! maxReached || it == G.currentSNode ){
+                if( ! it.search( regexps ) ) return
+                results << it
+                maxReached = ( results.size() >= numMax - 1 )
             }
-            
-            if( ! discard ){
-                // Create the highlight
-                ArrayList<Interval> parts = []
-                matchers.each{
-                    parts << new Interval( it.start(), it.end() )
-                    while( it.find() && it.end() > it.start() )
-                        parts << new Interval( it.start(), it.end() )
-                }
-                candidate.highlight( new Highlight( parts ) )
-            }
-
-            discard
         }
+        
+        return results
     }
 
-    private void update( SNodes newCandidates ){
+    // Set the results
+    private void update( SNodes newResults ){
         
         if( getSize() > 0 ) fireIntervalRemoved( this, 0, getSize() - 1 )
-        
-        int numCandidates = newCandidates.size()
-        int displayed = numCandidates
-        
-        if( numCandidates <= numMax ){
-            candidates = newCandidates.collect()
+
+        if( newResults.size() <= numMax ){
+            results = newResults.collect()
         } else {
-            int idx = newCandidates.findIndexOf{ it == G.currentSNode }
-            if( idx < 0 ){
-                candidates = newCandidates[ 0..( numMax - 1 ) ]
-                displayed = numMax
-            } else {
-                int max = numCandidates - 1
-                int i1 = idx - numMax / 2
-                int i2 = i1 + numMax - 1
-                if( i1 < 0 ){
-                    i2 -= i1
-                    i1 = 0
-                } else if( i2 > max ){
-                    i1 -= ( i2 - max )
-                    i2 = newCandidates.size()
-                }
-                if( i1 < 0 ) i1 = 0
-                if( i2 > max ) i2 = max
-                candidates = newCandidates[ i1..i2 ]
-                displayed = i2 - i1 + 1
-            }
+            results = newResults[ 0..(numMax-1) ]
         }
 
-        G.updateResultLabel( displayed, numCandidates, targets.size() )
+        boolean truncated = newResults.size() >= numMax - 1
+        G.updateResultLabel( results.size(), candidates.size(), truncated )
         
         if( getSize() > 0 ) fireIntervalAdded( this, 0, getSize() - 1 )
     }
@@ -603,11 +701,11 @@ public class SNodeCellRenderer extends JLabel implements ListCellRenderer<SNode>
  
     @Override
     public Component getListCellRendererComponent(
-        JList<SNode> list, SNode target,
+        JList<SNode> list, SNode sNode,
         int index, boolean isSelected, boolean cellHasFocus
     ){
-        setText( target.toString() );
-        setFont( G.getCandidatesFont() )
+        setText( sNode.toString() );
+        setFont( G.getResultsFont() )
         
         if (isSelected) {
             setBackground( list.getSelectionBackground() );
@@ -622,13 +720,13 @@ public class SNodeCellRenderer extends JLabel implements ListCellRenderer<SNode>
 }
 
 
-class TargetsOption {
+class CandidatesOption {
     int type
     String text
     int mnemonic
     JRadioButton radioButton
     String toolTip
-    TargetsOption( int type, String text, int mnemonic, String toolTip ){
+    CandidatesOption( int type, String text, int mnemonic, String toolTip ){
         this.type = type
         this.text = text
         this.mnemonic = mnemonic
@@ -653,9 +751,9 @@ class G {
     static JDialog gui
     static JTextField patternTF
     static JScrollPane scrollPane
-    static JList candidatesJList
+    static JList resultsJList
     static JLabel resultLbl
-    static Targets targets
+    static Candidates candidates
 
     static ArrayList<String> history = []
     static int historyIdx = 0
@@ -685,13 +783,13 @@ class G {
     static int SIBLINGS = 1
     static int DESCENDANTS = 2
     static int SIBLINGS_AND_DESCENDANTS = 3
-    static ArrayList<TargetsOption> targetsOptions
-    static int targetsType = ALL_NODES
-    static boolean isTargetsDefined = false
+    static ArrayList<CandidatesOption> candidatesOptions
+    static int candidatesType = ALL_NODES
+    static boolean isCandidatesDefined = false
     
     static String highlightColor = "#FFFFAA"
-    static private int candidatesFontSize = 0
-    static private Font candidatesFont
+    static private int resultsFontSize = 0
+    static private Font resultsFont
     static private int patternMinFontSize
 
     /**
@@ -706,20 +804,20 @@ class G {
         this.c = c
         sMap = new SMap( node.map.root )
         currentSNode = sMap.find{ it.node == node }
-        targets = new Targets()
-        isTargetsDefined = false
+        candidates = new Candidates()
+        isCandidatesDefined = false
         historyIdx = history.size()
         
         Rectangle guiRect = loadSettings()
         
-        targetsOptions = []
-        targetsOptions << new TargetsOption( ALL_NODES, "Whole map", KeyEvent.VK_M,
+        candidatesOptions = []
+        candidatesOptions << new CandidatesOption( ALL_NODES, "Whole map", KeyEvent.VK_M,
                                             "Search in the whole map" )
-        targetsOptions << new TargetsOption( SIBLINGS, "Siblings", KeyEvent.VK_S,
+        candidatesOptions << new CandidatesOption( SIBLINGS, "Siblings", KeyEvent.VK_S,
                                             "Search in the siblings of the selected node" )
-        targetsOptions << new TargetsOption( DESCENDANTS, "Descendants", KeyEvent.VK_D,
+        candidatesOptions << new CandidatesOption( DESCENDANTS, "Descendants", KeyEvent.VK_D,
                                             "Search in the descendants of the selected node" )
-        targetsOptions << new TargetsOption( SIBLINGS_AND_DESCENDANTS, "Siblings and descendants", KeyEvent.VK_A,
+        candidatesOptions << new CandidatesOption( SIBLINGS_AND_DESCENDANTS, "Siblings and descendants", KeyEvent.VK_A,
                                             "Search in the siblings of the selected node, and their descendants" )
 
         return guiRect
@@ -740,12 +838,12 @@ class G {
         gui = null
         patternTF = null
         scrollPane = null
-        candidatesJList = null
+        resultsJList = null
         resultLbl = null
-        targets = null
+        candidates = null
         showNodesLevelCB = null
         removeClonesCB = null
-        candidatesFont = null
+        resultsFont = null
     }
 
     static void saveSettings(){
@@ -757,11 +855,11 @@ class G {
         
         JsonBuilder builder = new JsonBuilder()
         builder{
-            targetsType        targetsType
+            candidatesType        candidatesType
             isShowNodesLevel   isShowNodesLevel
             isRemoveClones     isRemoveClones
             highlightColor     highlightColor
-            candidatesFontSize candidatesFontSize
+            resultsFontSize    resultsFontSize
             history            history
             searchOptions      searchOptions
             guiRect{
@@ -782,17 +880,17 @@ class G {
         Rectangle rect = new Rectangle()
         try{
             Map settings = new JsonSlurper().parseText( file.text )
-            targetsType        = settings.targetsType        ?: targetsType
-            isShowNodesLevel   = settings.isShowNodesLevel   ?: isShowNodesLevel
-            isRemoveClones     = settings.isRemoveClones     ?: isRemoveClones
-            highlightColor     = settings.highlightColor     ?: highlightColor
-            candidatesFontSize = settings.candidatesFontSize ?: candidatesFontSize
-            history            = settings.history            ?: history
+            candidatesType        = settings.candidatesType              ?: candidatesType
+            isShowNodesLevel   = settings.isShowNodesLevel == null ? isShowNodesLevel : settings.isShowNodesLevel
+            isRemoveClones     = settings.isRemoveClones   == null ? isRemoveClones : settings.isRemoveClones
+            highlightColor     = settings.highlightColor           ?: highlightColor
+            resultsFontSize    = settings.resultsFontSize          ?: resultsFontSize
+            history            = settings.history                  ?: history
             if( settings.searchOptions ) searchOptions = new SearchOptions( settings.searchOptions )
-            rect.x             = settings.guiRect?.x         ?: 0
-            rect.y             = settings.guiRect?.y         ?: 0
-            rect.width         = settings.guiRect?.width     ?: 0
-            rect.height        = settings.guiRect?.height    ?: 0
+            rect.x             = settings.guiRect                  ?.x         ?: 0
+            rect.y             = settings.guiRect                  ?.y         ?: 0
+            rect.width         = settings.guiRect                  ?.width     ?: 0
+            rect.height        = settings.guiRect                  ?.height    ?: 0
         } catch( Exception e){
             LogUtils.warn( "QuickSearch: unable to load the settings : $e")
         }
@@ -801,44 +899,44 @@ class G {
         else return null
     }
 
-    static void initTargets(){
-        if( isTargetsDefined ) return
-        updateTargets()
+    static void initCandidates(){
+        if( isCandidatesDefined ) return
+        updateCandidates()
     }
 
-    static void filterTargets(){
+    static void filterCandidates(){
         if( ! patternTF ) return
-        targets.filter( patternTF.text, searchOptions )
-        selectDefaultCandidate()
+        candidates.filter( patternTF.text, searchOptions )
+        selectDefaultResult()
     }
 
-    static void setTargetsType( int type ){
-        int previous = targetsType
-        targetsType = type
-        if( isTargetsDefined && previous != type ) updateTargets()
+    static void setCandidatesType( int type ){
+        int previous = candidatesType
+        candidatesType = type
+        if( isCandidatesDefined && previous != type ) updateCandidates()
     }
 
     static void setLevelDisplay( boolean show ){
         isShowNodesLevel = show
-        targets.repaintCandidates()
+        candidates.repaintResults()
     }
 
     static void setClonesDisplay( boolean showOnlyOne ){
         boolean previous = isRemoveClones
         isRemoveClones = showOnlyOne
-        if( isTargetsDefined && previous != showOnlyOne ) updateTargets()
+        if( isCandidatesDefined && previous != showOnlyOne ) updateCandidates()
     }
 
     static void setHighlightColor( Color color ){
         String colorStr = String.format( "#%06x", Integer.valueOf( color.getRGB() & 0x00FFFFFF ) )
         highlightColor = colorStr
-        targets.repaintCandidates()
+        candidates.repaintResults()
     }
 
-    static void updateResultLabel( int numDisplayed, int numFound, int numTotal ){
+    static void updateResultLabel( int numDisplayed, int numTotal, boolean maybeMore ){
         if( ! resultLbl ) return
-        String text = "<html><b>${numFound}</b> nodes found amoung <b>${numTotal}</b> scanned."
-        if( numDisplayed < numFound ) text += " Only ${numDisplayed} results are displayed."
+        String text = "<html><b>${numDisplayed}</b> nodes found amoung <b>${numTotal}</b> nodes."
+        if( maybeMore ) text += " It may be more matches than this."
         text += "<html>"
         resultLbl.text = text
     }
@@ -856,26 +954,24 @@ class G {
         else patternTF.text = history[ historyIdx ]
     }
     
-    /**
-     * Try to select the currently selected node in the GUI nodes list.
-     */
-    static void selectDefaultCandidate(){
-        if( ! targets?.candidates ) return
-        int selectIdx = targets.candidates.findIndexOf{ it == currentSNode }
+    // Try to select the currently selected node in the GUI nodes list.
+    static void selectDefaultResult(){
+        if( ! candidates?.results ) return
+        int selectIdx = candidates.results.findIndexOf{ it == currentSNode }
         if( selectIdx < 0 ) selectIdx = 0
-        setSelectedCandidate( selectIdx )
+        setSelectedResult( selectIdx )
     }
 
     /**
      * Select a node in the GUI nodes list.
      * @param idx The index of the list entry to select.
      */
-    static void setSelectedCandidate( int idx ){
-        if( ! targets?.getSize() ) return
+    static void setSelectedResult( int idx ){
+        if( ! candidates?.getSize() ) return
         if( idx < 0 ) idx = 0
-        if( idx >= targets.getSize() ) idx = targets.getSize() - 1
-        candidatesJList.setSelectedIndex( idx )
-        candidatesJList.ensureIndexIsVisible( idx )
+        if( idx >= candidates.getSize() ) idx = candidates.getSize() - 1
+        resultsJList.setSelectedIndex( idx )
+        resultsJList.ensureIndexIsVisible( idx )
     }
 
     /**
@@ -883,44 +979,44 @@ class G {
      * @param offset The number of rows the selection should move.
      *               Negative values to move up, positives to move down.
      */
-    static void offsetSelectedCandidate( int offset ){
-        int idx = candidatesJList.getSelectedIndex()
+    static void offsetSelectedResult( int offset ){
+        int idx = resultsJList.getSelectedIndex()
         if( idx >= 0 ){
-            setSelectedCandidate( idx + offset )
+            setSelectedResult( idx + offset )
         } else {
-            if( offset >= 0 ) setSelectedCandidate( 0 )
-            else offset = setSelectedCandidate( targets.getSize() - 1 )
+            if( offset >= 0 ) setSelectedResult( 0 )
+            else offset = setSelectedResult( candidates.getSize() - 1 )
         }
     }
 
-    static void jumpToSelectedCandidate(){
-        int idx = candidatesJList.getSelectedIndex()
+    static void jumpToSelectedResult(){
+        int idx = resultsJList.getSelectedIndex()
         if( idx >= 0 ){
             addToHistory( patternTF.text )
-            jumpToNodeAfterGuiDispose( targets.candidates[ idx ].node )
+            jumpToNodeAfterGuiDispose( candidates.results[ idx ].node )
             gui.dispose()
         }
     }
     
     static void initFontSize( int size, int min, int max ){
-        if( candidatesFontSize == 0 ) candidatesFontSize = size
-        if( candidatesFontSize < min ) candidatesFontSize = min
-        if( candidatesFontSize > max ) candidatesFontSize = max
+        if( resultsFontSize == 0 ) resultsFontSize = size
+        if( resultsFontSize < min ) resultsFontSize = min
+        if( resultsFontSize > max ) resultsFontSize = max
         patternMinFontSize = size
     }
         
     static void setFontSize( int size ){
 
-        candidatesFontSize = size
+        resultsFontSize = size
         int patternFontSize = size
         if( patternFontSize < patternMinFontSize ) patternFontSize = patternMinFontSize
         
-        if( ! candidatesFont ) return
-        if( size == candidatesFont.getSize() ) return
+        if( ! resultsFont ) return
+        if( size == resultsFont.getSize() ) return
         
-        candidatesFont = candidatesFont.deriveFont( (float)size )
-        Font patternFont = candidatesFont.deriveFont( (float)patternFontSize )
-        targets.repaintCandidates()
+        resultsFont = resultsFont.deriveFont( (float)size )
+        Font patternFont = resultsFont.deriveFont( (float)patternFontSize )
+        candidates.repaintResults()
         if( patternTF && gui ){
             patternTF.font = patternFont
             patternTF.validate()
@@ -928,26 +1024,24 @@ class G {
         }
     }
     
-    static Font getCandidatesFont(){
-        return candidatesFont
+    static Font getResultsFont(){
+        return resultsFont
     }
 
     private static File getSettingsFile(){
         File file = new File( c.getUserDirectory().toString() + File.separator + 'lilive_quicksearch.json' )
     }
 
-    /**
-     * Update the targets, according to the selected options.
-     */
-    private static void updateTargets(){
+    // Update the candidates, according to the selected options.
+    private static void updateCandidates(){
 
         if( ! currentSNode ) return
-        if( ! sMap ) return
+        if( sMap == null ) return
 
-        isTargetsDefined = true
+        isCandidatesDefined = true
         SNodes sNodes
         
-        switch( targetsType ){
+        switch( candidatesType ){
             case ALL_NODES:
                 sNodes = sMap.getAllNodes()
                 minNodeLevel = 1
@@ -967,8 +1061,8 @@ class G {
         }
         if( minNodeLevel < 1 ) minNodeLevel = 1
         if( isRemoveClones ) removeClones( sNodes )
-        targets.set( sNodes, patternTF.text, searchOptions )
-        selectDefaultCandidate()
+        candidates.set( sNodes, patternTF.text, searchOptions )
+        selectDefaultResult()
     }
 
     /**
@@ -1010,7 +1104,7 @@ class G {
      * Close the GUI then jump to a node;
      * @param target The node to jump to
      */
-    private static void jumpToNodeAfterGuiDispose( target ){
+    private static void jumpToNodeAfterGuiDispose( Node target ){
         // If the code to jump to a node is executed before the gui close,
         // it leave freeplane in a bad focus state.
         // This is solved by putting this code in a listener executed
@@ -1037,12 +1131,12 @@ class GuiManager {
         int fontSize = font.getSize()
         int minFontSize = font.getSize() - 6
         int maxFontSize = font.getSize() + 12
-        G.candidatesFont = new Font( font )
+        G.resultsFont = new Font( font )
         G.initFontSize( fontSize, minFontSize, maxFontSize )
-        G.setFontSize( G.candidatesFontSize  )
+        G.setFontSize( G.resultsFontSize  )
         
         G.patternTF = createPatternTextField( swing )
-        G.candidatesJList = createCandidatesJList( swing )
+        G.resultsJList = createResultsJList( swing )
         G.showNodesLevelCB = createShowNodesLevelCB( swing )
         G.removeClonesCB = createRemoveClonesCB( swing )
         G.regexSearchCB = createRegexSearchCB( swing )
@@ -1050,11 +1144,11 @@ class GuiManager {
         G.searchFromStartCB = createSearchFromStartCB( swing )
         G.splitPatternCB = createSplitPatternCB( swing )
         JButton highlightColorButton = createHighlightColorButton( swing )
-        JComponent fontSizeSlider = createCandidatesFontSizeSlider( swing, G.candidatesFontSize, minFontSize, maxFontSize )
+        JComponent fontSizeSlider = createResultsFontSizeSlider( swing, G.resultsFontSize, minFontSize, maxFontSize )
 
-        ButtonGroup targetsGroup = swing.buttonGroup( id: 'classGroup' )
-        G.targetsOptions.each{
-            it.radioButton = createTargetsOptionRadioButton( swing, targetsGroup, it )
+        ButtonGroup candidatesGroup = swing.buttonGroup( id: 'classGroup' )
+        G.candidatesOptions.each{
+            it.radioButton = createCandidatesOptionRadioButton( swing, candidatesGroup, it )
         }
     
         swing.build{
@@ -1080,7 +1174,7 @@ class GuiManager {
                     G.scrollPane = scrollPane(
                         constraints: gbc( gridx:0, gridy:y++, fill:GBC.BOTH, weighty:1 )
                     ){
-                        widget( G.candidatesJList )
+                        widget( G.resultsJList )
                     }
 
                     G.resultLbl = label(
@@ -1104,7 +1198,7 @@ class GuiManager {
                         ){
                             boxLayout( axis: BoxLayout.PAGE_AXIS )
                             label( "<html><b>Nodes to search</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
-                            G.targetsOptions.each{ widget( it.radioButton ) }
+                            G.candidatesOptions.each{ widget( it.radioButton ) }
                         }
                         separator(
                             orientation:JSeparator.VERTICAL,
@@ -1182,52 +1276,52 @@ class GuiManager {
                                 case G.regexSearchCBMnemonic:
                                     G.regexSearchCB.selected = ! G.regexSearchCB.selected
                                     G.searchOptions.isRegexSearch = G.regexSearchCB.selected
-                                    G.filterTargets()
+                                    G.filterCandidates()
                                     e.consume()
                                     break
                                 case G.caseSensitiveSearchCBMnemonic:
                                     G.caseSensitiveSearchCB.selected = ! G.caseSensitiveSearchCB.selected
                                     G.searchOptions.isCaseSensitiveSearch = G.caseSensitiveSearchCB.selected
-                                    G.filterTargets()
+                                    G.filterCandidates()
                                     e.consume()
                                     break
                                 case G.searchFromStartCBMnemonic:
                                     G.searchFromStartCB.selected = ! G.searchFromStartCB.selected
                                     G.searchOptions.isSearchFromStart = G.searchFromStartCB.selected
-                                    G.splitPatternCB.enabled = ! G.searchFromStartCB.selected
-                                    G.filterTargets()
+                                    G.splitPatternCB.enabled = ! G.searchOptions.isSearchFromStart
+                                    G.filterCandidates()
                                     e.consume()
                                     break
                                 case G.splitPatternCBMnemonic:
                                     G.splitPatternCB.selected = ! G.splitPatternCB.selected
                                     G.searchOptions.isSplitPattern = G.splitPatternCB.selected
-                                    G.filterTargets()
+                                    G.filterCandidates()
                                     e.consume()
                                     break
                                 default:
-                                    TargetsOption option = G.targetsOptions.find{ it.mnemonic == key }
+                                    CandidatesOption option = G.candidatesOptions.find{ it.mnemonic == key }
                                     if( option ){
                                         option.radioButton.selected = true
-                                        G.setTargetsType( option.type )
+                                        G.setCandidatesType( option.type )
                                         e.consume()
                                     }
                             }
                         } else {
                             switch( key ){
                                 case KeyEvent.VK_DOWN:
-                                    G.offsetSelectedCandidate(1)
+                                    G.offsetSelectedResult(1)
                                     e.consume()
                                     break
                                 case KeyEvent.VK_UP:
-                                    G.offsetSelectedCandidate(-1)
+                                    G.offsetSelectedResult(-1)
                                     e.consume()
                                     break
                                 case KeyEvent.VK_PAGE_DOWN:
-                                    G.offsetSelectedCandidate(10)
+                                    G.offsetSelectedResult(10)
                                     e.consume()
                                     break
                                 case KeyEvent.VK_PAGE_UP:
-                                    G.offsetSelectedCandidate(-10)
+                                    G.offsetSelectedResult(-10)
                                     e.consume()
                                     break
                             }
@@ -1237,7 +1331,7 @@ class GuiManager {
                     // ENTER to jump to the selected node
                     @Override public void keyReleased(KeyEvent e){
                         int key = e.getKeyCode()
-                        if( key == KeyEvent.VK_ENTER ) G.jumpToSelectedCandidate()
+                        if( key == KeyEvent.VK_ENTER ) G.jumpToSelectedResult()
                     }
                 }
             )
@@ -1246,22 +1340,22 @@ class GuiManager {
             G.patternTF.getDocument().addDocumentListener(
                 new DocumentListener() {
                     @Override public void changedUpdate(DocumentEvent e) {
-                        G.filterTargets()
+                        G.filterCandidates()
                     }
                     @Override public void removeUpdate(DocumentEvent e) {
-                        G.filterTargets()
+                        G.filterCandidates()
                     }
                     @Override public void insertUpdate(DocumentEvent e) {
-                        G.filterTargets()
+                        G.filterCandidates()
                     }
                 }
             )
 
             // Jump to a node clicked in the nodes list
-            G.candidatesJList.addMouseListener(
+            G.resultsJList.addMouseListener(
                 new MouseAdapter(){
                     @Override public void mouseClicked(MouseEvent e){
-                        G.jumpToSelectedCandidate()
+                        G.jumpToSelectedResult()
                     }
                 }
             )
@@ -1325,15 +1419,15 @@ class GuiManager {
     // A text field to enter the search terms
     private static JTextField createPatternTextField( swing ){
         return swing.textField(
-            font: G.candidatesFont,
+            font: G.resultsFont,
             focusable: true
         )
     }
 
     // A list of the nodes that match the search terms
-    private static JList createCandidatesJList( swing ){
+    private static JList createResultsJList( swing ){
         return swing.list(
-            model: G.targets,
+            model: G.candidates,
             visibleRowCount: 20,
             cellRenderer: new SNodeCellRenderer(),
             focusable: false
@@ -1362,13 +1456,14 @@ class GuiManager {
         )
     }
 
-    private static JRadioButton createTargetsOptionRadioButton( swing, group, TargetsOption option ){
+    private static JRadioButton createCandidatesOptionRadioButton( swing, group, CandidatesOption option ){
         return swing.radioButton(
+            id: Integer.toString( option.type ),
             text: option.text,
             buttonGroup: group,
-            selected: G.targetsType == option.type,
+            selected: G.candidatesType == option.type,
             mnemonic: option.mnemonic,
-            actionPerformed: { e -> G.setTargetsType( e.source.name as int ) },
+            actionPerformed: { e -> G.setCandidatesType( Integer.parseInt( e.source.name ) ) },
             focusable: false,
             toolTipText: option.toolTip
         )
@@ -1382,7 +1477,7 @@ class GuiManager {
             actionPerformed: {
                 e ->
                 G.searchOptions.isRegexSearch = e.source.selected
-                G.filterTargets()
+                G.filterCandidates()
             },
             focusable: false,
             toolTipText: "Check to use the search string as a regular expression"
@@ -1397,7 +1492,7 @@ class GuiManager {
             actionPerformed: {
                 e ->
                 G.searchOptions.isCaseSensitiveSearch = e.source.selected
-                G.filterTargets()
+                G.filterCandidates()
             },
             focusable: false,
             toolTipText: "<html>Check to make the difference between<br>uppercase and lowercase letters</html>"
@@ -1413,7 +1508,7 @@ class GuiManager {
                 e ->
                 G.searchOptions.isSearchFromStart = e.source.selected
                 G.splitPatternCB.enabled = ! e.source.selected
-                G.filterTargets()
+                G.filterCandidates()
             },
             focusable: false,
             toolTipText: "<html>Check to find only nodes where the search string<br>is at the beginning of the node</html>"
@@ -1428,8 +1523,9 @@ class GuiManager {
             actionPerformed: {
                 e ->
                 G.searchOptions.isSplitPattern = e.source.selected
-                G.filterTargets()
+                G.filterCandidates()
             },
+            enabled: ! G.searchOptions.isSearchFromStart,
             focusable: false,
             toolTipText: "<html>If checked, the search string is split into words (or smaller regular expressions).<br>" +
                 "A node is considering to match if it contains all of them, in any order.</html>"
@@ -1452,7 +1548,7 @@ class GuiManager {
         )
     }
 
-    private static JComponent createCandidatesFontSizeSlider( swing, int fontSize, int minFontSize, int maxFontSize ){
+    private static JComponent createResultsFontSizeSlider( swing, int fontSize, int minFontSize, int maxFontSize ){
         JSlider slider = swing.slider(
             value: fontSize,
             minimum: minFontSize,
@@ -1537,7 +1633,7 @@ G.gui.pack()
 GuiManager.fixComponentWidth( G.scrollPane )
 
 // Populate the nodes list
-G.initTargets()
+G.initCandidates()
 G.gui.pack()
 
 // Set the GUI minimal size
