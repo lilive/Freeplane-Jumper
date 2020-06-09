@@ -6,6 +6,7 @@ The goal is to provide a quick way to search for nodes, fully keyboard driven.
 
 ## Features
 
+- Regular search of transversal search (find words across a branch)
 - Plain text or regular expressions search
 - Case sensitive or insensitive search
 - Words can be searched in any order
