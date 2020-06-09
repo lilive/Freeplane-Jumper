@@ -41,21 +41,23 @@ You can now execute the script, you will find it in Menu > Edit > Find > Quick S
 
 ## TODO - Ideas
 
-**Legend**:  
+*Legend:  
 [ ] = To do  
 [?] = Not done, is it a good idea to do it ?  
-[n] = (n is a number) To do, lower number means higher priority
+[n] = (n is a number) To do, lower number means higher priority*
 
-**List**  
-[2] Don't copy node content  
-[2] Don't use keyboard shortcuts that conflict with common ones like Ctrl-A, Ctrl-V, Ctrl-C  
-[ ] Center the selected node in Freeplane main windows, restore the map when the dialog close.  
-[ ] Allow to order results by level  
-[ ] Allow to search entire words  
-[1] Allow to do the search not only in node text, but in branch text.  
-[1] Allow to search in node notes, details, attributes  
+[1] Options to search in node notes, details, attributes  
+[ ] Option to center the map on the selected result as the results list is browsed with the arrow keys  
+[ ] Option to order results by level  
+[ ] Option to search entire words only  
+[ ] Spacing or lines between results  
+[ ] Selected result background color option  
+[?] Don't buffer node content (The plain text for each node is buffered to speed up the search. Do we really need it?)  
 [?] Allow to search only in nodes with the same style than the currently selected node. Or provide a style selector.
 
+[X] Allow to do the search not only in node text, but in branch text.  
 [X] Show nodes parents in the search result list.  
+[X] Don't use keyboard shortcuts that conflict with common ones like Ctrl-A, Ctrl-V, Ctrl-C
+[X] Choose the size of the anscestors display in transversal mode  
 
 **This is WIP. Let me know what you think or propose improvements !**
