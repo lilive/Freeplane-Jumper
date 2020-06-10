@@ -1,6 +1,6 @@
-# QuickSearch for Freeplane
+# Jumper - The jumping filter for Freeplane
 
-This script for Freeplane provide a search box that filter the nodes as the user type the search terms.
+This script for Freeplane provide a search box that filter the nodes on-the-fly as the user type the search terms, and allow to jump to one of the results.
 
 The goal is to provide a quick way to search for nodes, fully keyboard driven.
 
@@ -27,18 +27,18 @@ Hover the question mark icon to display the usage instructions.
 
 ## Installation
 
-[Download QuickSearch.groovy](../../releases) and put it in the scripts subdirectory of the Freeplane homedir (open it via Menu > Tools > Open user directory).
+[Download Jumper.groovy](../../releases) and put it in the scripts subdirectory of the Freeplane homedir (open it via Menu > Tools > Open user directory).
 
 At Menu > Tools > Preferences > Scripts:
 - Set "script execution enabled" to Yes
 - Check "Permit file read operations"
 - Check "Permit file write operations"
 
-(This script need the file permissions because it save its settings in the Freeplane user directory. The name of the file is lilive_quicksearch.json.)
+(This script need the file permissions because it save its settings in the Freeplane user directory. The name of the file is lilive_jumper.json.)
 
 Restart Freeplane.
 
-You can now execute the script, you will find it in Menu > Edit > Find > Quick Search.
+You can now execute the script, you will find it in Menu > Edit > Find > Jumper.
 
 ## TODO - Ideas
 
@@ -53,6 +53,8 @@ You can now execute the script, you will find it in Menu > Edit > Find > Quick S
 [ ] Option to search entire words only  
 [ ] Spacing or lines between results  
 [ ] Selected result background color option  
+[?] Option to set the search string to the last one when the window open. Select this whole text in the text field, to make it be replaced as soon as the user type someting new.
+[?] Jump to next result and jump to previous result without opening the dialog.
 [?] Don't buffer node content (The plain text for each node is buffered to speed up the search. Do we really need it?)  
 [?] Allow to search only in nodes with the same style than the currently selected node. Or provide a style selector.
 

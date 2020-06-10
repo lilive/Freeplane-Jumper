@@ -1,15 +1,16 @@
 // @ExecutionModes({on_single_node="/main_menu/edit/find"})
 
 /*
-Provide a search box that filter the nodes as the user type the search terms.
+Provide a search box that filter the nodes on-the-fly as the user type the search terms,
+and allow to jump to one of the results.
 
 The search may use plain text or regular expressions, it can be either case
 sensitive or insensitive, the words can be searched in any order.
 
-Hover the question mark icon to display the usage instructions.
+Click the question mark icon to display the usage instructions.
 
 This script need the read/write file permissions because it save the settings
-in the Freeplane user directory. The name of the file is lilive_quicksearch.json
+in the Freeplane user directory. The name of the file is lilive_jumper.json
 
 author: lilive
 */
@@ -748,7 +749,7 @@ class GuiSettings {
     String separatorColor
     Integer resultsFontSize
     Integer parentsDisplayLength
-    Rectangle winBounds = new Rectangle()
+    Rectangle winBounds
 }
 
 // Global
@@ -773,7 +774,7 @@ class G {
     static int DESCENDANTS = 2
     static int SIBLINGS_AND_DESCENDANTS = 3
     static int candidatesType = ALL_NODES
-    static boolean isRemoveClones = true
+    static boolean isRemoveClones = false
     static boolean isCandidatesDefined = false
     
     static Node jumpToNode
@@ -850,10 +851,10 @@ class G {
         
         File file = getSettingsFile()
         if( ! file.exists() ) return guiSet
-        
+
+        guiSet.winBounds = new Rectangle()
         try{
             Map s = new JsonSlurper().parseText( file.text )
-            print s
             candidatesType = s.candidatesType ?: candidatesType
             if( s.isRemoveClones != null ) isRemoveClones = s.isRemoveClones
             if( s.searchOptions  != null ) searchOptions  = new SearchOptions( s.searchOptions )
@@ -870,7 +871,7 @@ class G {
                 guiSet.winBounds.height = rect?.height ?: 0
             }
         } catch( Exception e){
-            LogUtils.warn( "QuickSearch: unable to load the settings : $e")
+            LogUtils.warn( "Jumper: unable to load the settings : $e")
         }
 
         historyIdx = history.size()
@@ -976,7 +977,7 @@ class G {
     }
     
     private static File getSettingsFile(){
-        File file = new File( c.getUserDirectory().toString() + File.separator + 'lilive_quicksearch.json' )
+        File file = new File( c.getUserDirectory().toString() + File.separator + 'lilive_jumper.json' )
     }
 
     // Update the candidates, according to the selected options.
@@ -1146,7 +1147,7 @@ class Gui {
         }
 
         win = swing.dialog(
-            title: "Quick search",
+            title: "Jumper - The Jumping Filter",
             modal: true,
             owner: ui.frame,
             defaultCloseOperation: JFrame.DO_NOTHING_ON_CLOSE
@@ -1280,11 +1281,8 @@ class Gui {
         win.setMinimumSize( size )
     }
 
-    void setLocation( fpFrame, Rectangle rect ){
+    void setLocation( JFrame fpFrame, Rectangle rect ){
 
-        print "setLocation"
-        print rect
-        
         Dimension minSize = win.minimumSize
         
         if( rect ){
@@ -1697,7 +1695,7 @@ class Gui {
 
     private JDialog createHelpWindow( swing, gui ){
         JDialog dialog = swing.dialog(
-            title: 'QuickSearch Help',
+            title: 'Jumper Help',
             owner: gui,
             modal:false,
             defaultCloseOperation: javax.swing.JFrame.HIDE_ON_CLOSE 
