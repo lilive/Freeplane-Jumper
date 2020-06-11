@@ -27,24 +27,32 @@ Hover the question mark icon to display the usage instructions.
 
 ## Installation
 
-[Download Jumper.groovy](../../releases) and put it in the scripts subdirectory of the Freeplane homedir (open it via Menu > Tools > Open user directory).
+- Download *Jumper.groovy* and *Jumper.jar* from [the last release](https://github.com/lilive/Freeplane-Jumper/releases)
+- Put *Jumper.groovy* in the *scripts* subdirectory of the Freeplane homedir (open it via Menu > Tools > Open user directory).
+- Put *Jumper.jar* in the *bin* subdirectory of the Freeplane homedir
+- At Menu > Tools > Preferences > Scripts:
 
-At Menu > Tools > Preferences > Scripts:
-- Set "script execution enabled" to Yes
-- Check "Permit file read operations"
-- Check "Permit file write operations"
-
-(This script need the file permissions because it save its settings in the Freeplane user directory. The name of the file is lilive_jumper.json.)
-
-Restart Freeplane.
+  - Set "script execution enabled" to Yes
+  - Check "Permit file read operations"
+  - Check "Permit file write operations"
+  
+  (This script need the file permissions because it save its settings in the Freeplane user directory. The name of the file is lilive_jumper.json.)
+  
+- Restart Freeplane.
 
 You can now execute the script, you will find it in Menu > Edit > Find > Jumper.
+
+**This is a work in progress. Let me know what you think or propose improvements !  
+I will appreciate any feedback. They will help to keep me motivated to improve or maintain the script. Do you use it ? Just let me know :-)**  
+You can write to me in [this github thread](https://github.com/lilive/Freeplane-Jumper/issues/1) or in this [dedicated discussion](https://sourceforge.net/p/freeplane/discussion/758437/thread/e7b4594c02/) in the Freeplane forum.
+
+
 
 ## TODO - Ideas
 
 *Legend:  
 [ ] = To do  
-[?] = Not done, is it a good idea to do it ?  
+[?] = To do, but is it a good idea ?  
 [n] = (n is a number) To do, lower number means higher priority*
 
 [1] Options to search in node notes, details, attributes  
@@ -63,4 +71,9 @@ You can now execute the script, you will find it in Menu > Edit > Find > Jumper.
 [X] Don't use keyboard shortcuts that conflict with common ones like Ctrl-A, Ctrl-V, Ctrl-C
 [X] Choose the size of the anscestors display in transversal mode  
 
-**This is WIP. Let me know what you think or propose improvements !**
+## Compilation from the sources
+
+There is no need to compile *Jumper.groovy*, Freeplane will do it.
+
+But if you modify the scripts in *src/main* you have to build the *Jumper.jar* yourself.  
+To do that, install gradle and run the command `gradle build` in a terminal. The jar will be created in the *lib* directory.
