@@ -36,7 +36,8 @@ Hover the question mark icon to display the usage instructions.
   - Check "Permit file read operations"
   - Check "Permit file write operations"
   
-  (This script need the file permissions because it save its settings in the Freeplane user directory. The name of the file is lilive_jumper.json.)
+  Jumper need the file permissions because it save its settings in the Freeplane user directory. The name of the file is lilive_jumper.json.  
+  Jumper do not modify your maps, there is no risk to loose informations.
   
 - Restart Freeplane.
 
