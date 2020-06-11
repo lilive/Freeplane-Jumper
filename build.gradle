@@ -1,0 +1,33 @@
+apply plugin: 'groovy'
+
+targetCompatibility='1.8'
+
+libsDirName = "${rootDir}/lib"
+clean.doFirst { delete "${rootDir}/lib" }
+
+repositories {
+	mavenCentral()
+	flatDir name: 'localGitDepsRepository',
+	dirs: [
+        "C:/Program Files/Freeplane",
+        "C:/Program Files/Freeplane/core/org.freeplane.core/lib",
+		"C:/Program Files/Freeplane/plugins/org.freeplane.plugin.script/lib"
+	]
+}
+
+dependencies {
+    compile name: 'freeplanelauncher'
+    compile name: 'freeplaneviewer'
+	compile group: 'org.freeplane.script', name: 'plugin', version: '+'
+	compile ('org.codehaus.groovy:groovy-all:2.5.4') {
+        exclude group:'org.codehaus.groovy', module:'groovy-test'
+        exclude group:'org.codehaus.groovy', module:'groovy-test-junit5'
+        exclude group:'org.codehaus.groovy', module:'groovy-testng'
+        exclude group:'org.codehaus.groovy', module:'groovy-ant'
+        exclude group:'org.codehaus.groovy', module:'groovy-docgenerator'
+        exclude group:'org.codehaus.groovy', module:'groovy-groovydoc'
+        exclude group:'org.codehaus.groovy', module:'groovy-cli-commons'
+        exclude group:'org.codehaus.groovy', module:'groovy-cli-picocli'
+    }
+    compile 'org.codehaus.groovy:groovy-dateutil:2.5.4'
+}
