@@ -49,25 +49,30 @@ You can now execute the script, you will find it in Menu > Edit > Find > Jumper.
 ## TODO - Ideas
 
 *Legend:  
-[ ] = To do  
-[?] = To do, but is it a good idea ?  
-[n] = (n is a number) To do, lower number means higher priority*
+`[ ]` = To do  
+`[?]` = To do, but is it a good idea ?  
+`[n]` = (n is a number) To do, lower number means higher priority*  
+`[X]` = Done
 
-[1] Options to search in node notes, details, attributes  
-[ ] Option to center the map on the selected result as the results list is browsed with the arrow keys  
-[ ] Option to order results by level  
-[ ] Option to search entire words only  
-[ ] Spacing or lines between results  
-[ ] Selected result background color option  
-[?] Option to set the search string to the last one when the window open. Select this whole text in the text field, to make it be replaced as soon as the user type someting new.
-[?] Jump to next result and jump to previous result without opening the dialog.
-[?] Don't buffer node content (The plain text for each node is buffered to speed up the search. Do we really need it?)  
-[?] Allow to search only in nodes with the same style than the currently selected node. Or provide a style selector.
+---
 
-[X] Allow to do the search not only in node text, but in branch text.  
-[X] Show nodes parents in the search result list.  
-[X] Don't use keyboard shortcuts that conflict with common ones like Ctrl-A, Ctrl-V, Ctrl-C
-[X] Choose the size of the anscestors display in transversal mode  
+`[1]` Options to search in node notes, details, attributes  
+`[ ]` Option to center the map on the selected result as the results list is browsed with the arrow keys  
+`[ ]` Option to order results by level  
+`[ ]` Option to search entire words only  
+`[ ]` Spacing or lines between results  
+`[ ]` Selected result background color option  
+`[?]` Option to set the search string to the last one when the window open. Select this whole text in the text field, to make it be replaced as soon as the user type someting new.  
+`[?]` Jump to next result and jump to previous result without opening the dialog.  
+`[?]` Don't buffer node content (The plain text for each node is buffered to speed up the search. Do we really need it?)  
+`[?]` Allow to search only in nodes with the same style than the currently selected node. Or provide a style selector.
+
+---
+
+`[X]` Allow to do the search not only in node text, but in branch text.  
+`[X]` Show nodes parents in the search result list.  
+`[X]` Don't use keyboard shortcuts that conflict with common ones like Ctrl-A, Ctrl-V, Ctrl-C  
+`[X]` Choose the size of the anscestors display in transversal mode
 
 ## Compilation from the sources
 
