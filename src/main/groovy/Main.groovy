@@ -159,36 +159,64 @@ class Main {
     }
 
     static void setRegexSearch( boolean value ){
-        boolean previous = searchOptions.isRegexSearch
-        searchOptions.isRegexSearch = value
+        boolean previous = searchOptions.useRegex
+        searchOptions.useRegex = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
     static void setCaseSensitiveSearch( boolean value ){
-        boolean previous = searchOptions.isCaseSensitiveSearch
-        searchOptions.isCaseSensitiveSearch = value
+        boolean previous = searchOptions.caseSensitive
+        searchOptions.caseSensitive = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
     static void setSearchFromStart( boolean value ){
-        boolean previous = searchOptions.isSearchFromStart
-        searchOptions.isSearchFromStart = value
+        boolean previous = searchOptions.fromStart
+        searchOptions.fromStart = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
     static void setSplitPattern( boolean value ){
-        boolean previous = searchOptions.isSplitPattern
-        searchOptions.isSplitPattern = value
+        boolean previous = searchOptions.splitPattern
+        searchOptions.splitPattern = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
     static void setTransversalSearch( boolean value ){
-        boolean previous = searchOptions.isTransversalSearch
-        searchOptions.isTransversalSearch = value
+        boolean previous = searchOptions.transversal
+        searchOptions.transversal = value
+        gui.updateOptions()
+        if( previous != value ) searchAgain()
+    }
+
+    static void setDetailsSearch( boolean value ){
+        boolean previous = searchOptions.useDetails
+        searchOptions.useDetails = value
+        gui.updateOptions()
+        if( previous != value ) searchAgain()
+    }
+
+    static void setNoteSearch( boolean value ){
+        boolean previous = searchOptions.useNote
+        searchOptions.useNote = value
+        gui.updateOptions()
+        if( previous != value ) searchAgain()
+    }
+
+    static void setAttributesNameSearch( boolean value ){
+        boolean previous = searchOptions.useAttributesName
+        searchOptions.useAttributesName = value
+        gui.updateOptions()
+        if( previous != value ) searchAgain()
+    }
+
+    static void setAttributesValueSearch( boolean value ){
+        boolean previous = searchOptions.useAttributesValue
+        searchOptions.useAttributesValue = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }

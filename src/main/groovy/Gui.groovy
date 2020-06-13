@@ -59,17 +59,26 @@ class Gui {
     private int showNodesLevelCBMnemonic = KeyEvent.VK_L
     private JCheckBox removeClonesCB
     private int removeClonesCBMnemonic = KeyEvent.VK_K
-    private JCheckBox regexSearchCB
-    private int regexSearchCBMnemonic = KeyEvent.VK_R
-    private JCheckBox caseSensitiveSearchCB
-    private int caseSensitiveSearchCBMnemonic = KeyEvent.VK_I
-    private JCheckBox searchFromStartCB
-    private int searchFromStartCBMnemonic = KeyEvent.VK_G
+    private JCheckBox regexCB
+    private int regexCBMnemonic = KeyEvent.VK_R
+    private JCheckBox caseSensitiveCB
+    private int caseSensitiveCBMnemonic = KeyEvent.VK_I
+    private JCheckBox fromStartCB
+    private int fromStartCBMnemonic = KeyEvent.VK_G
     private JCheckBox splitPatternCB
     private int splitPatternCBMnemonic = KeyEvent.VK_U
-    private JCheckBox transversalSearchCB
-    private int transversalSearchCBMnemonic = KeyEvent.VK_T
+    private JCheckBox transversalCB
+    private int transversalCBMnemonic = KeyEvent.VK_T
+    private JCheckBox detailsCB
+    private int detailsCBMnemonic = KeyEvent.VK_1
+    private JCheckBox noteCB
+    private int noteCBMnemonic = KeyEvent.VK_2
+    private JCheckBox attributesNameCB
+    private int attributesNameCBMnemonic = KeyEvent.VK_3
+    private JCheckBox attributesValueCB
+    private int attributesValueCBMnemonic = KeyEvent.VK_4
 
+    
     private ArrayList<CandidatesOption> candidatesOptions
     private int allNodesMnemonic = KeyEvent.VK_M
     private int siblingsMnemonic = KeyEvent.VK_S
@@ -79,12 +88,22 @@ class Gui {
     private boolean isShowNodesLevel = false
     private String highlightColor = "#FFFFAA"
     private String separatorColor = "#888888"
+    private Color coreForegroundColor
+    private Color coreBackgroundColor
+    private Color detailsForegroundColor
+    private Color detailsBackgroundColor
+    private Color selectedCoreForegroundColor
+    private Color selectedCoreBackgroundColor
+    private Color selectedDetailsForegroundColor
+    private Color selectedDetailsBackgroundColor
     private int resultsFontSize
     private int minFontSize
     private int maxFontSize
     private Font resultsFont
     private int patternMinFontSize
     private int parentsDisplayLength = 15
+    private int namesDisplayLength = 15
+    private int valuesDisplayLength = 15
 
     int historyPreviousKey = KeyEvent.VK_UP
     int historyNextKey = KeyEvent.VK_DOWN
@@ -119,11 +138,15 @@ class Gui {
         resultsJList = createResultsJList( swing, candidates )
         showNodesLevelCB = createShowNodesLevelCB( swing )
         removeClonesCB = createRemoveClonesCB( swing )
-        regexSearchCB = createRegexSearchCB( swing )
-        caseSensitiveSearchCB = createCaseSensitiveSearchCB( swing )
-        searchFromStartCB = createSearchFromStartCB( swing )
+        regexCB = createRegexSearchCB( swing )
+        caseSensitiveCB = createCaseSensitiveSearchCB( swing )
+        fromStartCB = createSearchFromStartCB( swing )
         splitPatternCB = createSplitPatternCB( swing )
-        transversalSearchCB = createTransversalSearchCB( swing )
+        transversalCB = createTransversalSearchCB( swing )
+        detailsCB = createDetailsCB( swing )
+        noteCB = createNoteCB( swing )
+        attributesNameCB = createAttributesNameCB( swing )
+        attributesValueCB = createAttributesValueCB( swing )
         JComponent highlightColorButton = createHighlightColorButton( swing )
         JComponent separatorColorButton = createSeparatorColorButton( swing )
         JComponent fontSizeSlider = createResultsFontSizeSlider( swing )
@@ -204,11 +227,30 @@ class Gui {
                     ){
                         boxLayout( axis: BoxLayout.Y_AXIS )
                         label( "<html><b>How to search</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
-                        widget( regexSearchCB  )
-                        widget( caseSensitiveSearchCB )
-                        widget( searchFromStartCB )
+                        widget( regexCB  )
+                        widget( caseSensitiveCB )
+                        widget( fromStartCB )
                         widget( splitPatternCB )
-                        widget( transversalSearchCB )
+                        widget( transversalCB )
+                    }
+                    
+                    separator(
+                        orientation:JSeparator.VERTICAL,
+                        constraints: gbc( gridx:x++, gridy:0, fill:GBC.VERTICAL )
+                    )
+
+                    // Where to search in nodes
+                    panel(
+                        border: emptyBorder( 0, 8, 0, 32 ),
+                        constraints: gbc( gridx:x++, gridy:0, anchor:GBC.FIRST_LINE_START, weightx:0 )
+                    ){
+                        boxLayout( axis: BoxLayout.Y_AXIS )
+                        label( "<html><b>Where to search</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
+                        label( "Search in the node text and...")
+                        widget( detailsCB )
+                        widget( noteCB )
+                        widget( attributesNameCB )
+                        widget( attributesValueCB )
                     }
                     
                     separator(
@@ -312,19 +354,24 @@ class Gui {
         candidatesOptions.each{
             it.radioButton.selected = ( it.type == M.candidatesType )
         }
-        removeClonesCB.selected        = M.isRemoveClones
+        
+        removeClonesCB.selected = M.isRemoveClones
         
         M.searchOptions.with{
-            regexSearchCB.selected         = isRegexSearch
-            caseSensitiveSearchCB.selected = isCaseSensitiveSearch
-            searchFromStartCB.selected     = isSearchFromStart
-            splitPatternCB.selected        = isSplitPattern
-            transversalSearchCB.selected   = isTransversalSearch
-            splitPatternCB.enabled = ! isTransversalSearch && ! isSearchFromStart
-            showNodesLevelCB.enabled = ! isTransversalSearch
+            regexCB.selected           = useRegex
+            caseSensitiveCB.selected   = caseSensitive
+            fromStartCB.selected       = fromStart
+            splitPatternCB.selected    = splitPattern
+            transversalCB.selected     = transversal
+            detailsCB.selected         = useDetails
+            noteCB.selected           = useNote
+            attributesNameCB.selected  = useAttributesName
+            attributesValueCB.selected = useAttributesValue
+            splitPatternCB.enabled     = ! transversal && ! fromStart
+            showNodesLevelCB.enabled   = ! transversal
         }
         
-        showNodesLevelCB.selected      = isShowNodesLevel
+        showNodesLevelCB.selected = isShowNodesLevel
     }
     
     void toggleHelp(){
@@ -470,7 +517,7 @@ class Gui {
     private JList createResultsJList( swing, Candidates candidates ){
         return swing.list(
             model: candidates,
-            visibleRowCount: 20,
+            visibleRowCount: 12,
             cellRenderer: new SNodeCellRenderer(),
             focusable: false
         )
@@ -480,7 +527,7 @@ class Gui {
         return swing.checkBox(
             text: "Show nodes level",
             selected: isShowNodesLevel,
-            enabled: ! M.searchOptions.isTransversalSearch,
+            enabled: ! M.searchOptions.transversal,
             mnemonic: showNodesLevelCBMnemonic,
             actionPerformed: { e -> setLevelDisplay( e.source.selected ) },
             focusable: false,
@@ -515,8 +562,8 @@ class Gui {
     private JCheckBox createRegexSearchCB( swing ){
         return swing.checkBox(
             text: "Use regular expressions",
-            selected: M.searchOptions.isRegexSearch,
-            mnemonic: regexSearchCBMnemonic,
+            selected: M.searchOptions.useRegex,
+            mnemonic: regexCBMnemonic,
             actionPerformed: { e -> M.setRegexSearch( e.source.selected ) },
             focusable: false,
             toolTipText: "Check to use the search string as a regular expression"
@@ -526,8 +573,8 @@ class Gui {
     private JCheckBox createCaseSensitiveSearchCB( swing ){
         return swing.checkBox(
             text: "Case sensitive search",
-            selected: M.searchOptions.isCaseSensitiveSearch,
-            mnemonic: caseSensitiveSearchCBMnemonic,
+            selected: M.searchOptions.caseSensitive,
+            mnemonic: caseSensitiveCBMnemonic,
             actionPerformed: { e -> M.setCaseSensitiveSearch( e.source.selected ) },
             focusable: false,
             toolTipText: "<html>Check to make the difference between<br>uppercase and lowercase letters</html>"
@@ -537,8 +584,8 @@ class Gui {
     private JCheckBox createSearchFromStartCB( swing ){
         return swing.checkBox(
             text: "Search at beginning of nodes",
-            selected: M.searchOptions.isSearchFromStart,
-            mnemonic: searchFromStartCBMnemonic,
+            selected: M.searchOptions.fromStart,
+            mnemonic: fromStartCBMnemonic,
             actionPerformed: { e -> M.setSearchFromStart( e.source.selected ) },
             focusable: false,
             toolTipText: "<html>Check to find only nodes where the search string<br>is at the beginning of the node</html>"
@@ -548,10 +595,10 @@ class Gui {
     private JCheckBox createSplitPatternCB( swing ){
         return swing.checkBox(
             text: "Multiple pattern",
-            selected: M.searchOptions.isSplitPattern,
+            selected: M.searchOptions.splitPattern,
             mnemonic: splitPatternCBMnemonic,
             actionPerformed: { e -> M.setSplitPattern( e.source.selected ) },
-            enabled: ! M.searchOptions.isSearchFromStart && ! M.searchOptions.isTransversalSearch,
+            enabled: ! M.searchOptions.fromStart && ! M.searchOptions.transversal,
             focusable: false,
             toolTipText: "<html>If checked, the search string is split into words (or smaller regular expressions).<br>" +
                 "A node is considering to match if it contains all of them, in any order.</html>"
@@ -561,14 +608,58 @@ class Gui {
     private JCheckBox createTransversalSearchCB( swing ){
         return swing.checkBox(
             text: "Transversal search",
-            selected: M.searchOptions.isTransversalSearch,
-            mnemonic: transversalSearchCBMnemonic,
+            selected: M.searchOptions.transversal,
+            mnemonic: transversalCBMnemonic,
             actionPerformed: { e -> M.setTransversalSearch( e.source.selected ) },
             focusable: false,
             toolTipText: """<html>
                     Check to also find nodes that don't match the entire pattern<br>
                     if their ancestors match the rest of the pattern
                 <html>"""
+        )
+    }
+
+    private JCheckBox createDetailsCB( swing ){
+        return swing.checkBox(
+            text: "in details (1)",
+            selected: M.searchOptions.useDetails,
+            mnemonic: detailsCBMnemonic,
+            actionPerformed: { e -> M.setDetailsSearch( e.source.selected ) },
+            focusable: false,
+            toolTipText: "Check to search into the nodes details"
+        )
+    }
+
+    private JCheckBox createNoteCB( swing ){
+        return swing.checkBox(
+            text: "in note (2)",
+            selected: M.searchOptions.useNote,
+            mnemonic: noteCBMnemonic,
+            actionPerformed: { e -> M.setNoteSearch( e.source.selected ) },
+            focusable: false,
+            toolTipText: "Check to search into the nodes note"
+        )
+    }
+
+    private JCheckBox createAttributesNameCB( swing ){
+        return swing.checkBox(
+            text: "in attributes name (3)",
+            selected: M.searchOptions.useAttributesName,
+            mnemonic: attributesNameCBMnemonic,
+            actionPerformed: { e -> M.setAttributesNameSearch( e.source.selected ) },
+            focusable: false,
+            toolTipText: "Check to search into the attributes name"
+        )
+    }
+
+    private JCheckBox createAttributesValueCB( swing ){
+        return swing.checkBox(
+            text: "in attributes value (4)",
+            selected: M.searchOptions.useAttributesValue,
+            mnemonic: attributesValueCBMnemonic,
+            actionPerformed: { e -> M.setAttributesValueSearch( e.source.selected ) },
+            focusable: false,
+            toolTipText: "Check to search into the attributes value"
         )
     }
 
@@ -783,25 +874,41 @@ class Gui {
                                 if( removeClonesCB.enabled )
                                     M.setClonesDisplay( ! M.isRemoveClones )
                                 break
-                            case regexSearchCBMnemonic:
-                                if( regexSearchCB.enabled )
-                                    M.setRegexSearch( ! M.searchOptions.isRegexSearch )
+                            case regexCBMnemonic:
+                                if( regexCB.enabled )
+                                    M.setRegexSearch( ! M.searchOptions.useRegex )
                                 break
-                            case caseSensitiveSearchCBMnemonic:
-                                if( caseSensitiveSearchCB.enabled )
-                                    M.setCaseSensitiveSearch( ! M.searchOptions.isCaseSensitiveSearch )
+                            case caseSensitiveCBMnemonic:
+                                if( caseSensitiveCB.enabled )
+                                    M.setCaseSensitiveSearch( ! M.searchOptions.caseSensitive )
                                 break
-                            case searchFromStartCBMnemonic:
-                                if( searchFromStartCB.enabled )
-                                    M.setSearchFromStart( ! M.searchOptions.isSearchFromStart )
+                            case fromStartCBMnemonic:
+                                if( fromStartCB.enabled )
+                                    M.setSearchFromStart( ! M.searchOptions.fromStart )
                                 break
                             case splitPatternCBMnemonic:
                                 if( splitPatternCB.enabled )
-                                    M.setSplitPattern( ! M.searchOptions.isSplitPattern )
+                                    M.setSplitPattern( ! M.searchOptions.splitPattern )
                                 break
-                            case transversalSearchCBMnemonic:
-                                if( transversalSearchCB.enabled )
-                                    M.setTransversalSearch( ! M.searchOptions.isTransversalSearch )
+                            case transversalCBMnemonic:
+                                if( transversalCB.enabled )
+                                    M.setTransversalSearch( ! M.searchOptions.transversal )
+                                break
+                            case detailsCBMnemonic:
+                                if( detailsCB.enabled )
+                                    M.setDetailsSearch( ! M.searchOptions.useDetails )
+                                break
+                            case noteCBMnemonic:
+                                if( noteCB.enabled )
+                                    M.setNoteSearch( ! M.searchOptions.useNote )
+                                break
+                            case attributesNameCBMnemonic:
+                                if( attributesNameCB.enabled )
+                                    M.setAttributesNameSearch( ! M.searchOptions.useAttributesName )
+                                break
+                            case attributesValueCBMnemonic:
+                                if( attributesValueCB.enabled )
+                                    M.setAttributesValueSearch( ! M.searchOptions.useAttributesValue )
                                 break
                             default:
                                 CandidatesOption option = candidatesOptions.find{ it.mnemonic == key }

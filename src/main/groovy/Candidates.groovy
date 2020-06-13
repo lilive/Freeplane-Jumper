@@ -64,8 +64,8 @@ class Candidates extends DefaultListModel<SNode>{
         // Get the differents patterns
         Set<String> patterns
         if(
-            ( options.isSplitPattern && ! options.isSearchFromStart )
-            || options.isTransversalSearch
+            ( options.splitPattern && ! options.fromStart )
+            || options.transversal
         ){
             patterns = (Set<String>)( pattern.split( /\s+/ ) )
         } else {
@@ -88,9 +88,9 @@ class Candidates extends DefaultListModel<SNode>{
         try {
             regexps.addAll( patterns.collect{
                 String exp = it
-                if( ! options.isRegexSearch) exp = Pattern.quote( exp )
-                if( options.isSearchFromStart ) exp = "^$exp"
-                if( ! options.isCaseSensitiveSearch ) exp = "(?i)$exp"
+                if( ! options.useRegex) exp = Pattern.quote( exp )
+                if( options.fromStart ) exp = "^$exp"
+                if( ! options.caseSensitive ) exp = "(?i)$exp"
                 Pattern regex = ~/$exp/
                 oneValidRegex = true
                 regex
@@ -107,7 +107,7 @@ class Candidates extends DefaultListModel<SNode>{
         boolean maxReached = false
         candidates.each{
             if( ! maxReached || it == Main.currentSNode ){
-                if( ! it.search( regexps, options.isTransversalSearch ) ) return
+                if( ! it.search( regexps, options ) ) return
                 results << it
                 maxReached = ( results.size() >= numMax - 1 )
             }

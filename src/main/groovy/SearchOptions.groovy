@@ -2,9 +2,13 @@ package lilive.jumper
 
 
 class SearchOptions {
-    boolean isRegexSearch = true
-    boolean isCaseSensitiveSearch = false
-    boolean isSearchFromStart = false
-    boolean isSplitPattern = true
-    boolean isTransversalSearch = true
+    boolean useRegex = true
+    boolean caseSensitive = false
+    boolean fromStart = false
+    boolean splitPattern = true
+    boolean transversal = true
+    boolean useDetails = true
+    boolean useNote = true
+    boolean useAttributesName = true
+    boolean useAttributesValue = true
 }
