@@ -10,7 +10,7 @@ class Interval {
     int end
     
     Interval( int start, int end ){
-        if( end <= start ) throw new IllegalArgumentException("end must be greater or equal to start")
+        if( end <= start ) throw new IllegalArgumentException("end must be greater or equal to start. start:${start} end:${end}")
         this.start = start
         this.end = end
     }

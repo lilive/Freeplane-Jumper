@@ -419,12 +419,6 @@ class SNode {
     private void updateAttributesDisplayText(){
         if( namesHighlights || valuesHighlights ){
             attributesDisplay = ""
-            float cnt = 0
-            for( int i = 0; i < names.size(); i++ ){
-                if( namesHighlights?[i] || valuesHighlights?[i] ) cnt += 1f
-            }
-            int valueMaxLen = maxDisplayLength / cnt - cnt * ( M.gui.drs.namesDisplayLength + 3 ) - 12
-            if( valueMaxLen > M.gui.drs.valuesDisplayLength ) valueMaxLen = M.gui.drs.valuesDisplayLength
             for( int i = 0; i < names.size(); i++ ){
                 Highlight nameHL = namesHighlights?[i]
                 Highlight valueHL = valuesHighlights?[i]
@@ -433,8 +427,8 @@ class SNode {
                 if( nameHL || valueHL ){ 
                     if( nameHL ) n = getHighlightedText( names[i], nameHL, M.gui.drs.namesDisplayLength, false )
                     else n = getTruncatedText( names[i], M.gui.drs.namesDisplayLength )
-                    if( valueHL ) v = getHighlightedText( values[i], valueHL, valueMaxLen, true )
-                    else v = getTruncatedText( values[i], valueMaxLen )
+                    if( valueHL ) v = getHighlightedText( values[i], valueHL, M.gui.drs.valuesDisplayLength, true )
+                    else v = getTruncatedText( values[i], M.gui.drs.valuesDisplayLength )
                     if( attributesDisplay ) attributesDisplay += " \u25cf "
                     attributesDisplay = "${attributesDisplay}${n} : ${v}"
                 }
