@@ -61,7 +61,6 @@ You can now execute the script, you will find it in Menu > Edit > Find > Jumper.
 `[1]` Do the search in another thread to improve GUI reactivity  
 `[2]` Hide/Show options  
 `[3]` Color chooser for details, note, attributes highlighting  
-`[3]` Display options in another window  
 `[4]` Option to center the map on the selected result as the results list is browsed with the arrow keys  
 `[4]` Option to set the search string to the last one when the window open. Select this whole text in the text field, to make it be replaced as soon as the user type someting new.  
 `[ ]` Update code comments (SNode)  
@@ -77,6 +76,7 @@ You can now execute the script, you will find it in Menu > Edit > Find > Jumper.
 
 ---
 
+`[X]` Display options in another window  
 `[X]` Options to search in node notes, details, attributes  
 `[X]` Spacing or lines between results  
 `[X]` Allow to do the search not only in node text, but in branch text.  

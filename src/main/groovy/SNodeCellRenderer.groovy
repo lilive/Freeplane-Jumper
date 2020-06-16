@@ -8,6 +8,7 @@ import javax.swing.Box
 import javax.swing.BoxLayout
 import javax.swing.JSeparator
 import java.awt.Font
+import javax.swing.border.EmptyBorder
 
 
 class SNodeCellRenderer extends Box implements ListCellRenderer<SNode> {
@@ -21,9 +22,14 @@ class SNodeCellRenderer extends Box implements ListCellRenderer<SNode> {
         super( BoxLayout.Y_AXIS )
         setOpaque(true);
         coreTextLabel = new JLabel()
+        coreTextLabel.opaque = true
+        coreTextLabel.border = new EmptyBorder( 2, 2, 2, 2 )
         detailsLabel = new JLabel()
+        detailsLabel.opaque = true
         noteLabel = new JLabel()
+        noteLabel.opaque = true
         attributesLabel = new JLabel()
+        attributesLabel.opaque = true
         this.add( coreTextLabel )
         this.add( detailsLabel )
         this.add( noteLabel )
@@ -36,15 +42,21 @@ class SNodeCellRenderer extends Box implements ListCellRenderer<SNode> {
         JList<SNode> list, SNode sNode,
         int index, boolean isSelected, boolean cellHasFocus
     ){
-        Font font = Main.gui.getResultsFont()
+        DisplayResultsSettings drs = Main.gui.drs
+        Font coreFont = drs.coreFont
+        Font detailsFont = drs.detailsFont
         
         coreTextLabel.setText( sNode.coreDisplay );
-        coreTextLabel.setFont( font )
+        coreTextLabel.setFont( coreFont )
+        coreTextLabel.foreground = isSelected ? drs.selectedCoreForegroundColor : drs.coreForegroundColor
+        coreTextLabel.background = isSelected ? drs.selectedCoreBackgroundColor : drs.coreBackgroundColor
         
         String details = sNode.detailsDisplay
         if( details ){
             detailsLabel.setText( details )
-            detailsLabel.setFont( font )
+            detailsLabel.setFont( detailsFont )
+            detailsLabel.foreground = isSelected ? drs.selectedDetailsForegroundColor : drs.detailsForegroundColor
+            detailsLabel.background = isSelected ? drs.selectedDetailsBackgroundColor : drs.detailsBackgroundColor
             detailsLabel.visible = true
         } else {
             detailsLabel.visible = false
@@ -53,7 +65,9 @@ class SNodeCellRenderer extends Box implements ListCellRenderer<SNode> {
         String note = sNode.noteDisplay
         if( note ){
             noteLabel.setText( note )
-            noteLabel.setFont( font )
+            noteLabel.setFont( detailsFont )
+            noteLabel.foreground = isSelected ? drs.selectedDetailsForegroundColor : drs.detailsForegroundColor
+            noteLabel.background = isSelected ? drs.selectedDetailsBackgroundColor : drs.detailsBackgroundColor
             noteLabel.visible = true
         } else {
             noteLabel.visible = false
@@ -62,20 +76,14 @@ class SNodeCellRenderer extends Box implements ListCellRenderer<SNode> {
         String attributes = sNode.attributesDisplay
         if( attributes ){
             attributesLabel.setText( attributes )
-            attributesLabel.setFont( font )
+            attributesLabel.setFont( detailsFont )
+            attributesLabel.foreground = isSelected ? drs.selectedDetailsForegroundColor : drs.detailsForegroundColor
+            attributesLabel.background = isSelected ? drs.selectedDetailsBackgroundColor : drs.detailsBackgroundColor
             attributesLabel.visible = true
         } else {
             attributesLabel.visible = false
         }
         
-        if (isSelected) {
-            setBackground( list.getSelectionBackground() );
-            setForeground( list.getSelectionForeground() );
-        } else {
-            setBackground( list.getBackground() );
-            setForeground( list.getForeground() );
-        }
-
         return this;
     }
 }

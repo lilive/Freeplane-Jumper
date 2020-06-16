@@ -43,22 +43,36 @@ import javax.swing.UIManager
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 import lilive.jumper.Main as M
+import javax.swing.border.EmptyBorder
+import javax.swing.border.CompoundBorder
 
 
 class Gui {
 
-    private JDialog win
+    JDialog win
     private JDialog helpWin
-    
+
+    // Search pattern
     private JTextField patternTF
+
+    // Search results 
     private JScrollPane scrollPane
     private JList resultsJList
     private JLabel resultLbl
-    
-    private JCheckBox showNodesLevelCB
-    private int showNodesLevelCBMnemonic = KeyEvent.VK_L
+    DisplayResultsSettings drs = new DisplayResultsSettings()
+    private DisplaySettingsGui drsGui
+    int showNodesLevelCBMnemonic = KeyEvent.VK_L
+
+    // Which nodes to search options controls
+    private ArrayList<CandidatesOption> candidatesOptions
+    private int allNodesMnemonic = KeyEvent.VK_M
+    private int siblingsMnemonic = KeyEvent.VK_S
+    private int descendantsMnemonic = KeyEvent.VK_D
+    private int siblingsAndDescendantsMnemonic = KeyEvent.VK_B
     private JCheckBox removeClonesCB
     private int removeClonesCBMnemonic = KeyEvent.VK_K
+
+    // Search method options controls
     private JCheckBox regexCB
     private int regexCBMnemonic = KeyEvent.VK_R
     private JCheckBox caseSensitiveCB
@@ -70,6 +84,8 @@ class Gui {
     private JCheckBox transversalCB
     private int transversalCBMnemonic = KeyEvent.VK_T
     private JCheckBox detailsCB
+
+    // Which parts of the nodes to search options controls
     private int detailsCBMnemonic = KeyEvent.VK_1
     private JCheckBox noteCB
     private int noteCBMnemonic = KeyEvent.VK_2
@@ -78,48 +94,15 @@ class Gui {
     private JCheckBox attributesValueCB
     private int attributesValueCBMnemonic = KeyEvent.VK_4
 
-    
-    private ArrayList<CandidatesOption> candidatesOptions
-    private int allNodesMnemonic = KeyEvent.VK_M
-    private int siblingsMnemonic = KeyEvent.VK_S
-    private int descendantsMnemonic = KeyEvent.VK_D
-    private int siblingsAndDescendantsMnemonic = KeyEvent.VK_B
-
-    private boolean isShowNodesLevel = false
-    private String highlightColor = "#FFFFAA"
-    private String separatorColor = "#888888"
-    private Color coreForegroundColor
-    private Color coreBackgroundColor
-    private Color detailsForegroundColor
-    private Color detailsBackgroundColor
-    private Color selectedCoreForegroundColor
-    private Color selectedCoreBackgroundColor
-    private Color selectedDetailsForegroundColor
-    private Color selectedDetailsBackgroundColor
-    private int resultsFontSize
-    private int minFontSize
-    private int maxFontSize
-    private Font resultsFont
-    private int patternMinFontSize
-    private int parentsDisplayLength = 15
-    private int namesDisplayLength = 15
-    private int valuesDisplayLength = 15
-
+    // History controls
     int historyPreviousKey = KeyEvent.VK_UP
     int historyNextKey = KeyEvent.VK_DOWN
 
-    
-    Gui( ui, Candidates candidates, GuiSettings settings ){
+    Gui( ui, Candidates candidates, LoadedSettings settings ){
 
         initCandidatesOptions()
-        initFonts()
-        
-        if( settings.isShowNodesLevel     != null ) isShowNodesLevel      = settings.isShowNodesLevel
-        if( settings.highlightColor       != null ) highlightColor        = settings.highlightColor
-        if( settings.separatorColor       != null ) separatorColor        = settings.separatorColor
-        if( settings.resultsFontSize      != null ) setFontSize( settings.resultsFontSize )
-        if( settings.parentsDisplayLength != null ) parentsDisplayLength  = settings.parentsDisplayLength
-
+        if( settings.drs ) drs = settings.drs
+        drs.initFonts()
         build( ui, candidates )
         addKeyListeners( win, patternTF )
         addEditPatternListeners( patternTF )
@@ -134,9 +117,8 @@ class Gui {
         
         SwingBuilder swing = new SwingBuilder()
 
-        patternTF = createPatternTextField( swing, resultsFont )
+        patternTF = createPatternTextField( swing, drs.coreFont, drs.patternFontSize )
         resultsJList = createResultsJList( swing, candidates )
-        showNodesLevelCB = createShowNodesLevelCB( swing )
         removeClonesCB = createRemoveClonesCB( swing )
         regexCB = createRegexSearchCB( swing )
         caseSensitiveCB = createCaseSensitiveSearchCB( swing )
@@ -147,10 +129,7 @@ class Gui {
         noteCB = createNoteCB( swing )
         attributesNameCB = createAttributesNameCB( swing )
         attributesValueCB = createAttributesValueCB( swing )
-        JComponent highlightColorButton = createHighlightColorButton( swing )
-        JComponent separatorColorButton = createSeparatorColorButton( swing )
-        JComponent fontSizeSlider = createResultsFontSizeSlider( swing )
-        JComponent parentsDisplayLengthSlider = createParentsDisplayLengthSlider( swing )
+        JButton toggledisplaySettingsButton = createToggleDisplaySettingsButton( swing )
         JButton helpButton = createHelpButton( swing )
 
         ButtonGroup candidatesGroup = swing.buttonGroup( id: 'classGroup' )
@@ -252,42 +231,24 @@ class Gui {
                         widget( attributesNameCB )
                         widget( attributesValueCB )
                     }
-                    
-                    separator(
-                        orientation:JSeparator.VERTICAL,
-                        constraints: gbc( gridx:x++, gridy:0, fill:GBC.VERTICAL )
-                    )
+                }
 
-                    // How to display the results
-                    panel(
-                        border: emptyBorder( 0, 8, 0, 16 ),
-                        constraints: gbc( gridx:x++, gridy:0, anchor:GBC.FIRST_LINE_START )
-                    ){
-                        boxLayout( axis: BoxLayout.Y_AXIS )
-                        label( "<html><b>How to display the results</b></html>", border: emptyBorder( 4, 0, 4, 0 ), alignmentX: Component.LEFT_ALIGNMENT )
-                        widget( showNodesLevelCB, alignmentX: Component.LEFT_ALIGNMENT )
-                        widget( fontSizeSlider, alignmentX: Component.LEFT_ALIGNMENT )
-                        widget( parentsDisplayLengthSlider, alignmentX: Component.LEFT_ALIGNMENT )
-                        hbox( alignmentX: Component.LEFT_ALIGNMENT ){
-                            widget( highlightColorButton )
-                            hstrut()
-                            widget( separatorColorButton )
-                        }
-                    }
-
-                    // Help
-                    panel(
-                        constraints: gbc( gridx:x++, gridy:0, weightx:1, fill:GBC.BOTH )
-                    ){
-                        boxLayout( axis: BoxLayout.Y_AXIS )
-                        vglue()
-                        widget( helpButton, alignmentX: Component.RIGHT_ALIGNMENT )
-                    }
+                // Display settings and help
+                panel(
+                    border: emptyBorder( 4, 0, 0, 0 ),
+                    constraints: gbc( gridx:0, gridy:y++, fill:GBC.HORIZONTAL, weighty:0 )
+                ){
+                    boxLayout( axis: BoxLayout.X_AXIS )
+                    hglue()
+                    widget( toggledisplaySettingsButton )
+                    hstrut()
+                    widget( helpButton )
                 }
             }
         }
 
         helpWin = createHelpWindow( swing, win )
+        drsGui = new DisplaySettingsGui( this )
     }
 
     void pack(){
@@ -301,6 +262,7 @@ class Gui {
     void dispose(){
         win.dispose()
         helpWin.dispose()
+        drsGui.win.dispose()
     }
     
     Rectangle getBounds(){
@@ -364,16 +326,21 @@ class Gui {
             splitPatternCB.selected    = splitPattern
             transversalCB.selected     = transversal
             detailsCB.selected         = useDetails
-            noteCB.selected           = useNote
+            noteCB.selected            = useNote
             attributesNameCB.selected  = useAttributesName
             attributesValueCB.selected = useAttributesValue
-            splitPatternCB.enabled     = ! transversal && ! fromStart
-            showNodesLevelCB.enabled   = ! transversal
+            
+            splitPatternCB.enabled            = ! transversal && ! fromStart
+            drsGui.showNodesLevelCB.enabled   = ! transversal
         }
         
-        showNodesLevelCB.selected = isShowNodesLevel
+        drsGui.showNodesLevelCB.selected = drs.isShowNodesLevel
     }
     
+    void toggleDisplaySettings(){
+        if( drsGui ) drsGui.win.visible = ! drsGui.win.visible
+    }
+
     void toggleHelp(){
         if( helpWin ) helpWin.visible = ! helpWin.visible
         win.toFront()
@@ -429,28 +396,8 @@ class Gui {
         resultLbl.text = text
     }
     
-    Font getResultsFont(){
-        return resultsFont
-    }
-
-    String getHighlightColor( ){
-        return highlightColor
-    }
-
-    boolean getIsShowNodesLevel(){
-        return isShowNodesLevel
-    }
-    
-    int getParentsDisplayLength(){
-        return parentsDisplayLength
-    }
-    
-    String getSeparatorColor( ){
-        return separatorColor
-    }
-
     private void setLevelDisplay( boolean value ){
-        isShowNodesLevel = value
+        drs.isShowNodesLevel = value
         updateOptions()
         repaintResults()
     }
@@ -477,40 +424,29 @@ class Gui {
         )
     }
     
-    private void initFonts(){
-        Font font = new SwingBuilder().label().getFont()
-        int fontSize = font.getSize()
-        minFontSize = fontSize - 6
-        maxFontSize = fontSize + 12
-        patternMinFontSize = fontSize
-        resultsFont = new Font( font )
-        resultsFontSize = resultsFont.getSize()
-    }
-        
-    private void setFontSize( int size ){
-
-        resultsFontSize = size
-        int patternFontSize = size
-        if( patternFontSize < patternMinFontSize ) patternFontSize = patternMinFontSize
-        
-        if( size == resultsFont.getSize() ) return
-        
-        resultsFont = resultsFont.deriveFont( (float)size )
-
+    private void setCoreFontSize( int size ){
+        drs.setCoreFontSize( size )
         if( win ){
             repaintResults()
-            patternTF.font = resultsFont.deriveFont( (float)patternFontSize )
+            patternTF.font = drs.font.deriveFont( (float)drs.patternFontSize )
             patternTF.invalidate()
             win.validate()
         }
     }
     
+    private void setDetailsFontSize( int size ){
+        drs.setDetailsFontSize( size )
+        if( win ) repaintResults()
+    }
+    
     // A text field to enter the search terms
-    private JTextField createPatternTextField( swing, Font font ){
-        return swing.textField(
-            font: font,
+    private JTextField createPatternTextField( swing, Font baseFont, int fontSize ){
+        JTextField tf = swing.textField(
+            font: baseFont.deriveFont( (float)fontSize ),
             focusable: true
         )
+        tf.border = new CompoundBorder( tf.border, new EmptyBorder( 4, 4, 4, 4 ) )
+        return tf
     }
 
     // A list of the nodes that match the search terms
@@ -520,18 +456,6 @@ class Gui {
             visibleRowCount: 12,
             cellRenderer: new SNodeCellRenderer(),
             focusable: false
-        )
-    }
-
-    private JCheckBox createShowNodesLevelCB( swing ){
-        return swing.checkBox(
-            text: "Show nodes level",
-            selected: isShowNodesLevel,
-            enabled: ! M.searchOptions.transversal,
-            mnemonic: showNodesLevelCBMnemonic,
-            actionPerformed: { e -> setLevelDisplay( e.source.selected ) },
-            focusable: false,
-            toolTipText: "Indent the results accordingly to the nodes level in the map"
         )
     }
 
@@ -663,105 +587,13 @@ class Gui {
         )
     }
 
-    private JComponent createHighlightColorButton( swing ){
-        return swing.hbox{
-            button(
-                text: " ",
-                margin: new Insets(0, 8, 0, 8),
-                background: Color.decode( highlightColor ),
-                focusable: false,
-                toolTipText: "<html>Click to choose the color that highlight the text<br>that match the pattern in the results listing</html>",
-                actionPerformed: {
-                    e ->
-                    Color color = JColorChooser.showDialog( win, "Choose a color", Color.decode( highlightColor ) )
-                    if( color ){
-                        e.source.background = color
-                        highlightColor = encodeColor( color )
-                        repaintResults()
-                    }
-                }
-            )
-            hstrut()
-            label( "Highlight" )
-        }
-    }
-
-    private JComponent createSeparatorColorButton( swing ){
-        return swing.hbox{
-            button(
-                text: " ",
-                margin: new Insets(0, 8, 0, 8),
-                background: Color.decode( separatorColor ),
-                focusable: false,
-                toolTipText: "<html>Click to choose the color of the level marker<br>in the results listing</html>",
-                actionPerformed: {
-                    e ->
-                    Color color = JColorChooser.showDialog( win, "Choose a color", Color.decode( separatorColor ) )
-                    if( color ){
-                        e.source.background = color
-                        separatorColor = encodeColor( color )
-                        repaintResults()
-                    }
-                }
-            )
-            hstrut()
-            label( "Level" )
-        }
-    }
-
-    private JComponent createResultsFontSizeSlider( swing ){
-        JSlider slider = swing.slider(
-            value: resultsFontSize,
-            minimum: minFontSize,
-            maximum: maxFontSize,
+    private JButton createToggleDisplaySettingsButton( swing ){
+        return swing.button(
+            text: "Display options",
             focusable: false,
-            stateChanged: {
-                e ->
-                if( e.source.getValueIsAdjusting() ) return
-                setFontSize( e.source.value )
-            }
+            toolTipText: "Click to toggle the display settings window",
+            actionPerformed: { e -> toggleDisplaySettings() }
         )
-        JComponent component = swing.hbox(
-            border: swing.emptyBorder( 0, 0, 4, 0 )
-        ){
-            label( "Font size" )
-            hstrut()
-            widget( slider )
-        }
-        Dimension size = slider.getPreferredSize()
-        if( size ){
-            size.width = size.width / 2
-            slider.setPreferredSize( size )
-        }
-        return component
-    }
-
-    private JComponent createParentsDisplayLengthSlider( swing ){
-        JSlider slider = swing.slider(
-            value: parentsDisplayLength,
-            minimum: 8,
-            maximum: 30,
-            focusable: false,
-            stateChanged: {
-                e ->
-                if( e.source.getValueIsAdjusting() ) return
-                parentsDisplayLength = e.source.value
-                repaintResults()
-            }
-        )
-        JComponent component = swing.hbox(
-            border: swing.emptyBorder( 0, 0, 4, 0 )
-        ){
-            label( "Parents size" )
-            hstrut()
-            widget( slider )
-        }
-        Dimension size = slider.getPreferredSize()
-        if( size ){
-            size.width = size.width / 2
-            slider.setPreferredSize( size )
-        }
-        return component
     }
 
     private JButton createHelpButton( swing ){
@@ -871,8 +703,8 @@ class Gui {
                                 M.selectNextPattern()
                                 break
                             case showNodesLevelCBMnemonic:
-                                if( showNodesLevelCB.enabled )
-                                    setLevelDisplay( ! isShowNodesLevel )
+                                if( drsGui.showNodesLevelCB.enabled )
+                                    setLevelDisplay( ! drs.isShowNodesLevel )
                                 break
                             case removeClonesCBMnemonic:
                                 if( removeClonesCB.enabled )
@@ -1012,10 +844,6 @@ class Gui {
         Dimension prefferedSize = component.getPreferredSize()
         prefferedSize.width = emptySize.width
         component.setPreferredSize( prefferedSize )
-    }
-
-    private String encodeColor( Color color ){
-        return String.format( "#%06x", Integer.valueOf( color.getRGB() & 0x00FFFFFF ) )
     }
 
     private void repaintResults(){

@@ -1,11 +1,13 @@
 package lilive.jumper
 
-import groovy.json.JsonBuilder
+import groovy.json.JsonOutput
+import groovy.json.JsonGenerator
 import groovy.json.JsonSlurper
 import java.awt.Rectangle
 import org.freeplane.api.Node
 import org.freeplane.core.util.LogUtils
 import org.freeplane.plugin.script.proxy.Proxy
+import java.awt.Color
 
 class Main {
     
@@ -37,7 +39,7 @@ class Main {
      * Init the global variables.
      * Try to load them from a previous file settings.
      */
-    static GuiSettings init( node, c ){
+    static LoadedSettings init( node, c ){
 
         clear()
         
@@ -73,40 +75,52 @@ class Main {
         File file = getSettingsFile()
         
         Rectangle guiBounds = gui.getBounds()
+        DisplayResultsSettings drs = gui.drs
         
-        JsonBuilder builder = new JsonBuilder()
-        builder{
-            candidatesType     candidatesType
-            isRemoveClones     isRemoveClones
-            history            history
-            searchOptions      searchOptions
-            gui{
-                isShowNodesLevel     gui.isShowNodesLevel
-                highlightColor       gui.highlightColor
-                separatorColor       gui.separatorColor
-                resultsFontSize      gui.resultsFontSize
-                parentsDisplayLength gui.parentsDisplayLength
-                rect{
-                    x      guiBounds.x
-                    y      guiBounds.y
-                    width  guiBounds.width
-                    height guiBounds.height
-                }
+        Map datas = [
+            candidatesType: candidatesType,
+            isRemoveClones: isRemoveClones,
+            history:        history,
+            searchOptions:  searchOptions,
+            gui: [
+                drs:        gui.drs,
+                rect: [
+                    x:      guiBounds.x,
+                    y:      guiBounds.y,
+                    width:  guiBounds.width,
+                    height: guiBounds.height
+                ]
+            ]
+        ]
+
+        try{ 
+            JsonGenerator.Options options = new JsonGenerator.Options()
+            options.addConverter( DisplayResultsSettings ){
+                DisplayResultsSettings settings, String key ->
+                settings.toMap()
             }
+            options.addConverter( Color ){
+                Color color, String key ->
+                String.format( "#%06x", Integer.valueOf( color.getRGB() & 0x00FFFFFF ) )
+            }
+            JsonGenerator generator = options.build()
+            String json = generator.toJson( datas )
+            file.write( JsonOutput.prettyPrint( json ) )
+        } catch( Exception e){
+            LogUtils.warn( "Jumper: unable to save the settings : $e")
         }
-        file.write( builder.toPrettyString() )
     }
     
-    static GuiSettings loadSettings(){
+    static LoadedSettings loadSettings(){
 
         if( gui ) throw new Exception( "Load settings before gui creation" )
         
-        GuiSettings guiSet = new GuiSettings()
+        LoadedSettings settings = new LoadedSettings()
         
         File file = getSettingsFile()
-        if( ! file.exists() ) return guiSet
+        if( ! file.exists() ) return settings
 
-        guiSet.winBounds = new Rectangle()
+        settings.winBounds = new Rectangle()
         try{
             Map s = new JsonSlurper().parseText( file.text )
             candidatesType = s.candidatesType ?: candidatesType
@@ -114,24 +128,20 @@ class Main {
             if( s.searchOptions  != null ) searchOptions  = new SearchOptions( s.searchOptions )
             history = s.history ?: history
             if( s.gui ) s.gui.with{
-                guiSet.isShowNodesLevel     = isShowNodesLevel
-                guiSet.highlightColor       = highlightColor
-                guiSet.separatorColor       = separatorColor
-                guiSet.resultsFontSize      = resultsFontSize
-                guiSet.parentsDisplayLength = parentsDisplayLength
-                guiSet.winBounds.x      = rect?.x      ?: 0
-                guiSet.winBounds.y      = rect?.y      ?: 0
-                guiSet.winBounds.width  = rect?.width  ?: 0
-                guiSet.winBounds.height = rect?.height ?: 0
+                if( drs ) settings.drs = DisplayResultsSettings.fromMap( drs )
+                settings.winBounds.x      = rect?.x      ?: 0
+                settings.winBounds.y      = rect?.y      ?: 0
+                settings.winBounds.width  = rect?.width  ?: 0
+                settings.winBounds.height = rect?.height ?: 0
             }
         } catch( Exception e){
             LogUtils.warn( "Jumper: unable to load the settings : $e")
         }
 
         historyIdx = history.size()
-        if( guiSet.winBounds.width <= 0 ) guiSet.winBounds = null
+        if( settings.winBounds.width <= 0 ) settings.winBounds = null
 
-        return guiSet
+        return settings
     }
 
     static void initCandidates(){
