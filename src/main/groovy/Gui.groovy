@@ -674,9 +674,11 @@ class Gui {
                 actionPerformed: {
                     e ->
                     Color color = JColorChooser.showDialog( win, "Choose a color", Color.decode( highlightColor ) )
-                    e.source.background = color
-                    highlightColor = encodeColor( color )
-                    repaintResults()
+                    if( color ){
+                        e.source.background = color
+                        highlightColor = encodeColor( color )
+                        repaintResults()
+                    }
                 }
             )
             hstrut()
@@ -695,9 +697,11 @@ class Gui {
                 actionPerformed: {
                     e ->
                     Color color = JColorChooser.showDialog( win, "Choose a color", Color.decode( separatorColor ) )
-                    e.source.background = color
-                    separatorColor = encodeColor( color )
-                    repaintResults()
+                    if( color ){
+                        e.source.background = color
+                        separatorColor = encodeColor( color )
+                        repaintResults()
+                    }
                 }
             )
             hstrut()
