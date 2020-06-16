@@ -10,24 +10,26 @@ import groovy.swing.SwingBuilder
 class DisplayResultsSettings {
     
     boolean isShowNodesLevel= false
-    String highlightColor = "#FFFFAA"
-    String separatorColor = "#888888"
-    Color coreForegroundColor
-    Color coreBackgroundColor
-    Color detailsForegroundColor
-    Color detailsBackgroundColor
-    Color selectedCoreForegroundColor
-    Color selectedCoreBackgroundColor
-    Color selectedDetailsForegroundColor
-    Color selectedDetailsBackgroundColor
-    int fontSize
+    String highlightColor = "#ffffcc"
+    String separatorColor = "#0003ff"
+    Color coreForegroundColor = Color.decode( "#000000" )
+    Color coreBackgroundColor = Color.decode( "#f4f4f4" )
+    Color detailsForegroundColor = Color.decode( "#666666" )
+    Color detailsBackgroundColor = Color.decode( "#e5e5e5" )
+    Color selectedCoreForegroundColor = Color.decode( "#000000" )
+    Color selectedCoreBackgroundColor = Color.decode( "#babbff" )
+    Color selectedDetailsForegroundColor = Color.decode( "#333333" )
+    Color selectedDetailsBackgroundColor = Color.decode( "#d4d4ff" )
+    int coreFontSize
+    int detailsFontSize
     private boolean fontsInitialized = false
     private int baseFontSize
     private int minFontSize
     private int maxFontSize
-    private int patternFontSize
+    int patternFontSize
     private int patternMinFontSize
-    private Font font
+    Font coreFont
+    Font detailsFont
     int parentsDisplayLength = 15
     int namesDisplayLength = 15
     int valuesDisplayLength = 15
@@ -36,54 +38,71 @@ class DisplayResultsSettings {
 
         if( fontsInitialized ) return
         
-        font = new SwingBuilder().label().getFont()
-        fontSize = font.getSize()
-        baseFontSize = fontSize
-        minFontSize = fontSize - 6
-        maxFontSize = fontSize + 12
-        patternFontSize = fontSize
-        patternMinFontSize = fontSize
+        coreFont           = new SwingBuilder().label().getFont()
+        coreFontSize       = coreFont.getSize()
+        detailsFontSize    = coreFontSize - 2
+        baseFontSize       = coreFontSize
+        minFontSize        = coreFontSize - 6
+        maxFontSize        = coreFontSize + 12
+        patternFontSize    = coreFontSize
+        patternMinFontSize = coreFontSize
+        detailsFont = coreFont.deriveFont( (float)detailsFontSize )
 
         fontsInitialized = true
     }
 
-    int setFontSize( int size ){
+    int setCoreFontSize( int size ){
 
         if( ! fontsInitialized ) initFonts()
 
         if( size < minFontSize ) size = minFontSize
         if( size > maxFontSize ) size = maxFontSize
-        fontSize = size
-        int patternFontSize = size
+        coreFontSize = size
+        patternFontSize = size
         if( patternFontSize < patternMinFontSize )
             patternFontSize = patternMinFontSize
         
-        if( size == font.getSize() ) return size
+        if( size == coreFont.getSize() ) return size
         
-        font = font.deriveFont( (float)size )
+        coreFont = coreFont.deriveFont( (float)size )
+        return size
+    }
+
+    int setDetailsFontSize( int size ){
+
+        if( ! fontsInitialized ) initFonts()
+
+        if( size < minFontSize ) size = minFontSize
+        if( size > maxFontSize ) size = maxFontSize
+        detailsFontSize = size
+        
+        if( size == detailsFont.getSize() ) return size
+        
+        detailsFont = detailsFont.deriveFont( (float)size )
         return size
     }
 
     Map toMap(){
         
         Map result = [
-            "isShowNodesLevel"     : isShowNodesLevel,
-            "highlightColor"       : highlightColor,
-            "separatorColor"       : separatorColor,
-            "fontSize"             : fontSize,
-            "parentsDisplayLength" : parentsDisplayLength,
-            "namesDisplayLength"   : namesDisplayLength,
-            "valuesDisplayLength"  : valuesDisplayLength
+            "isShowNodesLevel"               : isShowNodesLevel,
+            "coreFontSize"                   : coreFontSize,
+            "detailsFontSize"                : detailsFontSize,
+            "parentsDisplayLength"           : parentsDisplayLength,
+            "namesDisplayLength"             : namesDisplayLength,
+            "valuesDisplayLength"            : valuesDisplayLength,
+            "highlightColor"                 : highlightColor,
+            "separatorColor"                 : separatorColor,
+            "coreForegroundColor"            : coreForegroundColor,
+            "coreBackgroundColor"            : coreBackgroundColor,
+            "detailsForegroundColor"         : detailsForegroundColor,
+            "detailsBackgroundColor"         : detailsBackgroundColor,
+            "selectedCoreForegroundColor"    : selectedCoreForegroundColor,
+            "selectedCoreBackgroundColor"    : selectedCoreBackgroundColor,
+            "selectedDetailsForegroundColor" : selectedDetailsForegroundColor,
+            "selectedDetailsBackgroundColor" : selectedDetailsBackgroundColor
         ]
 
-        if( coreForegroundColor            != null ) result[ "coreForegroundColor"            ] = coreForegroundColor
-        if( coreBackgroundColor            != null ) result[ "coreBackgroundColor"            ] = coreBackgroundColor
-        if( detailsForegroundColor         != null ) result[ "detailsForegroundColor"         ] = detailsForegroundColor
-        if( detailsBackgroundColor         != null ) result[ "detailsBackgroundColor"         ] = detailsBackgroundColor
-        if( selectedCoreForegroundColor    != null ) result[ "selectedCoreForegroundColor"    ] = selectedCoreForegroundColor
-        if( selectedCoreBackgroundColor    != null ) result[ "selectedCoreBackgroundColor"    ] = selectedCoreBackgroundColor
-        if( selectedDetailsForegroundColor != null ) result[ "selectedDetailsForegroundColor" ] = selectedDetailsForegroundColor
-        if( selectedDetailsBackgroundColor != null ) result[ "selectedDetailsBackgroundColor" ] = selectedDetailsBackgroundColor
 
         return result
     }

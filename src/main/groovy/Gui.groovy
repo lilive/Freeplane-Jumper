@@ -43,6 +43,8 @@ import javax.swing.UIManager
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 import lilive.jumper.Main as M
+import javax.swing.border.EmptyBorder
+import javax.swing.border.CompoundBorder
 
 
 class Gui {
@@ -115,7 +117,7 @@ class Gui {
         
         SwingBuilder swing = new SwingBuilder()
 
-        patternTF = createPatternTextField( swing, drs.font, drs.patternFontSize )
+        patternTF = createPatternTextField( swing, drs.coreFont, drs.patternFontSize )
         resultsJList = createResultsJList( swing, candidates )
         removeClonesCB = createRemoveClonesCB( swing )
         regexCB = createRegexSearchCB( swing )
@@ -218,7 +220,7 @@ class Gui {
 
                     // Where to search in nodes
                     panel(
-                        border: emptyBorder( 0, 8, 0, 16 ),
+                        border: emptyBorder( 0, 8, 0, 32 ),
                         constraints: gbc( gridx:x++, gridy:0, anchor:GBC.FIRST_LINE_START, weightx:0 )
                     ){
                         boxLayout( axis: BoxLayout.Y_AXIS )
@@ -422,8 +424,8 @@ class Gui {
         )
     }
     
-    private void setFontSize( int size ){
-        drs.setFontSize( size )
+    private void setCoreFontSize( int size ){
+        drs.setCoreFontSize( size )
         if( win ){
             repaintResults()
             patternTF.font = drs.font.deriveFont( (float)drs.patternFontSize )
@@ -432,12 +434,19 @@ class Gui {
         }
     }
     
+    private void setDetailsFontSize( int size ){
+        drs.setDetailsFontSize( size )
+        if( win ) repaintResults()
+    }
+    
     // A text field to enter the search terms
     private JTextField createPatternTextField( swing, Font baseFont, int fontSize ){
-        return swing.textField(
+        JTextField tf = swing.textField(
             font: baseFont.deriveFont( (float)fontSize ),
             focusable: true
         )
+        tf.border = new CompoundBorder( tf.border, new EmptyBorder( 4, 4, 4, 4 ) )
+        return tf
     }
 
     // A list of the nodes that match the search terms
