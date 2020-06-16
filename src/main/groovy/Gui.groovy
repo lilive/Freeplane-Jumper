@@ -47,7 +47,7 @@ import lilive.jumper.Main as M
 
 class Gui {
 
-    private JDialog win
+    JDialog win
     private JDialog helpWin
 
     // Search pattern
@@ -58,7 +58,8 @@ class Gui {
     private JList resultsJList
     private JLabel resultLbl
     DisplayResultsSettings drs = new DisplayResultsSettings()
-
+    private DisplaySettingsGui drsGui
+    int showNodesLevelCBMnemonic = KeyEvent.VK_L
 
     // Which nodes to search options controls
     private ArrayList<CandidatesOption> candidatesOptions
@@ -95,9 +96,6 @@ class Gui {
     int historyPreviousKey = KeyEvent.VK_UP
     int historyNextKey = KeyEvent.VK_DOWN
 
-    private JCheckBox showNodesLevelCB
-    private int showNodesLevelCBMnemonic = KeyEvent.VK_L
-
     Gui( ui, Candidates candidates, LoadedSettings settings ){
 
         initCandidatesOptions()
@@ -119,7 +117,6 @@ class Gui {
 
         patternTF = createPatternTextField( swing, drs.font, drs.patternFontSize )
         resultsJList = createResultsJList( swing, candidates )
-        showNodesLevelCB = createShowNodesLevelCB( swing )
         removeClonesCB = createRemoveClonesCB( swing )
         regexCB = createRegexSearchCB( swing )
         caseSensitiveCB = createCaseSensitiveSearchCB( swing )
@@ -130,10 +127,7 @@ class Gui {
         noteCB = createNoteCB( swing )
         attributesNameCB = createAttributesNameCB( swing )
         attributesValueCB = createAttributesValueCB( swing )
-        JComponent highlightColorButton = createHighlightColorButton( swing )
-        JComponent separatorColorButton = createSeparatorColorButton( swing )
-        JComponent fontSizeSlider = createResultsFontSizeSlider( swing )
-        JComponent parentsDisplayLengthSlider = createParentsDisplayLengthSlider( swing )
+        JButton toggledisplaySettingsButton = createToggleDisplaySettingsButton( swing )
         JButton helpButton = createHelpButton( swing )
 
         ButtonGroup candidatesGroup = swing.buttonGroup( id: 'classGroup' )
@@ -224,7 +218,7 @@ class Gui {
 
                     // Where to search in nodes
                     panel(
-                        border: emptyBorder( 0, 8, 0, 32 ),
+                        border: emptyBorder( 0, 8, 0, 16 ),
                         constraints: gbc( gridx:x++, gridy:0, anchor:GBC.FIRST_LINE_START, weightx:0 )
                     ){
                         boxLayout( axis: BoxLayout.Y_AXIS )
@@ -235,42 +229,24 @@ class Gui {
                         widget( attributesNameCB )
                         widget( attributesValueCB )
                     }
-                    
-                    separator(
-                        orientation:JSeparator.VERTICAL,
-                        constraints: gbc( gridx:x++, gridy:0, fill:GBC.VERTICAL )
-                    )
+                }
 
-                    // How to display the results
-                    panel(
-                        border: emptyBorder( 0, 8, 0, 16 ),
-                        constraints: gbc( gridx:x++, gridy:0, anchor:GBC.FIRST_LINE_START )
-                    ){
-                        boxLayout( axis: BoxLayout.Y_AXIS )
-                        label( "<html><b>How to display the results</b></html>", border: emptyBorder( 4, 0, 4, 0 ), alignmentX: Component.LEFT_ALIGNMENT )
-                        widget( showNodesLevelCB, alignmentX: Component.LEFT_ALIGNMENT )
-                        widget( fontSizeSlider, alignmentX: Component.LEFT_ALIGNMENT )
-                        widget( parentsDisplayLengthSlider, alignmentX: Component.LEFT_ALIGNMENT )
-                        hbox( alignmentX: Component.LEFT_ALIGNMENT ){
-                            widget( highlightColorButton )
-                            hstrut()
-                            widget( separatorColorButton )
-                        }
-                    }
-
-                    // Help
-                    panel(
-                        constraints: gbc( gridx:x++, gridy:0, weightx:1, fill:GBC.BOTH )
-                    ){
-                        boxLayout( axis: BoxLayout.Y_AXIS )
-                        vglue()
-                        widget( helpButton, alignmentX: Component.RIGHT_ALIGNMENT )
-                    }
+                // Display settings and help
+                panel(
+                    border: emptyBorder( 4, 0, 0, 0 ),
+                    constraints: gbc( gridx:0, gridy:y++, fill:GBC.HORIZONTAL, weighty:0 )
+                ){
+                    boxLayout( axis: BoxLayout.X_AXIS )
+                    hglue()
+                    widget( toggledisplaySettingsButton )
+                    hstrut()
+                    widget( helpButton )
                 }
             }
         }
 
         helpWin = createHelpWindow( swing, win )
+        drsGui = new DisplaySettingsGui( this )
     }
 
     void pack(){
@@ -284,6 +260,7 @@ class Gui {
     void dispose(){
         win.dispose()
         helpWin.dispose()
+        drsGui.win.dispose()
     }
     
     Rectangle getBounds(){
@@ -347,16 +324,21 @@ class Gui {
             splitPatternCB.selected    = splitPattern
             transversalCB.selected     = transversal
             detailsCB.selected         = useDetails
-            noteCB.selected           = useNote
+            noteCB.selected            = useNote
             attributesNameCB.selected  = useAttributesName
             attributesValueCB.selected = useAttributesValue
-            splitPatternCB.enabled     = ! transversal && ! fromStart
-            showNodesLevelCB.enabled   = ! transversal
+            
+            splitPatternCB.enabled            = ! transversal && ! fromStart
+            drsGui.showNodesLevelCB.enabled   = ! transversal
         }
         
-        showNodesLevelCB.selected = drs.isShowNodesLevel
+        drsGui.showNodesLevelCB.selected = drs.isShowNodesLevel
     }
     
+    void toggleDisplaySettings(){
+        if( drsGui ) drsGui.win.visible = ! drsGui.win.visible
+    }
+
     void toggleHelp(){
         if( helpWin ) helpWin.visible = ! helpWin.visible
         win.toFront()
@@ -444,7 +426,7 @@ class Gui {
         drs.setFontSize( size )
         if( win ){
             repaintResults()
-            patternTF.font = drs.font.deriveFont( (float)patternFontSize )
+            patternTF.font = drs.font.deriveFont( (float)drs.patternFontSize )
             patternTF.invalidate()
             win.validate()
         }
@@ -465,18 +447,6 @@ class Gui {
             visibleRowCount: 12,
             cellRenderer: new SNodeCellRenderer(),
             focusable: false
-        )
-    }
-
-    private JCheckBox createShowNodesLevelCB( swing ){
-        return swing.checkBox(
-            text: "Show nodes level",
-            selected: drs.isShowNodesLevel,
-            enabled: ! M.searchOptions.transversal,
-            mnemonic: showNodesLevelCBMnemonic,
-            actionPerformed: { e -> setLevelDisplay( e.source.selected ) },
-            focusable: false,
-            toolTipText: "Indent the results accordingly to the nodes level in the map"
         )
     }
 
@@ -608,105 +578,13 @@ class Gui {
         )
     }
 
-    private JComponent createHighlightColorButton( swing ){
-        return swing.hbox{
-            button(
-                text: " ",
-                margin: new Insets(0, 8, 0, 8),
-                background: Color.decode( drs.highlightColor ),
-                focusable: false,
-                toolTipText: "<html>Click to choose the color that highlight the text<br>that match the pattern in the results listing</html>",
-                actionPerformed: {
-                    e ->
-                    Color color = JColorChooser.showDialog( win, "Choose a color", Color.decode( drs.highlightColor ) )
-                    if( color ){
-                        e.source.background = color
-                        drs.highlightColor = encodeColor( color )
-                        repaintResults()
-                    }
-                }
-            )
-            hstrut()
-            label( "Highlight" )
-        }
-    }
-
-    private JComponent createSeparatorColorButton( swing ){
-        return swing.hbox{
-            button(
-                text: " ",
-                margin: new Insets(0, 8, 0, 8),
-                background: Color.decode( drs.separatorColor ),
-                focusable: false,
-                toolTipText: "<html>Click to choose the color of the level marker<br>in the results listing</html>",
-                actionPerformed: {
-                    e ->
-                    Color color = JColorChooser.showDialog( win, "Choose a color", Color.decode( drs.separatorColor ) )
-                    if( color ){
-                        e.source.background = color
-                        drs.separatorColor = encodeColor( color )
-                        repaintResults()
-                    }
-                }
-            )
-            hstrut()
-            label( "Level" )
-        }
-    }
-
-    private JComponent createResultsFontSizeSlider( swing ){
-        JSlider slider = swing.slider(
-            value: drs.font.size,
-            minimum: drs.minFontSize,
-            maximum: drs.maxFontSize,
+    private JButton createToggleDisplaySettingsButton( swing ){
+        return swing.button(
+            text: "Display options",
             focusable: false,
-            stateChanged: {
-                e ->
-                if( e.source.getValueIsAdjusting() ) return
-                setFontSize( e.source.value )
-            }
+            toolTipText: "Click to toggle the display settings window",
+            actionPerformed: { e -> toggleDisplaySettings() }
         )
-        JComponent component = swing.hbox(
-            border: swing.emptyBorder( 0, 0, 4, 0 )
-        ){
-            label( "Font size" )
-            hstrut()
-            widget( slider )
-        }
-        Dimension size = slider.getPreferredSize()
-        if( size ){
-            size.width = size.width / 2
-            slider.setPreferredSize( size )
-        }
-        return component
-    }
-
-    private JComponent createParentsDisplayLengthSlider( swing ){
-        JSlider slider = swing.slider(
-            value: drs.parentsDisplayLength,
-            minimum: 8,
-            maximum: 30,
-            focusable: false,
-            stateChanged: {
-                e ->
-                if( e.source.getValueIsAdjusting() ) return
-                drs.parentsDisplayLength = e.source.value
-                repaintResults()
-            }
-        )
-        JComponent component = swing.hbox(
-            border: swing.emptyBorder( 0, 0, 4, 0 )
-        ){
-            label( "Parents size" )
-            hstrut()
-            widget( slider )
-        }
-        Dimension size = slider.getPreferredSize()
-        if( size ){
-            size.width = size.width / 2
-            slider.setPreferredSize( size )
-        }
-        return component
     }
 
     private JButton createHelpButton( swing ){
@@ -816,7 +694,7 @@ class Gui {
                                 M.selectNextPattern()
                                 break
                             case showNodesLevelCBMnemonic:
-                                if( showNodesLevelCB.enabled )
+                                if( drsGui.showNodesLevelCB.enabled )
                                     setLevelDisplay( ! drs.isShowNodesLevel )
                                 break
                             case removeClonesCBMnemonic:
@@ -957,10 +835,6 @@ class Gui {
         Dimension prefferedSize = component.getPreferredSize()
         prefferedSize.width = emptySize.width
         component.setPreferredSize( prefferedSize )
-    }
-
-    private String encodeColor( Color color ){
-        return String.format( "#%06x", Integer.valueOf( color.getRGB() & 0x00FFFFFF ) )
     }
 
     private void repaintResults(){

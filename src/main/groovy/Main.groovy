@@ -92,14 +92,18 @@ class Main {
             ]
         ]
 
-        JsonGenerator.Options options = new JsonGenerator.Options()
-        options.addConverter( DisplayResultsSettings ){
-            DisplayResultsSettings settings, String key ->
-            settings.toJson()
+        try{ 
+            JsonGenerator.Options options = new JsonGenerator.Options()
+            options.addConverter( DisplayResultsSettings ){
+                DisplayResultsSettings settings, String key ->
+                settings.toMap()
+            }
+            JsonGenerator generator = options.build()
+            String json = generator.toJson( datas )
+            file.write( JsonOutput.prettyPrint( json ) )
+        } catch( Exception e){
+            LogUtils.warn( "Jumper: unable to save the settings : $e")
         }
-        JsonGenerator generator = options.build()
-        String json = generator.toJson( datas )
-        file.write( JsonOutput.prettyPrint( json ) )
     }
     
     static LoadedSettings loadSettings(){
@@ -119,7 +123,7 @@ class Main {
             if( s.searchOptions  != null ) searchOptions  = new SearchOptions( s.searchOptions )
             history = s.history ?: history
             if( s.gui ) s.gui.with{
-                if( drs ) settings.drs = DisplayResultsSettings.fromJson( drs )
+                if( drs ) settings.drs = DisplayResultsSettings.fromMap( drs )
                 settings.winBounds.x      = rect?.x      ?: 0
                 settings.winBounds.y      = rect?.y      ?: 0
                 settings.winBounds.width  = rect?.width  ?: 0

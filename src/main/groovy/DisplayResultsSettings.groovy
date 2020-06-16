@@ -21,6 +21,7 @@ class DisplayResultsSettings {
     Color selectedDetailsForegroundColor
     Color selectedDetailsBackgroundColor
     int fontSize
+    private boolean fontsInitialized = false
     private int baseFontSize
     private int minFontSize
     private int maxFontSize
@@ -33,6 +34,8 @@ class DisplayResultsSettings {
 
     void initFonts(){
 
+        if( fontsInitialized ) return
+        
         font = new SwingBuilder().label().getFont()
         fontSize = font.getSize()
         baseFontSize = fontSize
@@ -40,9 +43,13 @@ class DisplayResultsSettings {
         maxFontSize = fontSize + 12
         patternFontSize = fontSize
         patternMinFontSize = fontSize
+
+        fontsInitialized = true
     }
 
     int setFontSize( int size ){
+
+        if( ! fontsInitialized ) initFonts()
 
         if( size < minFontSize ) size = minFontSize
         if( size > maxFontSize ) size = maxFontSize
@@ -54,32 +61,38 @@ class DisplayResultsSettings {
         if( size == font.getSize() ) return size
         
         font = font.deriveFont( (float)size )
-
-        if( win ){
-            repaintResults()
-            patternTF.font = font.deriveFont( (float)patternFontSize )
-            patternTF.invalidate()
-            win.validate()
-        }
+        return size
     }
 
-    String toJson(){
-        JsonGenerator.Options options = new JsonGenerator.Options()
-        options.addConverter(Color){
-            Color color, String key ->
-            String.format( "#%06x", Integer.valueOf( color.getRGB() & 0x00FFFFFF ) )
-        }
-        JsonGenerator generator = options.build()
-        return generator.toJson( this )
+    Map toMap(){
+        
+        Map result = [
+            "isShowNodesLevel"     : isShowNodesLevel,
+            "highlightColor"       : highlightColor,
+            "separatorColor"       : separatorColor,
+            "fontSize"             : fontSize,
+            "parentsDisplayLength" : parentsDisplayLength,
+            "namesDisplayLength"   : namesDisplayLength,
+            "valuesDisplayLength"  : valuesDisplayLength
+        ]
+
+        if( coreForegroundColor            != null ) result[ "coreForegroundColor"            ] = coreForegroundColor
+        if( coreBackgroundColor            != null ) result[ "coreBackgroundColor"            ] = coreBackgroundColor
+        if( detailsForegroundColor         != null ) result[ "detailsForegroundColor"         ] = detailsForegroundColor
+        if( detailsBackgroundColor         != null ) result[ "detailsBackgroundColor"         ] = detailsBackgroundColor
+        if( selectedCoreForegroundColor    != null ) result[ "selectedCoreForegroundColor"    ] = selectedCoreForegroundColor
+        if( selectedCoreBackgroundColor    != null ) result[ "selectedCoreBackgroundColor"    ] = selectedCoreBackgroundColor
+        if( selectedDetailsForegroundColor != null ) result[ "selectedDetailsForegroundColor" ] = selectedDetailsForegroundColor
+        if( selectedDetailsBackgroundColor != null ) result[ "selectedDetailsBackgroundColor" ] = selectedDetailsBackgroundColor
+
+        return result
     }
 
-    static DisplayResultsSettings fromJson( String json ){
-        List<String> fields = getDeclaredFields().collect{  it.name }
-        Object datas = new JsonSlurper().parseText( json )
-        datas = datas.findAll{ k, v -> k in fields }
-        Map initializer = datas.collectEntries {
-            k, v ->
-            [(k): getDeclaredField( k ).type == Color ? Color.decode( v ) : v ]
+    static DisplayResultsSettings fromMap( Map map ){
+        List<String> fields = getDeclaredFields().findAll{ !it.synthetic }.collect{  it.name }
+        map = map.findAll{ it.key in fields }
+        Map initializer = map.collectEntries{
+            [ it.key, getDeclaredField( it.key ).type == Color ? Color.decode( it.value ) : it.value ]
         }
         return new DisplayResultsSettings( initializer )
     }
