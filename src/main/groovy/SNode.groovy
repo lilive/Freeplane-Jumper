@@ -172,8 +172,6 @@ class SNode {
         )
         fullMatch.matches = coreMatch.matches.clone()
         fullMatch.coreMatchers = coreMatch.matchers
-        print "fullSearch node:${text}"
-        print coreMatch.matches
         
         // Search all patterns
         regexps.each{ regex ->
@@ -224,7 +222,6 @@ class SNode {
                 }
             }
 
-            print "node:${text} regex:${regex.pattern()} isMatch:${isMatch} contains:${coreMatch.matches.contains( regex )}"
             if( ! isMatch && ! coreMatch.matches.contains( regex ) ) fullMatch.rejected << regex
         }
         
@@ -390,23 +387,13 @@ class SNode {
     }
 
     private void updateCoreDisplayText(){
-        print "updateCoreDisplayText"
         if( textHighlight ){
-            print "highlight"
-            print "text:${text}"
             coreDisplay = getHighlightedText( text, textHighlight, maxDisplayLength, true )
-            print "coreDisplay:${coreDisplay}"
             coreDisplay = "<html>${getAncestorsDisplayText()}$coreDisplay</html>"
-            print "coreDisplay:${coreDisplay}"
             shortCoreDisplay = getHighlightedText( text, textHighlight, M.gui.parentsDisplayLength, false )
-            print "shortCoreDisplay:${shortCoreDisplay}"
         } else {
-            print "not highlight"
-            print "text:${text}"
             coreDisplay = getTruncatedText( text, maxDisplayLength )
-            print "coreDisplay:${coreDisplay}"
             coreDisplay = "<html>$coreDisplay</html>"
-            print "coreDisplay:${coreDisplay}"
             shortCoreDisplay = getTruncatedText( text, M.gui.getParentsDisplayLength() )
         }
     }
@@ -512,7 +499,6 @@ class SNode {
      * and truncated at maxLength with an ellipsis at the end if necessary.
      */
     private String getTruncatedText( String text, int maxLength ){
-        print "text:${text} len:${maxLength}"
         if( ! text ) return ""
         String t = text
         if( t.length() > maxLength ) t = t.substring( 0, maxLength - 1 ) + "\u2026"
