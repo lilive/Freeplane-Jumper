@@ -36,7 +36,7 @@ class SNodeCellRenderer extends Box implements ListCellRenderer<SNode> {
         JList<SNode> list, SNode sNode,
         int index, boolean isSelected, boolean cellHasFocus
     ){
-        Font font = Main.gui.displayResultsSettings.resultsFont
+        Font font = Main.gui.drs.font
         
         coreTextLabel.setText( sNode.coreDisplay );
         coreTextLabel.setFont( font )

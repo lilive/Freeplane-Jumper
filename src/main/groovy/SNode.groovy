@@ -390,11 +390,11 @@ class SNode {
         if( textHighlight ){
             coreDisplay = getHighlightedText( text, textHighlight, maxDisplayLength, true )
             coreDisplay = "<html>${getAncestorsDisplayText()}$coreDisplay</html>"
-            shortCoreDisplay = getHighlightedText( text, textHighlight, M.gui.parentsDisplayLength, false )
+            shortCoreDisplay = getHighlightedText( text, textHighlight, M.gui.drs.parentsDisplayLength, false )
         } else {
             coreDisplay = getTruncatedText( text, maxDisplayLength )
             coreDisplay = "<html>$coreDisplay</html>"
-            shortCoreDisplay = getTruncatedText( text, M.gui.getParentsDisplayLength() )
+            shortCoreDisplay = getTruncatedText( text, M.gui.drs.parentsDisplayLength )
         }
     }
 
@@ -423,18 +423,18 @@ class SNode {
             for( int i = 0; i < names.size(); i++ ){
                 if( namesHighlights?[i] || valuesHighlights?[i] ) cnt += 1f
             }
-            int valueMaxLen = maxDisplayLength / cnt - cnt * ( M.gui.namesDisplayLength + 3 ) - 12
-            if( valueMaxLen < M.gui.namesDisplayLength ) valueMaxLen = M.gui.namesDisplayLength
+            int valueMaxLen = maxDisplayLength / cnt - cnt * ( M.gui.drs.namesDisplayLength + 3 ) - 12
+            if( valueMaxLen > M.gui.drs.valuesDisplayLength ) valueMaxLen = M.gui.drs.valuesDisplayLength
             for( int i = 0; i < names.size(); i++ ){
                 Highlight nameHL = namesHighlights?[i]
                 Highlight valueHL = valuesHighlights?[i]
                 String n
                 String v
                 if( nameHL || valueHL ){ 
-                    if( nameHL ) n = getHighlightedText( names[i], nameHL, M.gui.namesDisplayLength, false )
-                    else n = getTruncatedText( names[i], M.gui.namesDisplayLength )
+                    if( nameHL ) n = getHighlightedText( names[i], nameHL, M.gui.drs.namesDisplayLength, false )
+                    else n = getTruncatedText( names[i], M.gui.drs.namesDisplayLength )
                     if( valueHL ) v = getHighlightedText( values[i], valueHL, valueMaxLen, true )
-                    else v = getTruncatedText( values[i], M.gui.valuesDisplayLength )
+                    else v = getTruncatedText( values[i], valueMaxLen )
                     if( attributesDisplay ) attributesDisplay += " \u25cf "
                     attributesDisplay = "${attributesDisplay}${n} : ${v}"
                 }
@@ -473,7 +473,7 @@ class SNode {
         // Get the highlighted text to display
         Interval displayed = new Interval( start, end )
         int i = start
-        String style = "style='background-color:${M.gui.highlightColor};'"
+        String style = "style='background-color:${M.gui.drs.highlightColor};'"
         String result = ""
         hl.getParts().each{
             Interval itv = it.getIntersection( displayed )
@@ -509,7 +509,7 @@ class SNode {
         
         if(
             ! parent
-            || !( M.searchOptions.transversal || M.gui.isShowNodesLevel )
+            || !( M.searchOptions.transversal || M.gui.drs.isShowNodesLevel )
         )
             return ""
         
@@ -525,12 +525,12 @@ class SNode {
             } else {
                 if( n.displayTextInvalidated ) n.updateDisplayText()
                 if( ! opened ) s = "</b></font> " + s
-                s = "${n.getShortDisplayText()} <font style='color:${M.gui.separatorColor};'><b>\u00bb" + s
+                s = "${n.getShortDisplayText()} <font style='color:${M.gui.drs.separatorColor};'><b>\u00bb" + s
                 opened = false
             }
             n = n.parent
         }
-        if( opened ) s = "<font style='color:${M.gui.separatorColor};'><b>" + s
+        if( opened ) s = "<font style='color:${M.gui.drs.separatorColor};'><b>" + s
         return s
     }
 }

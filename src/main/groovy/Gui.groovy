@@ -57,7 +57,8 @@ class Gui {
     private JScrollPane scrollPane
     private JList resultsJList
     private JLabel resultLbl
-    DisplayResultsSettings displayResultsSettings
+    DisplayResultsSettings drs = new DisplayResultsSettings()
+
 
     // Which nodes to search options controls
     private ArrayList<CandidatesOption> candidatesOptions
@@ -94,10 +95,14 @@ class Gui {
     int historyPreviousKey = KeyEvent.VK_UP
     int historyNextKey = KeyEvent.VK_DOWN
 
-    Gui( ui, Candidates candidates, LoadedGuiSettings settings ){
+    private JCheckBox showNodesLevelCB
+    private int showNodesLevelCBMnemonic = KeyEvent.VK_L
+
+    Gui( ui, Candidates candidates, LoadedSettings settings ){
 
         initCandidatesOptions()
-        displayResultsSettings.init( settings )
+        if( settings.drs ) drs = settings.drs
+        drs.initFonts()
         build( ui, candidates )
         addKeyListeners( win, patternTF )
         addEditPatternListeners( patternTF )
@@ -112,7 +117,7 @@ class Gui {
         
         SwingBuilder swing = new SwingBuilder()
 
-        patternTF = createPatternTextField( swing, resultsFont )
+        patternTF = createPatternTextField( swing, drs.font, drs.patternFontSize )
         resultsJList = createResultsJList( swing, candidates )
         showNodesLevelCB = createShowNodesLevelCB( swing )
         removeClonesCB = createRemoveClonesCB( swing )
@@ -349,7 +354,7 @@ class Gui {
             showNodesLevelCB.enabled   = ! transversal
         }
         
-        showNodesLevelCB.selected = isShowNodesLevel
+        showNodesLevelCB.selected = drs.isShowNodesLevel
     }
     
     void toggleHelp(){
@@ -407,28 +412,8 @@ class Gui {
         resultLbl.text = text
     }
     
-    Font getResultsFont(){
-        return resultsFont
-    }
-
-    String getHighlightColor( ){
-        return highlightColor
-    }
-
-    boolean getIsShowNodesLevel(){
-        return isShowNodesLevel
-    }
-    
-    int getParentsDisplayLength(){
-        return parentsDisplayLength
-    }
-    
-    String getSeparatorColor( ){
-        return separatorColor
-    }
-
     private void setLevelDisplay( boolean value ){
-        isShowNodesLevel = value
+        drs.isShowNodesLevel = value
         updateOptions()
         repaintResults()
     }
@@ -456,19 +441,19 @@ class Gui {
     }
     
     private void setFontSize( int size ){
-        int size = displayResultsSettings.setFontSize( size )
+        drs.setFontSize( size )
         if( win ){
             repaintResults()
-            patternTF.font = resultsFont.deriveFont( (float)patternFontSize )
+            patternTF.font = drs.font.deriveFont( (float)patternFontSize )
             patternTF.invalidate()
             win.validate()
         }
     }
     
     // A text field to enter the search terms
-    private JTextField createPatternTextField( swing, Font font ){
+    private JTextField createPatternTextField( swing, Font baseFont, int fontSize ){
         return swing.textField(
-            font: font,
+            font: baseFont.deriveFont( (float)fontSize ),
             focusable: true
         )
     }
@@ -486,7 +471,7 @@ class Gui {
     private JCheckBox createShowNodesLevelCB( swing ){
         return swing.checkBox(
             text: "Show nodes level",
-            selected: isShowNodesLevel,
+            selected: drs.isShowNodesLevel,
             enabled: ! M.searchOptions.transversal,
             mnemonic: showNodesLevelCBMnemonic,
             actionPerformed: { e -> setLevelDisplay( e.source.selected ) },
@@ -628,15 +613,17 @@ class Gui {
             button(
                 text: " ",
                 margin: new Insets(0, 8, 0, 8),
-                background: Color.decode( highlightColor ),
+                background: Color.decode( drs.highlightColor ),
                 focusable: false,
                 toolTipText: "<html>Click to choose the color that highlight the text<br>that match the pattern in the results listing</html>",
                 actionPerformed: {
                     e ->
-                    Color color = JColorChooser.showDialog( win, "Choose a color", Color.decode( highlightColor ) )
-                    e.source.background = color
-                    highlightColor = encodeColor( color )
-                    repaintResults()
+                    Color color = JColorChooser.showDialog( win, "Choose a color", Color.decode( drs.highlightColor ) )
+                    if( color ){
+                        e.source.background = color
+                        drs.highlightColor = encodeColor( color )
+                        repaintResults()
+                    }
                 }
             )
             hstrut()
@@ -649,15 +636,17 @@ class Gui {
             button(
                 text: " ",
                 margin: new Insets(0, 8, 0, 8),
-                background: Color.decode( separatorColor ),
+                background: Color.decode( drs.separatorColor ),
                 focusable: false,
                 toolTipText: "<html>Click to choose the color of the level marker<br>in the results listing</html>",
                 actionPerformed: {
                     e ->
-                    Color color = JColorChooser.showDialog( win, "Choose a color", Color.decode( separatorColor ) )
-                    e.source.background = color
-                    separatorColor = encodeColor( color )
-                    repaintResults()
+                    Color color = JColorChooser.showDialog( win, "Choose a color", Color.decode( drs.separatorColor ) )
+                    if( color ){
+                        e.source.background = color
+                        drs.separatorColor = encodeColor( color )
+                        repaintResults()
+                    }
                 }
             )
             hstrut()
@@ -667,9 +656,9 @@ class Gui {
 
     private JComponent createResultsFontSizeSlider( swing ){
         JSlider slider = swing.slider(
-            value: displayResultsSettings.font.size,
-            minimum: minFontSize,
-            maximum: maxFontSize,
+            value: drs.font.size,
+            minimum: drs.minFontSize,
+            maximum: drs.maxFontSize,
             focusable: false,
             stateChanged: {
                 e ->
@@ -694,14 +683,14 @@ class Gui {
 
     private JComponent createParentsDisplayLengthSlider( swing ){
         JSlider slider = swing.slider(
-            value: parentsDisplayLength,
+            value: drs.parentsDisplayLength,
             minimum: 8,
             maximum: 30,
             focusable: false,
             stateChanged: {
                 e ->
                 if( e.source.getValueIsAdjusting() ) return
-                parentsDisplayLength = e.source.value
+                drs.parentsDisplayLength = e.source.value
                 repaintResults()
             }
         )
@@ -828,7 +817,7 @@ class Gui {
                                 break
                             case showNodesLevelCBMnemonic:
                                 if( showNodesLevelCB.enabled )
-                                    setLevelDisplay( ! isShowNodesLevel )
+                                    setLevelDisplay( ! drs.isShowNodesLevel )
                                 break
                             case removeClonesCBMnemonic:
                                 if( removeClonesCB.enabled )

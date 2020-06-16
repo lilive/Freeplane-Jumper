@@ -3,6 +3,9 @@ package lilive.jumper
 import java.awt.Rectangle
 import groovy.json.JsonSlurper
 import groovy.json.JsonGenerator
+import java.awt.Color
+import java.awt.Font
+import groovy.swing.SwingBuilder
 
 class DisplayResultsSettings {
     
@@ -17,35 +20,32 @@ class DisplayResultsSettings {
     Color selectedCoreBackgroundColor
     Color selectedDetailsForegroundColor
     Color selectedDetailsBackgroundColor
-    int baseFontSize
-    int minFontSize
-    int maxFontSize
     int fontSize
-    Font font
-    int parentsDisplayLength
+    private int baseFontSize
+    private int minFontSize
+    private int maxFontSize
+    private int patternFontSize
+    private int patternMinFontSize
+    private Font font
     int parentsDisplayLength = 15
     int namesDisplayLength = 15
     int valuesDisplayLength = 15
 
-    void init( LoadedGuiSettings settings ){
-        initFonts()
-        if( settings.isShowNodesLevel     != null ) isShowNodesLevel      = settings.isShowNodesLevel
-        if( settings.highlightColor       != null ) highlightColor        = settings.highlightColor
-        if( settings.separatorColor       != null ) separatorColor        = settings.separatorColor
-        if( settings.parentsDisplayLength != null ) parentsDisplayLength  = settings.parentsDisplayLength
-        if( settings.resultsFontSize      != null ) setFontSize( settings.resultsFontSize )
-    }
-    
     void initFonts(){
+
         font = new SwingBuilder().label().getFont()
         fontSize = font.getSize()
         baseFontSize = fontSize
         minFontSize = fontSize - 6
         maxFontSize = fontSize + 12
+        patternFontSize = fontSize
+        patternMinFontSize = fontSize
     }
 
     int setFontSize( int size ){
 
+        if( size < minFontSize ) size = minFontSize
+        if( size > maxFontSize ) size = maxFontSize
         fontSize = size
         int patternFontSize = size
         if( patternFontSize < patternMinFontSize )

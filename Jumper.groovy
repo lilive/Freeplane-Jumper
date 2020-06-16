@@ -16,13 +16,13 @@ author: lilive
 */
 
 import lilive.jumper.Gui
-import lilive.jumper.LoadedGuiSettings
+import lilive.jumper.LoadedSettings
 import lilive.jumper.Main
 
-LoadedGuiSettings guiSettings = Main.init( node, c )
+LoadedSettings settings = Main.init( node, c )
 
 // Create the GUI
-Main.gui = new Gui( ui, Main.candidates, guiSettings )
+Main.gui = new Gui( ui, Main.candidates, settings )
 
 // Populate the nodes list
 Main.initCandidates()
@@ -32,7 +32,7 @@ Main.gui.pack()
 Main.gui.setMinimumSizeToCurrentSize()
 
 // Place the GUI at its previous location if possible
-Main.gui.setLocation( ui.frame, guiSettings.winBounds )
+Main.gui.setLocation( ui.frame, settings.winBounds )
 
 // Display the GUI
 Main.gui.show()
