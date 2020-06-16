@@ -19,15 +19,16 @@ dependencies {
     compile name: 'freeplanelauncher'
     compile name: 'freeplaneviewer'
 	compile group: 'org.freeplane.script', name: 'plugin', version: '+'
-	compile ('org.codehaus.groovy:groovy-all:2.5.4') {
-        exclude group:'org.codehaus.groovy', module:'groovy-test'
-        exclude group:'org.codehaus.groovy', module:'groovy-test-junit5'
-        exclude group:'org.codehaus.groovy', module:'groovy-testng'
-        exclude group:'org.codehaus.groovy', module:'groovy-ant'
-        exclude group:'org.codehaus.groovy', module:'groovy-docgenerator'
-        exclude group:'org.codehaus.groovy', module:'groovy-groovydoc'
-        exclude group:'org.codehaus.groovy', module:'groovy-cli-commons'
-        exclude group:'org.codehaus.groovy', module:'groovy-cli-picocli'
-    }
-    compile 'org.codehaus.groovy:groovy-dateutil:2.5.4'
+	compile ('org.codehaus.groovy:groovy-all:3.0.1') {
+		exclude group:'org.codehaus.groovy', module:'groovy-test'
+		exclude group:'org.codehaus.groovy', module:'groovy-test-junit5'
+		exclude group:'org.codehaus.groovy', module:'groovy-testng'
+		exclude group:'org.codehaus.groovy', module:'groovy-ant'
+		exclude group:'org.codehaus.groovy', module:'groovy-docgenerator'
+		exclude group:'org.codehaus.groovy', module:'groovy-groovydoc'
+		exclude group:'org.codehaus.groovy', module:'groovy-cli-commons'
+		exclude group:'org.codehaus.groovy', module:'groovy-cli-picocli'
+	}
+	compile 'org.codehaus.groovy:groovy-dateutil:3.0.1'
 }
+
