@@ -37,7 +37,7 @@ class Main {
      * Init the global variables.
      * Try to load them from a previous file settings.
      */
-    static GuiSettings init( node, c ){
+    static LoadedGuiSettings init( node, c ){
 
         clear()
         
@@ -73,35 +73,33 @@ class Main {
         File file = getSettingsFile()
         
         Rectangle guiBounds = gui.getBounds()
+        DisplayResultsSettings drs = gui.displayResultsSettings
         
-        JsonBuilder builder = new JsonBuilder()
-        builder{
-            candidatesType     candidatesType
-            isRemoveClones     isRemoveClones
-            history            history
-            searchOptions      searchOptions
-            gui{
-                isShowNodesLevel     gui.isShowNodesLevel
-                highlightColor       gui.highlightColor
-                separatorColor       gui.separatorColor
-                resultsFontSize      gui.resultsFontSize
-                parentsDisplayLength gui.parentsDisplayLength
-                rect{
-                    x      guiBounds.x
-                    y      guiBounds.y
-                    width  guiBounds.width
-                    height guiBounds.height
-                }
-            }
-        }
-        file.write( builder.toPrettyString() )
+        Map datas = [
+            candidatesType: candidatesType,
+            isRemoveClones: isRemoveClones,
+            history:        history,
+            searchOptions:  searchOptions,
+            gui: [
+                drs:        gui.displayResultsSettings,
+                rect: [
+                    x:      guiBounds.x
+                    y:      guiBounds.y
+                    width:  guiBounds.width
+                    height: guiBounds.height
+                ]
+            ]
+        ]
+
+        String json = PrintJsonOutput.toJson( datas )
+        file.write( JsonOutput.prettyPrint( json ) )
     }
     
-    static GuiSettings loadSettings(){
+    static LoadedGuiSettings loadSettings(){
 
         if( gui ) throw new Exception( "Load settings before gui creation" )
         
-        GuiSettings guiSet = new GuiSettings()
+        LoadedGuiSettings guiSet = new LoadedGuiSettings()
         
         File file = getSettingsFile()
         if( ! file.exists() ) return guiSet

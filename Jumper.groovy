@@ -16,10 +16,10 @@ author: lilive
 */
 
 import lilive.jumper.Gui
-import lilive.jumper.GuiSettings
+import lilive.jumper.LoadedGuiSettings
 import lilive.jumper.Main
 
-GuiSettings guiSettings = Main.init( node, c )
+LoadedGuiSettings guiSettings = Main.init( node, c )
 
 // Create the GUI
 Main.gui = new Gui( ui, Main.candidates, guiSettings )

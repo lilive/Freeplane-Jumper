@@ -3,7 +3,7 @@ package lilive.jumper
 import java.awt.Rectangle
 
 
-class GuiSettings {
+class LoadedGuiSettings {
     Boolean isShowNodesLevel
     String highlightColor
     String separatorColor

@@ -45,59 +45,48 @@ import javax.swing.event.DocumentListener
 import lilive.jumper.Main as M
 
 
-class Gui {
+class DisplaySettingsGui {
 
     private JDialog win
-    private JDialog helpWin
+    
+    private JCheckBox showNodesLevelCB
+    private int showNodesLevelCBMnemonic = KeyEvent.VK_L
 
-    // Search pattern
-    private JTextField patternTF
+    private boolean isShowNodesLevel = false
+    private String highlightColor = "#FFFFAA"
+    private String separatorColor = "#888888"
+    private Color coreForegroundColor
+    private Color coreBackgroundColor
+    private Color detailsForegroundColor
+    private Color detailsBackgroundColor
+    private Color selectedCoreForegroundColor
+    private Color selectedCoreBackgroundColor
+    private Color selectedDetailsForegroundColor
+    private Color selectedDetailsBackgroundColor
+    private int resultsFontSize
+    private int minFontSize
+    private int maxFontSize
+    private Font resultsFont
+    private int patternMinFontSize
+    private int parentsDisplayLength = 15
+    private int namesDisplayLength = 15
+    private int valuesDisplayLength = 15
 
-    // Search results 
-    private JScrollPane scrollPane
-    private JList resultsJList
-    private JLabel resultLbl
-    DisplayResultsSettings displayResultsSettings
-
-    // Which nodes to search options controls
-    private ArrayList<CandidatesOption> candidatesOptions
-    private int allNodesMnemonic = KeyEvent.VK_M
-    private int siblingsMnemonic = KeyEvent.VK_S
-    private int descendantsMnemonic = KeyEvent.VK_D
-    private int siblingsAndDescendantsMnemonic = KeyEvent.VK_B
-    private JCheckBox removeClonesCB
-    private int removeClonesCBMnemonic = KeyEvent.VK_K
-
-    // Search method options controls
-    private JCheckBox regexCB
-    private int regexCBMnemonic = KeyEvent.VK_R
-    private JCheckBox caseSensitiveCB
-    private int caseSensitiveCBMnemonic = KeyEvent.VK_I
-    private JCheckBox fromStartCB
-    private int fromStartCBMnemonic = KeyEvent.VK_G
-    private JCheckBox splitPatternCB
-    private int splitPatternCBMnemonic = KeyEvent.VK_U
-    private JCheckBox transversalCB
-    private int transversalCBMnemonic = KeyEvent.VK_T
-    private JCheckBox detailsCB
-
-    // Which parts of the nodes to search options controls
-    private int detailsCBMnemonic = KeyEvent.VK_1
-    private JCheckBox noteCB
-    private int noteCBMnemonic = KeyEvent.VK_2
-    private JCheckBox attributesNameCB
-    private int attributesNameCBMnemonic = KeyEvent.VK_3
-    private JCheckBox attributesValueCB
-    private int attributesValueCBMnemonic = KeyEvent.VK_4
-
-    // History controls
     int historyPreviousKey = KeyEvent.VK_UP
     int historyNextKey = KeyEvent.VK_DOWN
 
-    Gui( ui, Candidates candidates, LoadedGuiSettings settings ){
+    
+    DisplaySettingsGui( ui, Candidates candidates, LoadedGuiSettings settings ){
 
         initCandidatesOptions()
-        displayResultsSettings.init( settings )
+        initFonts()
+        
+        if( settings.isShowNodesLevel     != null ) isShowNodesLevel      = settings.isShowNodesLevel
+        if( settings.highlightColor       != null ) highlightColor        = settings.highlightColor
+        if( settings.separatorColor       != null ) separatorColor        = settings.separatorColor
+        if( settings.resultsFontSize      != null ) setFontSize( settings.resultsFontSize )
+        if( settings.parentsDisplayLength != null ) parentsDisplayLength  = settings.parentsDisplayLength
+
         build( ui, candidates )
         addKeyListeners( win, patternTF )
         addEditPatternListeners( patternTF )
@@ -455,8 +444,26 @@ class Gui {
         )
     }
     
+    private void initFonts(){
+        Font font = new SwingBuilder().label().getFont()
+        int fontSize = font.getSize()
+        minFontSize = fontSize - 6
+        maxFontSize = fontSize + 12
+        patternMinFontSize = fontSize
+        resultsFont = new Font( font )
+        resultsFontSize = resultsFont.getSize()
+    }
+        
     private void setFontSize( int size ){
-        int size = displayResultsSettings.setFontSize( size )
+
+        resultsFontSize = size
+        int patternFontSize = size
+        if( patternFontSize < patternMinFontSize ) patternFontSize = patternMinFontSize
+        
+        if( size == resultsFont.getSize() ) return
+        
+        resultsFont = resultsFont.deriveFont( (float)size )
+
         if( win ){
             repaintResults()
             patternTF.font = resultsFont.deriveFont( (float)patternFontSize )
@@ -667,7 +674,7 @@ class Gui {
 
     private JComponent createResultsFontSizeSlider( swing ){
         JSlider slider = swing.slider(
-            value: displayResultsSettings.font.size,
+            value: resultsFontSize,
             minimum: minFontSize,
             maximum: maxFontSize,
             focusable: false,
