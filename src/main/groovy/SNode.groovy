@@ -77,7 +77,7 @@ class SNode {
                 it.text.replaceAll( "\n", " " )
             }
         } catch( Exception e ){
-            return [ "[value eeeeeee eeeeeeeeeee evaluation error !]" ] * size
+            return [ "[value evaluation error !]" ] * size
         }
     }
 

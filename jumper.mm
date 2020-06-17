@@ -1,9 +1,9 @@
 <map version="freeplane 1.8.0">
 <!--To view this file, download free mind mapping software Freeplane from http://freeplane.sourceforge.net -->
-<node TEXT="Jumper" LOCALIZED_STYLE_REF="styles.topic" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1592433112494" LINK="https://github.com/lilive/Freeplane-Jumper" BORDER_WIDTH="3.0 px" BORDER_COLOR_LIKE_EDGE="false" BORDER_COLOR="#192441" BORDER_DASH="CLOSE_DOTS" BACKGROUND_COLOR="#97c7dc" STYLE="rectangle" SHAPE_HORIZONTAL_MARGIN="6.0 pt" SHAPE_VERTICAL_MARGIN="6.0 pt">
+<node TEXT="Jumper" LOCALIZED_STYLE_REF="styles.topic" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1592434632053" LINK="https://github.com/lilive/Freeplane-Jumper" BORDER_WIDTH="3.0 px" BORDER_COLOR_LIKE_EDGE="false" BORDER_COLOR="#192441" BORDER_DASH="CLOSE_DOTS" BACKGROUND_COLOR="#97c7dc" STYLE="rectangle" SHAPE_HORIZONTAL_MARGIN="6.0 pt" SHAPE_VERTICAL_MARGIN="6.0 pt">
 <font SIZE="16" BOLD="true" ITALIC="true"/>
 <hook NAME="MapStyle" background="#cccccc">
-    <properties show_icon_for_attributes="true" fit_to_viewport="false" show_note_icons="true" show_notes_in_map="true" edgeColorConfiguration="#353535ff,#353535ff,#353535ff,#353535ff,#353535ff"/>
+    <properties fit_to_viewport="false" show_icon_for_attributes="true" show_note_icons="true" show_notes_in_map="true" edgeColorConfiguration="#353535ff,#353535ff,#353535ff,#353535ff,#353535ff"/>
 
 <map_styles>
 <stylenode LOCALIZED_TEXT="styles.root_node" STYLE="oval" UNIFORM_SHAPE="true" VGAP_QUANTITY="24.0 pt">
@@ -95,7 +95,7 @@
 <edge WIDTH="thin"/>
 <attribute_layout NAME_WIDTH="119.24999644607315 pt" VALUE_WIDTH="303.74999094754486 pt"/>
 <attribute NAME="name" VALUE="jumper"/>
-<attribute NAME="version" VALUE="v0.5.1"/>
+<attribute NAME="version" VALUE="v0.5.2"/>
 <attribute NAME="author" VALUE="lilive"/>
 <attribute NAME="freeplaneVersionFrom" VALUE="1.8.5"/>
 <attribute NAME="freeplaneVersionTo" VALUE=""/>
@@ -179,6 +179,9 @@
 </node>
 <node TEXT="v0.5.1" ID="ID_130951037" CREATED="1592433119030" MODIFIED="1592433123945">
 <node TEXT="Fix the problem when there are formulas error in the map" ID="ID_17306513" CREATED="1592433125558" MODIFIED="1592433170905"/>
+</node>
+<node TEXT="v0.5.2" ID="ID_227076356" CREATED="1592434638152" MODIFIED="1592434642367">
+<node TEXT="Fix bad string in v0.5.1" ID="ID_1008839979" CREATED="1592434643367" MODIFIED="1592434655068"/>
 </node>
 </node>
 <node TEXT="license" POSITION="left" ID="ID_1975958535" CREATED="1592410105197" MODIFIED="1592411295926" TEXT_SHORTENED="true">
