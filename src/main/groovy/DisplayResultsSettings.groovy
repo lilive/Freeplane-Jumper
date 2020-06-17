@@ -9,7 +9,7 @@ import groovy.swing.SwingBuilder
 class DisplayResultsSettings {
     
     boolean isShowNodesLevel= false
-    Color highlightColor                 = new Color( "#ffffcc" )
+    Color highlightColor                 = new Color( "#ffff99" )
     Color separatorColor                 = new Color( "#0003ff" )
     Color coreForegroundColor            = new Color( "#000000" )
     Color coreBackgroundColor            = new Color( "#f4f4f4" )
