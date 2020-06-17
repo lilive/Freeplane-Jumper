@@ -20,6 +20,7 @@ class DisplaySettingsGui {
     JDialog win
     private Gui parent
     private JCheckBox showNodesLevelCB
+    static String showNodesLevelCBLabel = "Show nodes level"
 
     DisplaySettingsGui( Gui parent ){
 
@@ -75,7 +76,7 @@ class DisplaySettingsGui {
     
     private JCheckBox createShowNodesLevelCB( swing ){
         return swing.checkBox(
-            text: "Show nodes level",
+            text: showNodesLevelCBLabel,
             selected: parent.drs.isShowNodesLevel,
             enabled: ! M.searchOptions.transversal,
             mnemonic: parent.showNodesLevelCBMnemonic,

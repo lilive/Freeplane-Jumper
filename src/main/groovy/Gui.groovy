@@ -75,28 +75,38 @@ class Gui {
     private int siblingsAndDescendantsMnemonic = KeyEvent.VK_B
     private JCheckBox removeClonesCB
     private int removeClonesCBMnemonic = KeyEvent.VK_K
+    private String removeClonesCBLabel = "Keep only one clone"
 
     // Search method options controls
     private JCheckBox regexCB
     private int regexCBMnemonic = KeyEvent.VK_R
+    private String regexCBLabel = "Use regular expressions"
     private JCheckBox caseSensitiveCB
     private int caseSensitiveCBMnemonic = KeyEvent.VK_I
+    private String caseSensitiveCBLabel = "Case sensitive search"
     private JCheckBox fromStartCB
     private int fromStartCBMnemonic = KeyEvent.VK_G
+    private String fromStartCBLabel = "Search at beginning of nodes"
     private JCheckBox splitPatternCB
     private int splitPatternCBMnemonic = KeyEvent.VK_U
+    private String splitPatternCBLabel = "Multiple pattern"
     private JCheckBox transversalCB
     private int transversalCBMnemonic = KeyEvent.VK_T
-    private JCheckBox detailsCB
+    private String transversalCBLabel = "Transversal search"
 
     // Which parts of the nodes to search options controls
+    private JCheckBox detailsCB
     private int detailsCBMnemonic = KeyEvent.VK_1
+    private String detailsCBLabel = "in details"
     private JCheckBox noteCB
     private int noteCBMnemonic = KeyEvent.VK_2
+    private String noteCBLabel = "in note"
     private JCheckBox attributesNameCB
     private int attributesNameCBMnemonic = KeyEvent.VK_3
+    private String attributesNameCBLabel = "in attributes name"
     private JCheckBox attributesValueCB
     private int attributesValueCBMnemonic = KeyEvent.VK_4
+    private String attributesValueCBLabel = "in attributes value"
 
     // History controls
     int historyPreviousKey = KeyEvent.VK_UP
@@ -289,55 +299,6 @@ class Gui {
         drsGui.win.dispose()
     }
     
-    Rectangle getWinBounds(){
-        Rectangle bounds = win.getBounds()
-        if( ! searchOptionsPanel.visible ){
-            bounds.height += searchOptionsPanel.preferredSize.height
-        }
-        return bounds
-    }
-
-    void setMinimumSizeToCurrentSize(){
-        Dimension size = win.getSize()
-        win.minimumSize = size
-    }
-
-    void setLocation( JFrame fpFrame, Rectangle rect ){
-
-        Dimension minSize = win.minimumSize
-        
-        if( rect ){
-            
-            // Be sure the rect is over the Freeplane frame
-            
-            Rectangle fpBounds = fpFrame.getBounds()
-            Rectangle bounds = fpBounds.createIntersection( rect )
-
-            // Corrections if rect is too small
-            if( bounds.width  < minSize.width  ) bounds.width  = minSize.width
-            if( bounds.height < minSize.height ) bounds.height = minSize.height
-
-            // Corrections if rect right bottom corner is outside the Freeplane frame
-            if( bounds.x + bounds.width > fpBounds.x + fpBounds.width )
-                bounds.x = fpBounds.x + fpBounds.width - bounds.width
-            if( bounds.y + bounds.height > fpBounds.y + fpBounds.height )
-                bounds.y = fpBounds.y + fpBounds.height - bounds.height
-
-            // Corrections if the Freeplane frame is smaller than minSize
-            if( bounds.x < 0 ) bounds.x = 0
-            if( bounds.y < 0 ) bounds.y = 0
-
-            // Place the GUI
-            win.setBounds( bounds )
-            
-        } else{
-
-            // If no location is provided, center the GUI over the Freeplane frame
-            win.setLocationRelativeTo( fpFrame )
-            
-        }
-    }
-
     // Update the controls according to the script current options values
     void updateOptions(){
         
@@ -521,7 +482,7 @@ class Gui {
     
     private JCheckBox createRemoveClonesCB( swing ){
         return swing.checkBox(
-            text: "Keep only one clone",
+            text: removeClonesCBLabel,
             selected: M.isRemoveClones,
             mnemonic: removeClonesCBMnemonic,
             actionPerformed: { e -> M.setClonesDisplay( e.source.selected ) },
@@ -545,7 +506,7 @@ class Gui {
 
     private JCheckBox createRegexSearchCB( swing ){
         return swing.checkBox(
-            text: "Use regular expressions",
+            text: regexCBLabel,
             selected: M.searchOptions.useRegex,
             mnemonic: regexCBMnemonic,
             actionPerformed: { e -> M.setRegexSearch( e.source.selected ) },
@@ -556,7 +517,7 @@ class Gui {
 
     private JCheckBox createCaseSensitiveSearchCB( swing ){
         return swing.checkBox(
-            text: "Case sensitive search",
+            text: caseSensitiveCBLabel,
             selected: M.searchOptions.caseSensitive,
             mnemonic: caseSensitiveCBMnemonic,
             actionPerformed: { e -> M.setCaseSensitiveSearch( e.source.selected ) },
@@ -567,7 +528,7 @@ class Gui {
 
     private JCheckBox createSearchFromStartCB( swing ){
         return swing.checkBox(
-            text: "Search at beginning of nodes",
+            text: fromStartCBLabel,
             selected: M.searchOptions.fromStart,
             mnemonic: fromStartCBMnemonic,
             actionPerformed: { e -> M.setSearchFromStart( e.source.selected ) },
@@ -578,7 +539,7 @@ class Gui {
 
     private JCheckBox createSplitPatternCB( swing ){
         return swing.checkBox(
-            text: "Multiple pattern",
+            text: splitPatternCBLabel,
             selected: M.searchOptions.splitPattern,
             mnemonic: splitPatternCBMnemonic,
             actionPerformed: { e -> M.setSplitPattern( e.source.selected ) },
@@ -591,7 +552,7 @@ class Gui {
 
     private JCheckBox createTransversalSearchCB( swing ){
         return swing.checkBox(
-            text: "Transversal search",
+            text: transversalCBLabel,
             selected: M.searchOptions.transversal,
             mnemonic: transversalCBMnemonic,
             actionPerformed: { e -> M.setTransversalSearch( e.source.selected ) },
@@ -605,7 +566,7 @@ class Gui {
 
     private JCheckBox createDetailsCB( swing ){
         return swing.checkBox(
-            text: "in details (1)",
+            text: detailsCBLabel,
             selected: M.searchOptions.useDetails,
             mnemonic: detailsCBMnemonic,
             actionPerformed: { e -> M.setDetailsSearch( e.source.selected ) },
@@ -616,7 +577,7 @@ class Gui {
 
     private JCheckBox createNoteCB( swing ){
         return swing.checkBox(
-            text: "in note (2)",
+            text: noteCBLabel,
             selected: M.searchOptions.useNote,
             mnemonic: noteCBMnemonic,
             actionPerformed: { e -> M.setNoteSearch( e.source.selected ) },
@@ -627,7 +588,7 @@ class Gui {
 
     private JCheckBox createAttributesNameCB( swing ){
         return swing.checkBox(
-            text: "in attributes name (3)",
+            text: attributesNameCBLabel,
             selected: M.searchOptions.useAttributesName,
             mnemonic: attributesNameCBMnemonic,
             actionPerformed: { e -> M.setAttributesNameSearch( e.source.selected ) },
@@ -638,7 +599,7 @@ class Gui {
 
     private JCheckBox createAttributesValueCB( swing ){
         return swing.checkBox(
-            text: "in attributes value (4)",
+            text: attributesValueCBLabel,
             selected: M.searchOptions.useAttributesValue,
             mnemonic: attributesValueCBMnemonic,
             actionPerformed: { e -> M.setAttributesValueSearch( e.source.selected ) },
@@ -677,55 +638,95 @@ class Gui {
             modal:false,
             defaultCloseOperation: javax.swing.JFrame.HIDE_ON_CLOSE 
         ){
-            panel( border: emptyBorder( 8, 8, 16, 8 ) ){
+            JScrollPane sp = scrollPane( border: emptyBorder( 8, 8, 16, 8 ) ){
                 label( getHelpText() )
             }
+            sp.getVerticalScrollBar().setUnitIncrement(8)
         }
+        Rectangle bounds = gui.owner.getBounds()
         dialog.pack()
+        Dimension size = new Dimension( (int)dialog.size.width + 50, (int)(bounds.height * 2 / 3) )
+        dialog.size = size
         dialog.setLocationRelativeTo( win )
         return dialog
     }
     
+    private String getShorcutHelpText( int key, String text, boolean addAlt = true ){
+        String keyText = KeyEvent.getKeyText( key )
+        if( addAlt )
+            return "<b>&lt;Alt-$keyText&gt;</b> : $text<br/>"
+        else
+            return "<b>&lt;$keyText&gt;</b> : $text<br/>"
+    }
+        
     private String getHelpText(){
+        
+        String candidatesOptionsHelpText = "Change the nodes to search:<br/>"
+        candidatesOptions.each{
+            candidatesOptionsHelpText += getShorcutHelpText( it.mnemonic, it.text )
+        }
+        candidatesOptionsHelpText += getShorcutHelpText( removeClonesCBMnemonic, removeClonesCBLabel )
+
         return """<html>
-            <b>Usage</b><br/>
+            <font size=+2><b>Usage</b></font><br/>
             <br/>
               - <b>Type</b> the text to search<br/>
               - The node list updates to show only the nodes that contains the text<br/>
-              - Select a node With the <b>&lt;up&gt;</b> and <b>&lt;down&gt;</b> arrow keys, then press <b>&lt;enter&gt;</b> to jump to it<br/>
-              - You can also select a node with a mouse click<br/>
+              - Select a node with the <b>&lt;Up&gt;</b> and <b>&lt;Down&gt;</b> arrow keys, then press <b>&lt;Enter&gt;</b> to jump to it<br/>
+              - You can also select a node with a mouse click.<br/>
             <br/>
-            <b>Shortcuts</b><br/>
-            <br/>
-              You can use a keyboard shortcut to toggle each search option.<br/>
-              Each option has a single letter keyboard shortcut.<br/>
-              Press the <b>&lt;Alt&gt;</b> key to reveal the associated letters in the options names.<br/>
-              Keep &lt;Alt&gt; pressed then press a letter shortcut to toggle the option.<br/>
-              (the shortcuts also work with the <b>&lt;Ctrl&gt;</b> key)<br/>
-            <br/>
-            <b>History</b><br/>
-            <br/>
-              You can use a previously search string.<br/>
-              Press <b>&lt;Alt-Up&gt;</b> and <b>&lt;Alt-Down&gt;</b> to navigate in the search history<br/>
-              (&lt;Ctrl-Up&gt; and &lt;Ctrl-Down&gt; also works)<br/>
-            <br/>
-            <b>Search options</b><br/>
+
+            <font size=+2><b>Search options</b></font><br/>
             <br/>
               You enter a search pattern in the upper text field.<br/>
               This pattern is searched differently according to the search options.<br/>
               <br>
-              <b>1 -</b> The pattern can be taken as a single string to search, including its spaces characters, or it can be<br/>
+              <b>1 -</b> The search can be case sensitive or case insensitive.<br/>
+              <br>
+              <b>2 -</b> The pattern can be taken as a single string to search, including its spaces characters, or it can be<br/>
               break into differents units that are searched in any order. This allow you to find the sentence<br/>
               <i>"This is a good day in the mountains"</i> by typing <i>"mountain day"</i>.<br/>
               <br>
-              <b>2 -</b> The pattern can be taken literally, or as a regular expression. You have to know how to use regular<br/>
+              <b>3 -</b> The pattern can be taken literally, or as a regular expression. You have to know how to use regular<br/>
               expressions to use this second option.<br>
               <br>
-              <b>3 -</b> The pattern can be searched transversely, meaning that a node is considering to match the pattern if<br/>
+              <b>4 -</b> The pattern can be searched transversely, meaning that a node is considering to match the pattern if<br/>
               it match only some units and if its parents nodes match the rest of the units. For example, the last node of<br/>
               a branch [<i>Stories</i>]->[<i>Dracula</i>]->[<i>He fear the daylight</i>] will be found with the search pattern <i>"dracula day stories"</i>.<br/> 
             <br/>
-        
+
+            <font size=+2><b>History</b></font><br/>
+            <br/>
+              You can use a previously search string.<br/>
+              Press <b>&lt;Alt-Up&gt;</b> and <b>&lt;Alt-Down&gt;</b> to navigate in the search history.<br/>
+              <b>&lt;Ctrl-Up&gt;</b> and <b>&lt;Ctrl-Down&gt;</b> also works.<br/>
+            <br/>
+
+            <font size=+2><b>Shortcuts</b></font><br/>
+            <br/>
+              ${getShorcutHelpText( toggleOptionsDisplayMnemonic, "Show/Hide the search options", false )}
+              <br/>
+              You can use a keyboard shortcut to toggle each search option.<br/>
+              All shortcuts works either with <b>Alt</b> and <b>Ctrl</b>.<br/>
+              <br/>
+              ${candidatesOptionsHelpText}
+              <br/>
+              Change the search method:<br/>
+              ${getShorcutHelpText( regexCBMnemonic, regexCBLabel )}
+              ${getShorcutHelpText( caseSensitiveCBMnemonic, caseSensitiveCBLabel )}
+              ${getShorcutHelpText( fromStartCBMnemonic, fromStartCBLabel )}
+              ${getShorcutHelpText( splitPatternCBMnemonic, splitPatternCBLabel )}
+              ${getShorcutHelpText( transversalCBMnemonic, transversalCBLabel )}
+              <br/>
+              Change the parts of the nodes where to look:<br/>
+              ${getShorcutHelpText( detailsCBMnemonic, detailsCBLabel )}
+              ${getShorcutHelpText( noteCBMnemonic, noteCBLabel )}
+              ${getShorcutHelpText( attributesNameCBMnemonic, attributesNameCBLabel )}
+              ${getShorcutHelpText( attributesValueCBMnemonic, attributesValueCBLabel )}
+              <br/>
+              How to display the results:<br/>
+              ${getShorcutHelpText( showNodesLevelCBMnemonic, DisplaySettingsGui.showNodesLevelCBLabel )}
+            <br/>
           </html>"""
     }
 
@@ -903,6 +904,55 @@ class Gui {
                 }
             }
         )
+    }
+
+private Rectangle getWinBounds(){
+        Rectangle bounds = win.getBounds()
+        if( ! searchOptionsPanel.visible ){
+            bounds.height += searchOptionsPanel.preferredSize.height
+        }
+        return bounds
+    }
+
+    private void setMinimumSizeToCurrentSize(){
+        Dimension size = win.getSize()
+        win.minimumSize = size
+    }
+
+    private void setLocation( JFrame fpFrame, Rectangle rect ){
+
+        Dimension minSize = win.minimumSize
+        
+        if( rect ){
+            
+            // Be sure the rect is over the Freeplane frame
+            
+            Rectangle fpBounds = fpFrame.getBounds()
+            Rectangle bounds = fpBounds.createIntersection( rect )
+
+            // Corrections if rect is too small
+            if( bounds.width  < minSize.width  ) bounds.width  = minSize.width
+            if( bounds.height < minSize.height ) bounds.height = minSize.height
+
+            // Corrections if rect right bottom corner is outside the Freeplane frame
+            if( bounds.x + bounds.width > fpBounds.x + fpBounds.width )
+                bounds.x = fpBounds.x + fpBounds.width - bounds.width
+            if( bounds.y + bounds.height > fpBounds.y + fpBounds.height )
+                bounds.y = fpBounds.y + fpBounds.height - bounds.height
+
+            // Corrections if the Freeplane frame is smaller than minSize
+            if( bounds.x < 0 ) bounds.x = 0
+            if( bounds.y < 0 ) bounds.y = 0
+
+            // Place the GUI
+            win.setBounds( bounds )
+            
+        } else{
+
+            // If no location is provided, center the GUI over the Freeplane frame
+            win.setLocationRelativeTo( fpFrame )
+            
+        }
     }
 
     private void fixComponentWidth( JComponent component ){
