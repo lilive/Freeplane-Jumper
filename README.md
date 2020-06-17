@@ -61,6 +61,7 @@ You can now use Jumper, you will find it in Menu > Edit > Find > Jumper.
 `[1]` Do the search in another thread to improve GUI reactivity  
 `[1]` Option to center the map on the selected result as the results list is browsed with the arrow keys  
 `[1]` Option to set the search string to the last one when the window open. Select this whole text in the text field, to make it be replaced as soon as the user type someting new.  
+`[ ]` Give the focus to the help window when it opens.  
 `[ ]` Update code comments (SNode)  
 `[ ]` Option to not search before N characters are typed  
 `[ ]` Option to search entire words only  
