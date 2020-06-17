@@ -1,9 +1,9 @@
 <map version="freeplane 1.8.0">
 <!--To view this file, download free mind mapping software Freeplane from http://freeplane.sourceforge.net -->
-<node TEXT="Jumper" LOCALIZED_STYLE_REF="styles.topic" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1592410505861" LINK="https://github.com/lilive/Freeplane-Jumper" BORDER_WIDTH="3.0 px" BORDER_COLOR_LIKE_EDGE="false" BORDER_COLOR="#192441" BORDER_DASH="CLOSE_DOTS" BACKGROUND_COLOR="#97c7dc" STYLE="rectangle" SHAPE_HORIZONTAL_MARGIN="6.0 pt" SHAPE_VERTICAL_MARGIN="6.0 pt" TEXT_SHORTENED="true">
+<node TEXT="Jumper" LOCALIZED_STYLE_REF="styles.topic" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1592413564168" LINK="https://github.com/lilive/Freeplane-Jumper" BORDER_WIDTH="3.0 px" BORDER_COLOR_LIKE_EDGE="false" BORDER_COLOR="#192441" BORDER_DASH="CLOSE_DOTS" BACKGROUND_COLOR="#97c7dc" STYLE="rectangle" SHAPE_HORIZONTAL_MARGIN="6.0 pt" SHAPE_VERTICAL_MARGIN="6.0 pt" TEXT_SHORTENED="true">
 <font SIZE="16" BOLD="true" ITALIC="true"/>
 <hook NAME="MapStyle" background="#cccccc">
-    <properties fit_to_viewport="false" show_icon_for_attributes="true" show_note_icons="true" show_notes_in_map="true" edgeColorConfiguration="#353535ff,#353535ff,#353535ff,#353535ff,#353535ff"/>
+    <properties show_icon_for_attributes="true" fit_to_viewport="false" show_note_icons="true" show_notes_in_map="true" edgeColorConfiguration="#353535ff,#353535ff,#353535ff,#353535ff,#353535ff"/>
 
 <map_styles>
 <stylenode LOCALIZED_TEXT="styles.root_node" STYLE="oval" UNIFORM_SHAPE="true" VGAP_QUANTITY="24.0 pt">
@@ -135,7 +135,6 @@
     </ul>
   </body>
 </html>
-
 </richcontent>
 <node TEXT="description" POSITION="left" ID="ID_971223094" CREATED="1592410105126" MODIFIED="1592411299558" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
@@ -157,7 +156,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 <node TEXT="A fully keyboard driven search box that filter the nodes on-the-fly as the user type the search terms, and allow to jump to one of the results." ID="ID_414073752" CREATED="1592410703269" MODIFIED="1592410765467"/>
 </node>
@@ -175,7 +173,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 <node TEXT="v0.5.0" ID="ID_607298643" CREATED="1592411201957" MODIFIED="1592411205113">
 <node TEXT="Package the Jumper script into an add-on" ID="ID_603689072" CREATED="1592411206917" MODIFIED="1592411230809"/>
@@ -201,7 +198,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 <node TEXT="&#xa;This add-on is free software: you can redistribute it and/or modify&#xa;it under the terms of the GNU General Public License as published by&#xa;the Free Software Foundation, either version 2 of the License, or&#xa;(at your option) any later version.&#xa;&#xa;This program is distributed in the hope that it will be useful,&#xa;but WITHOUT ANY WARRANTY; without even the implied warranty of&#xa;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the&#xa;GNU General Public License for more details.&#xa;" ID="ID_1223814638" CREATED="1592410105205" MODIFIED="1592410105209"/>
 </node>
@@ -222,7 +218,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 </node>
 <node TEXT="default.properties" POSITION="left" ID="ID_1995339540" CREATED="1592410105244" MODIFIED="1592411293365" TEXT_SHORTENED="true">
@@ -247,7 +242,6 @@
     </ul>
   </body>
 </html>
-
 </richcontent>
 </node>
 <node TEXT="translations" POSITION="left" ID="ID_1981447827" CREATED="1592410105250" MODIFIED="1592411393036" TEXT_SHORTENED="true">
@@ -275,7 +269,6 @@
     </ul>
   </body>
 </html>
-
 </richcontent>
 <node TEXT="en" ID="ID_1840514888" CREATED="1592410105258" MODIFIED="1592411456025">
 <attribute_layout NAME_WIDTH="128.99999615550053 pt" VALUE_WIDTH="257.2499923333528 pt"/>
@@ -297,7 +290,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 <attribute_layout VALUE_WIDTH="238.4999928921463 pt"/>
 <attribute NAME="delete" VALUE="${installationbase}/addons/${name}.script.xml"/>
@@ -423,7 +415,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 <node TEXT="Jumper.groovy" ID="ID_1411088832" CREATED="1592410873205" MODIFIED="1592411089974">
 <attribute_layout NAME_WIDTH="193.4999942332508 pt" VALUE_WIDTH="168.74999497085824 pt"/>
@@ -476,7 +467,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 <node TEXT="Jumper.jar" ID="ID_1696766086" CREATED="1592410105335" MODIFIED="1592410105336"/>
 </node>
@@ -518,7 +508,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 </node>
 <node TEXT="images" POSITION="right" ID="ID_1159861672" CREATED="1592410105346" MODIFIED="1592410912806" TEXT_SHORTENED="true">
@@ -555,7 +544,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 </node>
 </node>
