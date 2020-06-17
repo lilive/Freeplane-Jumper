@@ -1,6 +1,6 @@
 # Jumper - The jumping filter for Freeplane
 
-This Freeplane add-on provide a search box that filter the nodes on-the-fly as the user type the search terms, and allow to jump to one of the results.
+This Freeplane add-on provides a search box that filter the nodes on-the-fly as the user type the search terms, and allows to jump to one of the results.
 
 The goal is to provide a quick way to search for nodes, fully keyboard driven.
 
@@ -37,7 +37,7 @@ Click the question mark icon to display the usage instructions.
   - Check "Permit file read operations"
   - Check "Permit file write operations"
   
-  Jumper need the file permissions because it save its settings in the Freeplane user directory. The name of the file is lilive_jumper.json.  
+  Jumper need the file permissions because it save its settings in the Freeplane user directory. The name of the file is `lilive_jumper.json`.  
   Jumper do not modify your maps, there is no risk to loose informations.
   
 - Restart Freeplane.
