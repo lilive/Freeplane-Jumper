@@ -7,7 +7,6 @@ import java.awt.Rectangle
 import org.freeplane.api.Node
 import org.freeplane.core.util.LogUtils
 import org.freeplane.plugin.script.proxy.Proxy
-import java.awt.Color
 
 class Main {
     
@@ -101,7 +100,7 @@ class Main {
             }
             options.addConverter( Color ){
                 Color color, String key ->
-                String.format( "#%06x", Integer.valueOf( color.getRGB() & 0x00FFFFFF ) )
+                color.toString()
             }
             JsonGenerator generator = options.build()
             String json = generator.toJson( datas )

@@ -3,23 +3,22 @@ package lilive.jumper
 import java.awt.Rectangle
 import groovy.json.JsonSlurper
 import groovy.json.JsonGenerator
-import java.awt.Color
 import java.awt.Font
 import groovy.swing.SwingBuilder
 
 class DisplayResultsSettings {
     
     boolean isShowNodesLevel= false
-    String highlightColor = "#ffffcc"
-    String separatorColor = "#0003ff"
-    Color coreForegroundColor = Color.decode( "#000000" )
-    Color coreBackgroundColor = Color.decode( "#f4f4f4" )
-    Color detailsForegroundColor = Color.decode( "#666666" )
-    Color detailsBackgroundColor = Color.decode( "#e5e5e5" )
-    Color selectedCoreForegroundColor = Color.decode( "#000000" )
-    Color selectedCoreBackgroundColor = Color.decode( "#babbff" )
-    Color selectedDetailsForegroundColor = Color.decode( "#333333" )
-    Color selectedDetailsBackgroundColor = Color.decode( "#d4d4ff" )
+    Color highlightColor                 = new Color( "#ffffcc" )
+    Color separatorColor                 = new Color( "#0003ff" )
+    Color coreForegroundColor            = new Color( "#000000" )
+    Color coreBackgroundColor            = new Color( "#f4f4f4" )
+    Color detailsForegroundColor         = new Color( "#666666" )
+    Color detailsBackgroundColor         = new Color( "#e5e5e5" )
+    Color selectedCoreForegroundColor    = new Color( "#000000" )
+    Color selectedCoreBackgroundColor    = new Color( "#babbff" )
+    Color selectedDetailsForegroundColor = new Color( "#333333" )
+    Color selectedDetailsBackgroundColor = new Color( "#d4d4ff" )
     int coreFontSize
     int detailsFontSize
     private boolean fontsInitialized = false
@@ -111,7 +110,7 @@ class DisplayResultsSettings {
         List<String> fields = getDeclaredFields().findAll{ !it.synthetic }.collect{  it.name }
         map = map.findAll{ it.key in fields }
         Map initializer = map.collectEntries{
-            [ it.key, getDeclaredField( it.key ).type == Color ? Color.decode( it.value ) : it.value ]
+            [ it.key, getDeclaredField( it.key ).type == Color ? new Color( it.value ) : it.value ]
         }
         return new DisplayResultsSettings( initializer )
     }

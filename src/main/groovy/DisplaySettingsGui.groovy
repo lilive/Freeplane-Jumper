@@ -1,7 +1,6 @@
 package lilive.jumper
 
 import groovy.swing.SwingBuilder
-import java.awt.Color
 import java.awt.Component
 import java.awt.Dimension
 import java.awt.Insets
@@ -89,7 +88,7 @@ class DisplaySettingsGui {
         return swing.hbox{
             button(
                 text: "",
-                icon: new ColorIcon( Color.decode( parent.drs.highlightColor ), size ),
+                icon: new ColorIcon( parent.drs.highlightColor, size ),
                 margin: new Insets(0, 0, 0, 0),
                 borderPainted: false,
                 opaque: false,
@@ -98,10 +97,11 @@ class DisplaySettingsGui {
                 toolTipText: "<html>Click to choose the color that highlight the text<br>that match the pattern in the results listing</html>",
                 actionPerformed: {
                     e ->
-                    Color color = JColorChooser.showDialog( win, "Choose a color", Color.decode( parent.drs.highlightColor ) )
-                    if( color ){
+                    java.awt.Color c = JColorChooser.showDialog( win, "Choose a color", parent.drs.highlightColor )
+                    if( c ){
+                        Color color = new Color( c )
                         e.source.icon = new ColorIcon( color, size )
-                        parent.drs.highlightColor = encodeColor( color )
+                        parent.drs.highlightColor = color
                         parent.repaintResults()
                     }
                 }
@@ -115,7 +115,7 @@ class DisplaySettingsGui {
         return swing.hbox{
             button(
                 text: "",
-                icon: new ColorIcon( Color.decode( parent.drs.separatorColor ), size ),
+                icon: new ColorIcon( parent.drs.separatorColor, size ),
                 margin: new Insets(0, 0, 0, 0),
                 borderPainted: false,
                 opaque: false,
@@ -124,10 +124,11 @@ class DisplaySettingsGui {
                 toolTipText: "<html>Click to choose the color of the level marker<br>in the results listing</html>",
                 actionPerformed: {
                     e ->
-                    Color color = JColorChooser.showDialog( win, "Choose a color", Color.decode( parent.drs.separatorColor ) )
-                    if( color ){
+                    java.awt.Color c = JColorChooser.showDialog( win, "Choose a color", parent.drs.separatorColor )
+                    if( c ){
+                        Color color = new Color( c )
                         e.source.icon = new ColorIcon( color, size )
-                        parent.drs.separatorColor = encodeColor( color )
+                        parent.drs.separatorColor = color
                         parent.repaintResults()
                     }
                 }
@@ -229,8 +230,9 @@ class DisplaySettingsGui {
             toolTipText: toolTip,
             actionPerformed: {
                 e ->
-                Color color = JColorChooser.showDialog( win, "Choose a color", getColor() )
-                if( color ){
+                java.awt.Color c = JColorChooser.showDialog( win, "Choose a color", getColor() )
+                if( c ){
+                    Color color = new Color( c )
                     e.source.icon = new ColorIcon( color, size )
                     setColor( color )
                     parent.repaintResults()
@@ -309,9 +311,5 @@ class DisplaySettingsGui {
             slider.setPreferredSize( size )
         }
         return component
-    }
-
-    private String encodeColor( Color color ){
-        return String.format( "#%06x", Integer.valueOf( color.getRGB() & 0x00FFFFFF ) )
     }
 }

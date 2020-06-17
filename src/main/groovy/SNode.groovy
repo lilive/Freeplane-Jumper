@@ -467,7 +467,7 @@ class SNode {
         // Get the highlighted text to display
         Interval displayed = new Interval( start, end )
         int i = start
-        String style = "style='background-color:${M.gui.drs.highlightColor};'"
+        String style = "style='background-color:${M.gui.drs.highlightColor.hex};'"
         String result = ""
         hl.getParts().each{
             Interval itv = it.getIntersection( displayed )
@@ -519,12 +519,12 @@ class SNode {
             } else {
                 if( n.displayTextInvalidated ) n.updateDisplayText()
                 if( ! opened ) s = "</b></font> " + s
-                s = "${n.getShortDisplayText()} <font style='color:${M.gui.drs.separatorColor};'><b>\u00bb" + s
+                s = "${n.getShortDisplayText()} <font style='color:${M.gui.drs.separatorColor.hex};'><b>\u00bb" + s
                 opened = false
             }
             n = n.parent
         }
-        if( opened ) s = "<font style='color:${M.gui.drs.separatorColor};'><b>" + s
+        if( opened ) s = "<font style='color:${M.gui.drs.separatorColor.hex};'><b>" + s
         return s
     }
 }
