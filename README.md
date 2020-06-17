@@ -1,6 +1,6 @@
 # Jumper - The jumping filter for Freeplane
 
-This Freeplane add-on provides a search box that filter the nodes on-the-fly as the user types the search terms, and allows to jump to one of the results.
+This Freeplane add-on provides a search box that filters the nodes on-the-fly as the user types the search terms, and allows to jump to one of the results.
 
 The goal is to provide a quick way to search for nodes, fully keyboard driven.
 

@@ -157,7 +157,7 @@
   </body>
 </html>
 </richcontent>
-<node TEXT="A fully keyboard driven search box that filter the nodes on-the-fly as the user type the search terms, and allow to jump to one of the results." ID="ID_414073752" CREATED="1592410703269" MODIFIED="1592410765467"/>
+<node TEXT="A fully keyboard driven search box that filters the nodes on-the-fly as the user types the search terms, and allows to jump to one of the results." ID="ID_414073752" CREATED="1592410703269" MODIFIED="1592416048652"/>
 </node>
 <node TEXT="changes" POSITION="left" ID="ID_465882181" CREATED="1592410105189" MODIFIED="1592411297238" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
