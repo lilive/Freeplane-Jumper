@@ -273,11 +273,26 @@ class SNode {
             namesHL = buildHightlights( fullMatch.namesMatchers )
             valuesHL = buildHightlights( fullMatch.valuesMatchers )
         }
-        textHighlight = checkHighlight( textHighlight, text, textHL, { coreDisplayInvalidated = shortCoreDisplayInvalidated = true } )
-        detailsHighlight = checkHighlight( detailsHighlight, details, detailsHL, { detailsDisplayInvalidated = true } )
-        noteHighlight = checkHighlight( noteHighlight, note, noteHL, { noteDisplayInvalidated = true } )
-        namesHighlights = checkHighlights( namesHighlights, names, namesHL, { attributesDisplayInvalidated = true } )
-        valuesHighlights = checkHighlights( valuesHighlights, values, valuesHL, { attributesDisplayInvalidated = true } )
+        textHighlight = checkHighlight(
+            textHighlight, text, textHL,
+            { coreDisplayInvalidated = shortCoreDisplayInvalidated = true }
+        )
+        detailsHighlight = checkHighlight(
+            detailsHighlight, details, detailsHL,
+            { detailsDisplayInvalidated = true }
+        )
+        noteHighlight = checkHighlight(
+            noteHighlight, note, noteHL,
+            { noteDisplayInvalidated = true }
+        )
+        namesHighlights = checkHighlights(
+            namesHighlights, names, namesHL,
+            { attributesDisplayInvalidated = true }
+        )
+        valuesHighlights = checkHighlights(
+            valuesHighlights, values, valuesHL,
+            { attributesDisplayInvalidated = true }
+        )
         highlightInvalidated = false
     }
     
@@ -393,7 +408,7 @@ class SNode {
             coreDisplay = getHighlightedText( text, textHighlight, maxDisplayLength, true )
             coreDisplay = "<html>${getAncestorsDisplayText()}$coreDisplay</html>"
         } else {
-            coreDisplay = getTruncatedText( text, maxDisplayLength )
+            coreDisplay = getTruncatedText( text, maxDisplayLength, M.gui.drs.isShowNodesLevel )
             coreDisplay = "<html>$coreDisplay</html>"
         }
         coreDisplayInvalidated = false
@@ -505,11 +520,15 @@ class SNode {
      * Return the text, HTML escaped,
      * and truncated at maxLength with an ellipsis at the end if necessary.
      */
-    private String getTruncatedText( String text, int maxLength ){
+    private String getTruncatedText( String text, int maxLength, boolean addLevel = false ){
         if( ! text ) return ""
         String t = text
         if( t.length() > maxLength ) t = t.substring( 0, maxLength - 1 ) + "\u2026"
-        return HtmlUtils.toHTMLEscapedText( t )
+        t = HtmlUtils.toHTMLEscapedText( t )
+        if( addLevel ){
+            t = "<font style='color:${M.gui.drs.separatorColor.hex};'><b>${'\u00bb'*level}</b></font> ${t}"
+        }
+        return t
     }
 
     private String getAncestorsDisplayText(){
