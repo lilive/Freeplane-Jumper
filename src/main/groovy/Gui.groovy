@@ -191,6 +191,7 @@ class Gui {
                     constraints: gbc( gridx:0, gridy:y++, fill:GBC.HORIZONTAL, weightx:1, weighty:0 )
                 ){
                     widget( patternTF )
+                    hstrut()
                     widget( helpButton )
                 }
 
