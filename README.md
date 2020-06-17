@@ -1,21 +1,23 @@
 # Jumper - The jumping filter for Freeplane
 
-This script for Freeplane provide a search box that filter the nodes on-the-fly as the user type the search terms, and allow to jump to one of the results.
+This Freeplane add-on provide a search box that filter the nodes on-the-fly as the user type the search terms, and allow to jump to one of the results.
 
 The goal is to provide a quick way to search for nodes, fully keyboard driven.
 
 ## Features
 
+- Search in any part of the nodes (core text, details, notes, attributes)
 - Regular search of transversal search (find words across a branch)
-- Plain text or regular expressions search
 - Case sensitive or insensitive search
+- Plain text or regular expressions search
 - Words can be searched in any order
 - Search the whole map, only the siblings of the selected node, or its descendants
 - Results updated as you type
 - Matching text is highlighted in the results list
-- Search string history
-- Keyboard shorcuts for all the search options
-- Persistent search settings across script execution
+- Search history
+- Keyboard shortcuts for all the search options
+- Persistent search settings
+- Options to customize the results appearence
 
 ## Usage
 
@@ -23,14 +25,13 @@ Watch the text field at the top of the window in the demo below. This is were yo
 
 ![demo](demo.gif)
 
-Hover the question mark icon to display the usage instructions.
+Click the question mark icon to display the usage instructions.
 
 ## Installation
 
-- Download *Jumper.groovy* and *Jumper.jar* from [the last release](https://github.com/lilive/Freeplane-Jumper/releases)
-- Put *Jumper.groovy* in the *scripts* subdirectory of the Freeplane homedir (open it via Menu > Tools > Open user directory).
-- Put *Jumper.jar* in the *bin* subdirectory of the Freeplane homedir
-- At Menu > Tools > Preferences > Scripts:
+- Download `jumper.addon.mm` from [the last release](https://github.com/lilive/Freeplane-Jumper/releases)
+- Open this file with Freeplane and follow the instructions
+- Jumper require some permissions to works. At Menu > Tools > Preferences > Scripts:
 
   - Set "script execution enabled" to Yes
   - Check "Permit file read operations"
@@ -41,7 +42,7 @@ Hover the question mark icon to display the usage instructions.
   
 - Restart Freeplane.
 
-You can now execute the script, you will find it in Menu > Edit > Find > Jumper.
+You can now use Jumper, you will find it in Menu > Edit > Find > Jumper.
 
 > :bell: **This is a work in progress. Let me know what you think or propose improvements !**  
 > I will appreciate any feedback. They will help to keep me motivated to improve or maintain the script. Do you use it ? Just let me know :smile:  
@@ -87,7 +88,13 @@ You can now execute the script, you will find it in Menu > Edit > Find > Jumper.
 
 ## Compilation from the sources
 
-There is no need to compile *Jumper.groovy*, Freeplane will do it.
+If you want to build the add-on installation file `jumper.addon.mm` yourself, you have to build the library before to package the addon.
 
-But if you modify the scripts in *src/main* you have to build the *Jumper.jar* yourself.  
-To do that, install gradle and run the command `gradle build` in a terminal. The jar will be created in the *lib* directory.
+- Install Freeplane (of course !)
+- Download the source
+- Install gradle
+- Open `build.gradle` with a text editor and modify the paths in `repositories.dirs[]` to point to your Freeplane installation
+- Get a command prompt at the root of the sources folder
+- `gradle build` will create the file lib/bookmarks.jar
+
+Now you can open `jumper.mm` with Freeplane and package the addon with [Tools > Developer Tools > Package add-on for publication](https://freeplane.sourceforge.io/wiki/index.php/Add-ons_(Develop)). This will create the file `jumper-vx.x.x.addon.mm`. Open this file with Freeplane to install the add-on.
