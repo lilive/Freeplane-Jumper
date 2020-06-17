@@ -36,7 +36,11 @@ class SNode {
     private ArrayList<Highlight> namesHighlights  // Attributes names highlighting
     private ArrayList<Highlight> valuesHighlights // Attributes values highlighting
     private boolean highlightInvalidated          // Is highlight up to date ?
-    private boolean displayTextInvalidated        // Is display texts up to date ?
+    private boolean coreDisplayInvalidated        // Is core display text up to date ?
+    private boolean shortCoreDisplayInvalidated
+    private boolean detailsDisplayInvalidated
+    private boolean noteDisplayInvalidated
+    private boolean attributesDisplayInvalidated
     
     SNode( Node node, SNode parent ){
         this.node = node
@@ -55,7 +59,7 @@ class SNode {
         detailsDisplay    = ""
         noteDisplay       = ""
         attributesDisplay = ""
-        displayTextInvalidated = true
+        invalidateDisplay()
     }
 
     String toString(){
@@ -64,31 +68,31 @@ class SNode {
 
     String getCoreDisplay(){
         if( highlightInvalidated ) updateHighlight()
-        if( displayTextInvalidated ) updateDisplayText()
+        if( coreDisplayInvalidated ) updateCoreDisplayText()
         return coreDisplay
     }
     
     String getDetailsDisplay(){
         if( highlightInvalidated ) updateHighlight()
-        if( displayTextInvalidated ) updateDisplayText()
+        if( detailsDisplayInvalidated ) updateDetailsDisplayText()
         return detailsDisplay
     }
 
     String getNoteDisplay(){
         if( highlightInvalidated ) updateHighlight()
-        if( displayTextInvalidated ) updateDisplayText()
+        if( noteDisplayInvalidated ) updateNoteDisplayText()
         return noteDisplay
     }
 
     String getAttributesDisplay(){
         if( highlightInvalidated ) updateHighlight()
-        if( displayTextInvalidated ) updateDisplayText()
+        if( attributesDisplayInvalidated ) updateAttributesDisplayText()
         return attributesDisplay
     }
 
     private getShortDisplayText(){
         if( highlightInvalidated ) updateHighlight()
-        if( displayTextInvalidated ) updateDisplayText()
+        if( shortCoreDisplayInvalidated ) updateShortCoreDisplayText()
         return shortCoreDisplay
     }
 
@@ -112,7 +116,11 @@ class SNode {
     }
 
     void invalidateDisplay(){
-        displayTextInvalidated = true
+        coreDisplayInvalidated = true
+        shortCoreDisplayInvalidated = true
+        detailsDisplayInvalidated = true
+        noteDisplayInvalidated = true
+        attributesDisplayInvalidated = true
     }
 
     // Search if a node match
@@ -265,11 +273,11 @@ class SNode {
             namesHL = buildHightlights( fullMatch.namesMatchers )
             valuesHL = buildHightlights( fullMatch.valuesMatchers )
         }
-        textHighlight = checkHighlight( textHighlight, text, textHL )
-        detailsHighlight = checkHighlight( detailsHighlight, details, detailsHL )
-        noteHighlight = checkHighlight( noteHighlight, note, noteHL )
-        namesHighlights = checkHighlights( namesHighlights, names, namesHL )
-        valuesHighlights = checkHighlights( valuesHighlights, values, valuesHL )
+        textHighlight = checkHighlight( textHighlight, text, textHL, { coreDisplayInvalidated = shortCoreDisplayInvalidated = true } )
+        detailsHighlight = checkHighlight( detailsHighlight, details, detailsHL, { detailsDisplayInvalidated = true } )
+        noteHighlight = checkHighlight( noteHighlight, note, noteHL, { noteDisplayInvalidated = true } )
+        namesHighlights = checkHighlights( namesHighlights, names, namesHL, { attributesDisplayInvalidated = true } )
+        valuesHighlights = checkHighlights( valuesHighlights, values, valuesHL, { attributesDisplayInvalidated = true } )
         highlightInvalidated = false
     }
     
@@ -325,20 +333,21 @@ class SNode {
      * @param prev The Highlight previously applied to the text. Can be null.
      * @param text The text to highlight
      * @param next The Highlight to check. Can be null.
+     * @param invalidate The function to call to invalidate the displayed text.
      * @return Allways return the next paramater.
      * @exception Throw an exception if the Highlight is not appropriate for this text.
      */
-    private Highlight checkHighlight( Highlight prev, String text, Highlight next ){
+    private Highlight checkHighlight( Highlight prev, String text, Highlight next, Closure invalidate ){
 
         if( ! next || next.empty() ){
-            if( prev ) displayTextInvalidated = true
+            if( prev ) invalidate()
             return next
         }
             
         if( next.start < 0 ) throw new IllegalArgumentException("next.start must be greater or equal to 0")
         if( next.end > text.length() ) throw new IllegalArgumentException("next.end must be lower or equal to text length")
         
-        if( ! prev?.equals( next ) ) displayTextInvalidated = true
+        if( ! prev?.equals( next ) ) invalidate()
         return next
     }
 
@@ -348,6 +357,7 @@ class SNode {
      * @param prevs The list of Highlights previously applied to the list of text. Can be null.
      * @param texts The texts to highlight
      * @param nexts The list of Highlights to check. Can be null.
+     * @param invalidate The function to call to invalidate the displayed texts.
      * @precondition Each list is either null or non empty.
      * @precondition Each non empty list has the same size.
      * @precondition Texts is not null if prevs or nexts are not.
@@ -357,45 +367,45 @@ class SNode {
     private ArrayList<Highlight> checkHighlights(
         ArrayList<Highlight> prevs,
         ArrayList<String> texts,
-        ArrayList<Highlight> nexts
+        ArrayList<Highlight> nexts,
+        Closure invalidate
     ){
         if( ! texts ) return null
         
         if( ! nexts ){
             if( prevs ) prevs.eachWithIndex{
-                hl, i -> checkHighlight( hl, texts[i], null )
+                hl, i -> checkHighlight( hl, texts[i], null, invalidate )
             }
         } else if( ! prevs ){
             nexts.eachWithIndex{
-                hl, i -> checkHighlight( null, texts[i], hl )
+                hl, i -> checkHighlight( null, texts[i], hl, invalidate )
             }
         } else {
             nexts.eachWithIndex{
-                hl, i -> checkHighlight( prevs[i], texts[i], hl )
+                hl, i -> checkHighlight( prevs[i], texts[i], hl, invalidate )
             }
         }
         return nexts
     }
     
-    private void updateDisplayText(){
-        if( ! displayTextInvalidated ) return
-        updateCoreDisplayText()
-        updateDetailsDisplayText()
-        updateNoteDisplayText()
-        updateAttributesDisplayText()
-        displayTextInvalidated = false
-    }
-
     private void updateCoreDisplayText(){
         if( textHighlight ){
             coreDisplay = getHighlightedText( text, textHighlight, maxDisplayLength, true )
             coreDisplay = "<html>${getAncestorsDisplayText()}$coreDisplay</html>"
-            shortCoreDisplay = getHighlightedText( text, textHighlight, M.gui.drs.parentsDisplayLength, false )
         } else {
             coreDisplay = getTruncatedText( text, maxDisplayLength )
             coreDisplay = "<html>$coreDisplay</html>"
+        }
+        coreDisplayInvalidated = false
+    }
+
+    private void updateShortCoreDisplayText(){
+        if( textHighlight ){
+            shortCoreDisplay = getHighlightedText( text, textHighlight, M.gui.drs.parentsDisplayLength, false )
+        } else {
             shortCoreDisplay = getTruncatedText( text, M.gui.drs.parentsDisplayLength )
         }
+        shortCoreDisplayInvalidated = false
     }
 
     private void updateDetailsDisplayText(){
@@ -405,6 +415,7 @@ class SNode {
         } else {
             detailsDisplay = ""
         }
+        detailsDisplayInvalidated = false
     }
     
     private void updateNoteDisplayText(){
@@ -414,6 +425,7 @@ class SNode {
         } else {
             noteDisplay = ""
         }
+        noteDisplayInvalidated = false
     }
     
     private void updateAttributesDisplayText(){
@@ -437,6 +449,7 @@ class SNode {
         } else {
             attributesDisplay = ""
         }
+        attributesDisplayInvalidated = false
     }
 
     // Create the highlighted text to display
@@ -517,7 +530,6 @@ class SNode {
                 else s = "\u00bb</b></font> " + s
                 opened = true
             } else {
-                if( n.displayTextInvalidated ) n.updateDisplayText()
                 if( ! opened ) s = "</b></font> " + s
                 s = "${n.getShortDisplayText()} <font style='color:${M.gui.drs.separatorColor.hex};'><b>\u00bb" + s
                 opened = false

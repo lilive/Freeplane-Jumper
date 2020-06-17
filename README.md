@@ -57,7 +57,7 @@ You can now execute the script, you will find it in Menu > Edit > Find > Jumper.
 
 ---
 
-`[1]` Validate each result display text independently (or just core and rest)  
+`[1]` Show level in all cases  
 `[1]` Do the search in another thread to improve GUI reactivity  
 `[2]` Hide/Show options  
 `[3]` Color chooser for details, note, attributes highlighting  
@@ -76,6 +76,7 @@ You can now execute the script, you will find it in Menu > Edit > Find > Jumper.
 
 ---
 
+`[X]` Validate each result display text independently (or just core and rest)  
 `[X]` Display options in another window  
 `[X]` Options to search in node notes, details, attributes  
 `[X]` Spacing or lines between results  
