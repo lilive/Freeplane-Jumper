@@ -29,7 +29,7 @@ Click the question mark icon to display the usage instructions.
 
 ## Installation
 
-- Download `jumper.addon.mm` from [the last release](https://github.com/lilive/Freeplane-Jumper/releases)
+- Download `jumper-vX.X.X.addon.mm` from [the last release](https://github.com/lilive/Freeplane-Jumper/releases)
 - Open this file with Freeplane and follow the instructions
 - Jumper require some permissions to works. At Menu > Tools > Preferences > Scripts:
 
@@ -89,7 +89,7 @@ You can now use Jumper, you will find it in Menu > Edit > Find > Jumper.
 
 ## Compilation from the sources
 
-If you want to build the add-on installation file `jumper.addon.mm` yourself, you have to build the library before to package the addon.
+If you want to build the add-on installation file `jumper-vX.X.X.addon.mm` yourself, you have to build the library before to package the addon.
 
 - Install Freeplane (of course !)
 - Download the source
@@ -98,4 +98,4 @@ If you want to build the add-on installation file `jumper.addon.mm` yourself, yo
 - Get a command prompt at the root of the sources folder
 - `gradle build` will create the file lib/bookmarks.jar
 
-Now you can open `jumper.mm` with Freeplane and package the addon with [Tools > Developer Tools > Package add-on for publication](https://freeplane.sourceforge.io/wiki/index.php/Add-ons_(Develop)). This will create the file `jumper-vx.x.x.addon.mm`. Open this file with Freeplane to install the add-on.
+Now you can open `jumper.mm` with Freeplane and package the addon with [Tools > Developer Tools > Package add-on for publication](https://freeplane.sourceforge.io/wiki/index.php/Add-ons_(Develop)). This will create the file `jumper-vX.X.X.addon.mm`. Open this file with Freeplane to install the add-on.
