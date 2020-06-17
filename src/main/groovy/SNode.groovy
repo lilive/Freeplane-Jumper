@@ -6,6 +6,7 @@ import java.util.regex.Pattern
 import org.freeplane.api.Node
 import org.freeplane.core.util.HtmlUtils
 import lilive.jumper.Main as M
+import org.freeplane.api.Convertible
 
 // A node that can be found
 class SNode {
@@ -47,12 +48,12 @@ class SNode {
         this.parent = parent
         children = []
         if( parent ) parent.children << this
-        text = node.plainText.replaceAll("\n", " ")
+        text = getNodePlainText( node )
         if( node.details ) details = node.details.plain.replaceAll("\n", " ")
         if( node.note    ) note    = node.note.plain.replaceAll("\n", " ")
         if( node.attributes ){
             names  = node.attributes.names.collect()
-            values = node.attributes.values.collect{ it.plain.replaceAll("\n", " ") }
+            values = getNodeValues( node, names.size() )
         }
         highlightInvalidated = true
         coreDisplay       = ""
@@ -60,6 +61,27 @@ class SNode {
         noteDisplay       = ""
         attributesDisplay = ""
         invalidateDisplay()
+    }
+
+    private String getNodePlainText( Node node ){
+        try{
+            return node.plainText.replaceAll("\n", " ")
+        } catch ( Exception e ){
+            return "[evaluation error !]"
+        }
+    }
+
+    private ArrayList<String> getNodeValues( Node node, int size ){
+        try{
+            return node.attributes.values.collect{
+                it.text.replaceAll( "\n", " " )
+            }
+        } catch( Exception e ){
+            return [ "[value eeeeeee eeeeeeeeeee evaluation error !]" ] * size
+        }
+    }
+
+    private String getNodeDetails( Node node ){
     }
 
     String toString(){
@@ -476,10 +498,12 @@ class SNode {
         // index of the 1rst char to display
         int start = 0
         if( stripBeginning ){
-            int before = 15 // how much characters to display before the highlighted part ?
+            // how much characters to display before the highlighted part ?
+            int before = (float)maxLength / 5
+            if( before > 15 ) before = 15
             start = hl.start
             start -= before
-            if( start < 5 ) start = 0
+            if( start < 2 ) start = 0
         }
 
         // index of the last displayed char + 1
@@ -490,11 +514,12 @@ class SNode {
         
         // If we strip text at the beginning and display the end of the text,
         // perhaps we can display some text before
-        if( start > 0 && length < 80 ){
-            start -= 80 - length
-            if( start < 5 ) start = 0
+        int m = Math.min( 100, maxLength )
+        if( start > 0 && length < m ){
+            start -= m - length
+            if( start < 2 ) start = 0
         }
-        
+
         // Get the highlighted text to display
         Interval displayed = new Interval( start, end )
         int i = start

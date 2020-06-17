@@ -31,7 +31,7 @@ class DisplayResultsSettings {
     Font detailsFont
     int parentsDisplayLength = 15
     int namesDisplayLength = 15
-    int valuesDisplayLength = 15
+    int valuesDisplayLength = 20
 
     void initFonts(){
 
