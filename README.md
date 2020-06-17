@@ -64,8 +64,6 @@ You can now execute the script, you will find it in Menu > Edit > Find > Jumper.
 `[ ]` Option to not search before N characters are typed  
 `[ ]` Option to search entire words only  
 `[ ]` Option to search only at the beginning of the words  
-`[ ]` Selected result background color option (different for core text and the rest)  
-`[ ]` Make an addon (easier installation and possible translations)  
 `[ ]` Option to order results by level  
 `[?]` Jump to next result and jump to previous result without opening the dialog.  
 `[?]` Don't buffer node content (The plain text for each node is buffered to speed up the search. Do we really need it?)  
@@ -73,7 +71,9 @@ You can now execute the script, you will find it in Menu > Edit > Find > Jumper.
 
 ---
 
+`[X]` Make an addon (easier installation and possible translations)  
 `[X]` Color chooser for details, note, attributes highlighting  
+`[X]` Selected result background color option (different for core text and the rest)  
 `[X]` Hide/Show options  
 `[X]` Show level in all cases  
 `[X]` Validate each result display text independently (or just core and rest)  
