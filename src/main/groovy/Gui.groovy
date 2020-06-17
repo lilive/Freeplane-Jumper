@@ -309,6 +309,7 @@ class Gui {
         removeClonesCB.selected = M.isRemoveClones
         
         M.searchOptions.with{
+            
             regexCB.selected           = useRegex
             caseSensitiveCB.selected   = caseSensitive
             fromStartCB.selected       = fromStart
@@ -319,8 +320,7 @@ class Gui {
             attributesNameCB.selected  = useAttributesName
             attributesValueCB.selected = useAttributesValue
             
-            splitPatternCB.enabled            = ! transversal && ! fromStart
-            drsGui.showNodesLevelCB.enabled   = ! transversal
+            splitPatternCB.enabled = ! transversal && ! fromStart
         }
         
         drsGui.showNodesLevelCB.selected = drs.isShowNodesLevel

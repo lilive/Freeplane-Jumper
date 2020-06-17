@@ -78,7 +78,6 @@ class DisplaySettingsGui {
         return swing.checkBox(
             text: showNodesLevelCBLabel,
             selected: parent.drs.isShowNodesLevel,
-            enabled: ! M.searchOptions.transversal,
             mnemonic: parent.showNodesLevelCBMnemonic,
             actionPerformed: { e -> parent.setLevelDisplay( e.source.selected ) },
             focusable: false,
