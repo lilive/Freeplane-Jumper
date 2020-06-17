@@ -44,6 +44,7 @@ import javax.swing.event.DocumentListener
 import lilive.jumper.Main as M
 import javax.swing.border.EmptyBorder
 import javax.swing.border.CompoundBorder
+import javax.swing.JPanel
 
 
 class Gui {
@@ -61,6 +62,10 @@ class Gui {
     DisplayResultsSettings drs = new DisplayResultsSettings()
     private DisplaySettingsGui drsGui
     int showNodesLevelCBMnemonic = KeyEvent.VK_L
+
+    // Container for all search options
+    private JPanel searchOptionsPanel
+    private int toggleOptionsDisplayMnemonic = KeyEvent.VK_TAB
 
     // Which nodes to search options controls
     private ArrayList<CandidatesOption> candidatesOptions
@@ -110,6 +115,24 @@ class Gui {
         
         win.pack()
         fixComponentWidth( scrollPane )
+        setMinimumSizeToCurrentSize()
+        setLocation( ui.frame, settings.winBounds )
+
+        if( ! settings.showOptions ) toggleOptionsDisplay()
+    }
+
+    Map getSaveMap(){
+        Rectangle bounds = getWinBounds()
+        return [
+            drs         : drs,
+            showOptions : searchOptionsPanel.visible,
+            rect        : [
+                x       : bounds.x,
+                y       : bounds.y,
+                width   : bounds.width,
+                height  : bounds.height
+            ]
+        ]
     }
 
     private void build( ui, Candidates candidates ){ 
@@ -118,6 +141,7 @@ class Gui {
 
         patternTF = createPatternTextField( swing, drs.coreFont, drs.patternFontSize )
         resultsJList = createResultsJList( swing, candidates )
+        JButton toggleOptionsButton = createToggleOptionsButton( swing )
         removeClonesCB = createRemoveClonesCB( swing )
         regexCB = createRegexSearchCB( swing )
         caseSensitiveCB = createCaseSensitiveSearchCB( swing )
@@ -128,7 +152,7 @@ class Gui {
         noteCB = createNoteCB( swing )
         attributesNameCB = createAttributesNameCB( swing )
         attributesValueCB = createAttributesValueCB( swing )
-        JButton toggledisplaySettingsButton = createToggleDisplaySettingsButton( swing )
+        JButton toggleDisplaySettingsButton = createToggleDisplaySettingsButton( swing )
         JButton helpButton = createHelpButton( swing )
 
         ButtonGroup candidatesGroup = swing.buttonGroup( id: 'classGroup' )
@@ -151,11 +175,14 @@ class Gui {
                 int y = 0
 
                 // Search string edition
-                
-                widget(
-                    patternTF,
+
+                hbox(
+                    border: emptyBorder( 0, 0, 4, 0 ),
                     constraints: gbc( gridx:0, gridy:y++, fill:GBC.HORIZONTAL, weightx:1, weighty:0 )
-                )
+                ){
+                    widget( patternTF )
+                    widget( helpButton )
+                }
 
                 // Search results
                 
@@ -165,83 +192,81 @@ class Gui {
                     widget( resultsJList )
                 }
 
-                resultLbl = label(
-                    border: emptyBorder( 4, 0, 8, 0 ),
-                    constraints: gbc( gridx:0, gridy:y++, weighty:0, anchor:GBC.LINE_START, fill:GBC.HORIZONTAL )
-                )
-
-                separator(
-                    constraints: gbc( gridx:0, gridy:y++, fill:GBC.HORIZONTAL )
-                )
+                hbox(
+                    border: emptyBorder( 8, 0, 0, 0 ),
+                    constraints: gbc( gridx:0, gridy:y++, weighty:0, fill:GBC.HORIZONTAL )
+                ){
+                    resultLbl = label()
+                    hglue()
+                    widget( toggleOptionsButton )
+                    hstrut()
+                    widget( toggleDisplaySettingsButton )
+                }
 
                 // Search options
                 
-                panel(
-                    constraints: gbc( gridx:0, gridy:y++, fill:GBC.HORIZONTAL, weighty:0 )
-                ){
-                    gridBagLayout()
-                    int x = 0
-
-                    // Which nodes to search
-                    panel(
-                        border: emptyBorder( 0, 0, 0, 32 ),
-                        constraints: gbc( gridx:x++, gridy:0, anchor:GBC.FIRST_LINE_START, weightx:0 )
-                    ){
-                        boxLayout( axis: BoxLayout.Y_AXIS )
-                        label( "<html><b>Nodes to search</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
-                        candidatesOptions.each{ widget( it.radioButton ) }
-                        widget( removeClonesCB )
-                    }
+                searchOptionsPanel = panel(
+                    border: emptyBorder( 8, 0, 0, 0 ),
+                    constraints: gbc( gridx:0, gridy:y++, fill:GBC.HORIZONTAL, anchor:GBC.FIRST_LINE_START, weighty:0 )
+                ){ 
+                    borderLayout()
                     
-                    separator(
-                        orientation:JSeparator.VERTICAL,
-                        constraints: gbc( gridx:x++, gridy:0, fill:GBC.VERTICAL )
-                    )
-
-                    // How to use the search string
-                    panel(
-                        border: emptyBorder( 0, 8, 0, 32 ),
-                        constraints: gbc( gridx:x++, gridy:0, anchor:GBC.FIRST_LINE_START, weightx:0 )
-                    ){
-                        boxLayout( axis: BoxLayout.Y_AXIS )
-                        label( "<html><b>How to search</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
-                        widget( regexCB  )
-                        widget( caseSensitiveCB )
-                        widget( fromStartCB )
-                        widget( splitPatternCB )
-                        widget( transversalCB )
-                    }
+                    separator( constraints: BorderLayout.PAGE_START )
                     
-                    separator(
-                        orientation:JSeparator.VERTICAL,
-                        constraints: gbc( gridx:x++, gridy:0, fill:GBC.VERTICAL )
-                    )
+                    panel( constraints: BorderLayout.LINE_START ){
+                        
+                        gridBagLayout()
+                        int x = 0
 
-                    // Where to search in nodes
-                    panel(
-                        border: emptyBorder( 0, 8, 0, 32 ),
-                        constraints: gbc( gridx:x++, gridy:0, anchor:GBC.FIRST_LINE_START, weightx:0 )
-                    ){
-                        boxLayout( axis: BoxLayout.Y_AXIS )
-                        label( "<html><b>Where to search</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
-                        label( "Search in the node text and...")
-                        widget( detailsCB )
-                        widget( noteCB )
-                        widget( attributesNameCB )
-                        widget( attributesValueCB )
+                        // Which nodes to search
+                        panel(
+                            border: emptyBorder( 0, 0, 0, 32 ),
+                            constraints: gbc( gridx:x++, gridy:0, anchor:GBC.FIRST_LINE_START, weightx:0 )
+                        ){
+                            boxLayout( axis: BoxLayout.Y_AXIS )
+                            label( "<html><b>Nodes to search</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
+                            candidatesOptions.each{ widget( it.radioButton ) }
+                            widget( removeClonesCB )
+                        }
+                        
+                        separator(
+                            orientation:JSeparator.VERTICAL,
+                            constraints: gbc( gridx:x++, gridy:0, fill:GBC.VERTICAL )
+                        )
+
+                        // How to use the search string
+                        panel(
+                            border: emptyBorder( 0, 8, 0, 32 ),
+                            constraints: gbc( gridx:x++, gridy:0, anchor:GBC.FIRST_LINE_START, weightx:0 )
+                        ){
+                            boxLayout( axis: BoxLayout.Y_AXIS )
+                            label( "<html><b>How to search</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
+                            widget( regexCB  )
+                            widget( caseSensitiveCB )
+                            widget( fromStartCB )
+                            widget( splitPatternCB )
+                            widget( transversalCB )
+                        }
+                        
+                        separator(
+                            orientation:JSeparator.VERTICAL,
+                            constraints: gbc( gridx:x++, gridy:0, fill:GBC.VERTICAL )
+                        )
+
+                        // Where to search in nodes
+                        panel(
+                            border: emptyBorder( 0, 8, 0, 32 ),
+                            constraints: gbc( gridx:x++, gridy:0, anchor:GBC.FIRST_LINE_START, weightx:0 )
+                        ){
+                            boxLayout( axis: BoxLayout.Y_AXIS )
+                            label( "<html><b>Where to search</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
+                            label( "Search in the node text and...")
+                            widget( detailsCB )
+                            widget( noteCB )
+                            widget( attributesNameCB )
+                            widget( attributesValueCB )
+                        }
                     }
-                }
-
-                // Display settings and help
-                panel(
-                    border: emptyBorder( 4, 0, 0, 0 ),
-                    constraints: gbc( gridx:0, gridy:y++, fill:GBC.HORIZONTAL, weighty:0 )
-                ){
-                    boxLayout( axis: BoxLayout.X_AXIS )
-                    hglue()
-                    widget( toggledisplaySettingsButton )
-                    hstrut()
-                    widget( helpButton )
                 }
             }
         }
@@ -264,13 +289,17 @@ class Gui {
         drsGui.win.dispose()
     }
     
-    Rectangle getBounds(){
-        return win.getBounds()
+    Rectangle getWinBounds(){
+        Rectangle bounds = win.getBounds()
+        if( ! searchOptionsPanel.visible ){
+            bounds.height += searchOptionsPanel.preferredSize.height
+        }
+        return bounds
     }
 
     void setMinimumSizeToCurrentSize(){
         Dimension size = win.getSize()
-        win.setMinimumSize( size )
+        win.minimumSize = size
     }
 
     void setLocation( JFrame fpFrame, Rectangle rect ){
@@ -334,6 +363,27 @@ class Gui {
         }
         
         drsGui.showNodesLevelCB.selected = drs.isShowNodesLevel
+    }
+
+    void toggleOptionsDisplay(){
+        
+        Dimension panelSize = searchOptionsPanel.preferredSize
+        Dimension mainSize = win.size
+        Dimension minSize = win.minimumSize
+
+        if( searchOptionsPanel.visible ){
+            searchOptionsPanel.visible = false
+            mainSize.height -= panelSize.height
+            minSize.height -= panelSize.height
+        } else {
+            searchOptionsPanel.visible = true
+            mainSize.height += panelSize.height
+            minSize.height += panelSize.height
+        }
+
+        win.minimumSize = minSize
+        win.size = mainSize
+        win.validate()
     }
     
     void toggleDisplaySettings(){
@@ -427,7 +477,7 @@ class Gui {
         drs.setCoreFontSize( size )
         if( win ){
             repaintResults()
-            patternTF.font = drs.font.deriveFont( (float)drs.patternFontSize )
+            patternTF.font = drs.coreFont.deriveFont( (float)drs.patternFontSize )
             patternTF.invalidate()
             win.validate()
         }
@@ -445,6 +495,7 @@ class Gui {
             focusable: true
         )
         tf.border = new CompoundBorder( tf.border, new EmptyBorder( 4, 4, 4, 4 ) )
+        tf.setFocusTraversalKeysEnabled( false )
         return tf
     }
 
@@ -458,6 +509,16 @@ class Gui {
         )
     }
 
+    private JButton createToggleOptionsButton( swing ){
+        return swing.button(
+            text: "Search settings",
+            focusable: false,
+            toolTipText: "Click to toggle the display of the search settings",
+            margin: new Insets( 0, 4, 0, 4 ),
+            actionPerformed: { e -> toggleOptionsDisplay() }
+        )
+    }
+    
     private JCheckBox createRemoveClonesCB( swing ){
         return swing.checkBox(
             text: "Keep only one clone",
@@ -588,8 +649,9 @@ class Gui {
 
     private JButton createToggleDisplaySettingsButton( swing ){
         return swing.button(
-            text: "Display options",
+            text: "Display settings",
             focusable: false,
+            margin: new Insets( 0, 4, 0, 4 ),
             toolTipText: "Click to toggle the display settings window",
             actionPerformed: { e -> toggleDisplaySettings() }
         )
@@ -620,6 +682,7 @@ class Gui {
             }
         }
         dialog.pack()
+        dialog.setLocationRelativeTo( win )
         return dialog
     }
     
@@ -769,6 +832,9 @@ class Gui {
                             case KeyEvent.VK_PAGE_UP:
                                 offsetSelectedResult(-10)
                                 break
+                            case toggleOptionsDisplayMnemonic:
+                                toggleOptionsDisplay()
+                                break
                             default:
                                 keyUsed = false
                         }
@@ -784,6 +850,7 @@ class Gui {
             }
         )
 
+        
         // Set Esc key to close the script
         String onEscPressID = "onEscPress"
         InputMap inputMap = gui.getRootPane().getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT )

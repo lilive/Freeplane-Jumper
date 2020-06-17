@@ -15,26 +15,7 @@ in the Freeplane user directory. The name of the file is lilive_jumper.json
 author: lilive
 */
 
-import lilive.jumper.Gui
-import lilive.jumper.LoadedSettings
-import lilive.jumper.Main
+lilive.jumper.Main.start( node, c, ui )
 
-LoadedSettings settings = Main.init( node, c )
-
-// Create the GUI
-Main.gui = new Gui( ui, Main.candidates, settings )
-
-// Populate the nodes list
-Main.initCandidates()
-
-// Set the GUI minimal size
-Main.gui.pack()
-Main.gui.setMinimumSizeToCurrentSize()
-
-// Place the GUI at its previous location if possible
-Main.gui.setLocation( ui.frame, settings.winBounds )
-
-// Display the GUI
-Main.gui.show()
 
  

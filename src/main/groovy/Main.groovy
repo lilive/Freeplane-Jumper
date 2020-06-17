@@ -38,7 +38,7 @@ class Main {
      * Init the global variables.
      * Try to load them from a previous file settings.
      */
-    static LoadedSettings init( node, c ){
+    static void start( node, c, ui ){
 
         clear()
         
@@ -50,8 +50,11 @@ class Main {
         lastPattern = null
         isCandidatesDefined = false
         historyIdx = history.size()
-        
-        return loadSettings()
+
+        LoadedSettings settings = loadSettings()
+        gui = new Gui( ui, candidates, settings )
+        initCandidates()
+        gui.show()
     }
 
     /**
@@ -73,23 +76,14 @@ class Main {
         
         File file = getSettingsFile()
         
-        Rectangle guiBounds = gui.getBounds()
         DisplayResultsSettings drs = gui.drs
         
         Map datas = [
-            candidatesType: candidatesType,
-            isRemoveClones: isRemoveClones,
-            history:        history,
-            searchOptions:  searchOptions,
-            gui: [
-                drs:        gui.drs,
-                rect: [
-                    x:      guiBounds.x,
-                    y:      guiBounds.y,
-                    width:  guiBounds.width,
-                    height: guiBounds.height
-                ]
-            ]
+            candidatesType : candidatesType,
+            isRemoveClones : isRemoveClones,
+            history        : history,
+            searchOptions  : searchOptions,
+            gui            : gui.getSaveMap()
         ]
 
         try{ 
@@ -127,6 +121,7 @@ class Main {
             if( s.searchOptions  != null ) searchOptions  = new SearchOptions( s.searchOptions )
             history = s.history ?: history
             if( s.gui ) s.gui.with{
+                if( showOptions != null ) settings.showOptions = showOptions
                 if( drs ) settings.drs = DisplayResultsSettings.fromMap( drs )
                 settings.winBounds.x      = rect?.x      ?: 0
                 settings.winBounds.y      = rect?.y      ?: 0

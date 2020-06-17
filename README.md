@@ -58,10 +58,8 @@ You can now execute the script, you will find it in Menu > Edit > Find > Jumper.
 ---
 
 `[1]` Do the search in another thread to improve GUI reactivity  
-`[2]` Hide/Show options  
-`[3]` Color chooser for details, note, attributes highlighting  
-`[4]` Option to center the map on the selected result as the results list is browsed with the arrow keys  
-`[4]` Option to set the search string to the last one when the window open. Select this whole text in the text field, to make it be replaced as soon as the user type someting new.  
+`[1]` Option to center the map on the selected result as the results list is browsed with the arrow keys  
+`[1]` Option to set the search string to the last one when the window open. Select this whole text in the text field, to make it be replaced as soon as the user type someting new.  
 `[ ]` Update code comments (SNode)  
 `[ ]` Option to not search before N characters are typed  
 `[ ]` Option to search entire words only  
@@ -75,6 +73,8 @@ You can now execute the script, you will find it in Menu > Edit > Find > Jumper.
 
 ---
 
+`[X]` Color chooser for details, note, attributes highlighting  
+`[X]` Hide/Show options  
 `[X]` Show level in all cases  
 `[X]` Validate each result display text independently (or just core and rest)  
 `[X]` Display options in another window  

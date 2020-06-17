@@ -26,6 +26,7 @@ class DisplaySettingsGui {
         this.parent = parent
         build( parent )
         win.pack()
+        win.setLocationRelativeTo( parent.win )
     }
 
     private void build( Gui parent ){ 
