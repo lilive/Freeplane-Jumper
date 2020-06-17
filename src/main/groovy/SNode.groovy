@@ -275,7 +275,10 @@ class SNode {
         }
         textHighlight = checkHighlight(
             textHighlight, text, textHL,
-            { coreDisplayInvalidated = shortCoreDisplayInvalidated = true }
+            {
+                coreDisplayInvalidated = true
+                shortCoreDisplayInvalidated = true
+            }
         )
         detailsHighlight = checkHighlight(
             detailsHighlight, details, detailsHL,
@@ -540,22 +543,24 @@ class SNode {
             return ""
         
         String s = ""
-        boolean opened = false
         SNode n = parent
+        int cnt = 0
         
         while( n?.parent ){
             if( ! n.coreMatch?.isMatchOne || ! M.searchOptions.transversal ){
-                if( opened ) s = "\u00bb" + s
-                else s = "\u00bb</b></font> " + s
-                opened = true
+                cnt++
             } else {
-                if( ! opened ) s = "</b></font> " + s
-                s = "${n.getShortDisplayText()} <font style='color:${M.gui.drs.separatorColor.hex};'><b>\u00bb" + s
-                opened = false
+                if( cnt ){
+                    s = "${n.getShortDisplayText()} <font style='color:${M.gui.drs.separatorColor.hex};'><b>${'\u00bb'*(cnt+1)}</b></font> $s"
+                    cnt = 0
+                } else {
+                    s = "${n.getShortDisplayText()} <font style='color:${M.gui.drs.separatorColor.hex};'><b>\u00bb</b></font> $s"
+                }
             }
             n = n.parent
         }
-        if( opened ) s = "<font style='color:${M.gui.drs.separatorColor.hex};'><b>" + s
+        if( cnt && M.gui.drs.isShowNodesLevel )
+            s = "<font style='color:${M.gui.drs.separatorColor.hex};'><b>${'\u00bb'*cnt}</b></font> $s"
         return s
     }
 }
