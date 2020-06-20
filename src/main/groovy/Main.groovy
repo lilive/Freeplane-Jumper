@@ -60,7 +60,7 @@ class Main {
         LoadedSettings settings = loadSettings()
         gui = new Gui( ui, candidates, settings )
         initCandidates()
-        selectPreviousPattern()
+        recallLastPattern( settings.currentPattern )
         gui.show()
     }
 
@@ -229,6 +229,7 @@ class Main {
             candidatesType : candidatesType,
             isRemoveClones : isRemoveClones,
             history        : history,
+            currentPattern : gui.getPatternText() ?: null,
             searchOptions  : searchOptions,
             gui            : gui.getSaveMap()
         ]
@@ -267,6 +268,7 @@ class Main {
             if( s.isRemoveClones != null ) isRemoveClones = s.isRemoveClones
             if( s.searchOptions  != null ) searchOptions  = new SearchOptions( s.searchOptions )
             history = s.history ?: history
+            if( s.currentPattern != null ) settings.currentPattern = s.currentPattern
             if( s.gui ) s.gui.with{
                 if( showOptions != null ) settings.showOptions = showOptions
                 if( drs ) settings.drs = DisplayResultsSettings.fromMap( drs )
@@ -358,6 +360,12 @@ class Main {
         if( history.size() > historyMaxSize ) history = history[ (-historyMaxSize)..-1]
     }
 
+    private static recallLastPattern( String pattern ){
+        if( ! pattern ) return
+        if( history && history.last() == pattern ) selectPreviousPattern()
+        else gui.setPatternText( pattern )
+    }
+    
     private static void searchAgain(){
         if( lastPattern == null ) return
         candidates.filter( lastPattern, searchOptions )
