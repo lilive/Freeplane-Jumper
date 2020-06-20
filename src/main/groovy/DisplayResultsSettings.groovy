@@ -8,9 +8,11 @@ import groovy.swing.SwingBuilder
 
 class DisplayResultsSettings {
     
-    boolean isShowNodesLevel= false
+    boolean showNodesLevel = false
+    boolean followSelected = true
     Color highlightColor                 = new Color( "#ffff99" )
-    Color separatorColor                 = new Color( "#0003ff" )
+    Color levelMarkColor                 = new Color( "#990000" )
+    Color attributesMarkColor            = new Color( "#ff0066" )
     Color coreForegroundColor            = new Color( "#000000" )
     Color coreBackgroundColor            = new Color( "#f4f4f4" )
     Color detailsForegroundColor         = new Color( "#666666" )
@@ -29,9 +31,10 @@ class DisplayResultsSettings {
     private int patternMinFontSize
     Font coreFont
     Font detailsFont
-    int parentsDisplayLength = 15
-    int namesDisplayLength = 15
-    int valuesDisplayLength = 20
+    int nodeDisplayLength     = 200
+    int ancestorDisplayLength = 15
+    int nameDisplayLength     = 15
+    int valueDisplayLength    = 30
 
     void initFonts(){
 
@@ -84,14 +87,17 @@ class DisplayResultsSettings {
     Map toMap(){
         
         Map result = [
-            "isShowNodesLevel"               : isShowNodesLevel,
+            "showNodesLevel"                 : showNodesLevel,
+            "followSelected"                 : followSelected,
             "coreFontSize"                   : coreFontSize,
             "detailsFontSize"                : detailsFontSize,
-            "parentsDisplayLength"           : parentsDisplayLength,
-            "namesDisplayLength"             : namesDisplayLength,
-            "valuesDisplayLength"            : valuesDisplayLength,
+            "nodeDisplayLength"              : nodeDisplayLength,
+            "ancestorDisplayLength"          : ancestorDisplayLength,
+            "nameDisplayLength"              : nameDisplayLength,
+            "valueDisplayLength"             : valueDisplayLength,
             "highlightColor"                 : highlightColor,
-            "separatorColor"                 : separatorColor,
+            "levelMarkColor"                 : levelMarkColor,
+            "attributesMarkColor"            : attributesMarkColor,
             "coreForegroundColor"            : coreForegroundColor,
             "coreBackgroundColor"            : coreBackgroundColor,
             "detailsForegroundColor"         : detailsForegroundColor,

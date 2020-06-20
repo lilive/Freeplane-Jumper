@@ -32,8 +32,14 @@ class Main {
     static boolean isRemoveClones = false
     static boolean isCandidatesDefined = false
     
+    static ArrayList<Boolean> ancestorsFolding
+    static Node previousSelectedNode
     static Node jumpToNode
 
+
+    //////////////////////////////////////////////////////////////////
+    // Main public functions /////////////////////////////////////////
+    
     /**
      * Init the global variables.
      * Try to load them from a previous file settings.
@@ -57,103 +63,62 @@ class Main {
         gui.show()
     }
 
-    /**
-     * Clear some global variables.
-     * This is needed because they are persistant between script calls
-     */
-    static void clear(){
-        
-        node = null
-        c = null
-        currentSNode = null
-        sMap = null
-        gui = null
-        candidates = null
-        jumpToNode = null
-    }
-
-    static void saveSettings(){
-        
-        File file = getSettingsFile()
-        
-        DisplayResultsSettings drs = gui.drs
-        
-        Map datas = [
-            candidatesType : candidatesType,
-            isRemoveClones : isRemoveClones,
-            history        : history,
-            searchOptions  : searchOptions,
-            gui            : gui.getSaveMap()
-        ]
-
-        try{ 
-            JsonGenerator.Options options = new JsonGenerator.Options()
-            options.addConverter( DisplayResultsSettings ){
-                DisplayResultsSettings settings, String key ->
-                settings.toMap()
-            }
-            options.addConverter( Color ){
-                Color color, String key ->
-                color.toString()
-            }
-            JsonGenerator generator = options.build()
-            String json = generator.toJson( datas )
-            file.write( JsonOutput.prettyPrint( json ) )
-        } catch( Exception e){
-            LogUtils.warn( "Jumper: unable to save the settings : $e")
-        }
+    // Jump to the user selected node (if any) and close GUI
+    static void end(){
+        saveSettings()
+        gui.dispose()
+        if( jumpToNode ) selectMapNode( jumpToNode )
+        else selectMapNode( node )
+        clear()
     }
     
-    static LoadedSettings loadSettings(){
-
-        if( gui ) throw new Exception( "Load settings before gui creation" )
-        
-        LoadedSettings settings = new LoadedSettings()
-        
-        File file = getSettingsFile()
-        if( ! file.exists() ) return settings
-
-        settings.winBounds = new Rectangle()
-        try{
-            Map s = new JsonSlurper().parseText( file.text )
-            candidatesType = s.candidatesType ?: candidatesType
-            if( s.isRemoveClones != null ) isRemoveClones = s.isRemoveClones
-            if( s.searchOptions  != null ) searchOptions  = new SearchOptions( s.searchOptions )
-            history = s.history ?: history
-            if( s.gui ) s.gui.with{
-                if( showOptions != null ) settings.showOptions = showOptions
-                if( drs ) settings.drs = DisplayResultsSettings.fromMap( drs )
-                settings.winBounds.x      = rect?.x      ?: 0
-                settings.winBounds.y      = rect?.y      ?: 0
-                settings.winBounds.width  = rect?.width  ?: 0
-                settings.winBounds.height = rect?.height ?: 0
-            }
-        } catch( Exception e){
-            LogUtils.warn( "Jumper: unable to load the settings : $e")
-        }
-
-        historyIdx = history.size()
-        if( settings.winBounds.width <= 0 ) settings.winBounds = null
-
-        return settings
-    }
-
-    static void initCandidates(){
-        if( isCandidatesDefined ) return
-        updateCandidates()
-    }
-
     static void search( String pattern ){
         lastPattern = pattern
         candidates.filter( pattern, searchOptions )
         selectDefaultResult()
     }
 
-    private static void searchAgain(){
-        if( lastPattern == null ) return
-        candidates.filter( lastPattern, searchOptions )
-        selectDefaultResult()
+    static void selectPreviousPattern(){
+        if( historyIdx <= 0 ) return
+        historyIdx--
+        gui.setPatternText( history[ historyIdx ] )
     }
+    
+    static void selectNextPattern(){
+        if( historyIdx >= history.size() ) return
+        historyIdx++
+        if( historyIdx == history.size() ) gui.setPatternText( "" )
+        else gui.setPatternText( history[ historyIdx ] )
+    }
+    
+    // Try to select the currently selected node in the GUI nodes list.
+    static void selectDefaultResult(){
+        if( ! candidates?.results ) return
+        int selectIdx = candidates.results.findIndexOf{ it == currentSNode }
+        if( selectIdx < 0 ) selectIdx = 0
+        gui.setSelectedResult( selectIdx )
+    }
+
+    static void selectMapNode( Node node ){
+
+        if( previousSelectedNode && node == previousSelectedNode ) return
+
+        // Restore folding state of the branch of the previously selected node  
+        restoreFolding()
+
+        // Save folding state of the branch of the new selected node
+        ancestorsFolding = new ArrayList<Boolean>()
+        Node n = node
+        while( n = n.parent )
+            ancestorsFolding << n.isFolded()
+        
+        c.select( node )
+        c.centerOnNode( node )
+        previousSelectedNode = node
+    }
+    
+    //////////////////////////////////////////////////////////////////
+    // Options functions /////////////////////////////////////////////
 
     static void setCandidatesType( int type ){
         int previous = candidatesType
@@ -232,36 +197,98 @@ class Main {
         if( isCandidatesDefined && previous != showOnlyOne ) updateCandidates()
     }
 
-    static void selectPreviousPattern(){
-        if( historyIdx <= 0 ) return
-        historyIdx--
-        gui.setPatternText( history[ historyIdx ] )
-    }
-    
-    static void selectNextPattern(){
-        if( historyIdx >= history.size() ) return
-        historyIdx++
-        if( historyIdx == history.size() ) gui.setPatternText( "" )
-        else gui.setPatternText( history[ historyIdx ] )
-    }
-    
-    // Try to select the currently selected node in the GUI nodes list.
-    static void selectDefaultResult(){
-        if( ! candidates?.results ) return
-        int selectIdx = candidates.results.findIndexOf{ it == currentSNode }
-        if( selectIdx < 0 ) selectIdx = 0
-        gui.setSelectedResult( selectIdx )
+
+    //////////////////////////////////////////////////////////////////
+    // Private functions /////////////////////////////////////////////
+
+    /**
+     * Clear some global variables.
+     * This is needed because they are persistant between script calls
+     */
+    private static void clear(){
+        
+        node = null
+        c = null
+        currentSNode = null
+        sMap = null
+        gui = null
+        candidates = null
+        ancestorsFolding = null
+        previousSelectedNode = null
+        jumpToNode = null
     }
 
-    static void jumpToSelectedResult(){
-        int idx = gui.getSelectedResult()
-        if( idx >= 0 ){
-            addToHistory( gui.getPatternText() )
-            jumpToNode = candidates.results[ idx ].node
-            end()
+    private static void saveSettings(){
+        
+        File file = getSettingsFile()
+        
+        DisplayResultsSettings drs = gui.drs
+        
+        Map datas = [
+            candidatesType : candidatesType,
+            isRemoveClones : isRemoveClones,
+            history        : history,
+            searchOptions  : searchOptions,
+            gui            : gui.getSaveMap()
+        ]
+
+        try{ 
+            JsonGenerator.Options options = new JsonGenerator.Options()
+            options.addConverter( DisplayResultsSettings ){
+                DisplayResultsSettings settings, String key ->
+                settings.toMap()
+            }
+            options.addConverter( Color ){
+                Color color, String key ->
+                color.toString()
+            }
+            JsonGenerator generator = options.build()
+            String json = generator.toJson( datas )
+            file.write( JsonOutput.prettyPrint( json ) )
+        } catch( Exception e){
+            LogUtils.warn( "Jumper: unable to save the settings : $e")
         }
     }
     
+    private static LoadedSettings loadSettings(){
+
+        if( gui ) throw new Exception( "Load settings before gui creation" )
+        
+        LoadedSettings settings = new LoadedSettings()
+        
+        File file = getSettingsFile()
+        if( ! file.exists() ) return settings
+
+        settings.winBounds = new Rectangle()
+        try{
+            Map s = new JsonSlurper().parseText( file.text )
+            candidatesType = s.candidatesType ?: candidatesType
+            if( s.isRemoveClones != null ) isRemoveClones = s.isRemoveClones
+            if( s.searchOptions  != null ) searchOptions  = new SearchOptions( s.searchOptions )
+            history = s.history ?: history
+            if( s.gui ) s.gui.with{
+                if( showOptions != null ) settings.showOptions = showOptions
+                if( drs ) settings.drs = DisplayResultsSettings.fromMap( drs )
+                settings.winBounds.x      = rect?.x      ?: 0
+                settings.winBounds.y      = rect?.y      ?: 0
+                settings.winBounds.width  = rect?.width  ?: 0
+                settings.winBounds.height = rect?.height ?: 0
+            }
+        } catch( Exception e){
+            LogUtils.warn( "Jumper: unable to load the settings : $e")
+        }
+
+        historyIdx = history.size()
+        if( settings.winBounds.width <= 0 ) settings.winBounds = null
+
+        return settings
+    }
+
+    private static void initCandidates(){
+        if( isCandidatesDefined ) return
+        updateCandidates()
+    }
+
     private static File getSettingsFile(){
         File file = new File( c.getUserDirectory().toString() + File.separator + 'lilive_jumper.json' )
     }
@@ -329,15 +356,28 @@ class Main {
         history << pattern
         if( history.size() > historyMaxSize ) history = history[ (-historyMaxSize)..-1]
     }
-        
-    // Jump to the user selected node
-    static void end(){
-        saveSettings()
-        gui.dispose()
-        if( jumpToNode ){
-            c.select( jumpToNode )
-            c.centerOnNode( jumpToNode )
-        }
-        clear()
+
+    private static void searchAgain(){
+        if( lastPattern == null ) return
+        candidates.filter( lastPattern, searchOptions )
+        selectDefaultResult()
     }
+
+    // Restore folding state of the branch of the previously selected node
+    private static void restoreFolding(){
+        if( previousSelectedNode ){
+            Node n = previousSelectedNode
+            while( n = n.parent ) n.setFolded( ancestorsFolding.pop() )
+        }
+    }
+    
+    private static void jumpToSelectedResult(){
+        int idx = gui.getSelectedResult()
+        if( idx >= 0 ){
+            addToHistory( gui.getPatternText() )
+            jumpToNode = candidates.results[ idx ].node
+            end()
+        }
+    }
+    
 }

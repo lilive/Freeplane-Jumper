@@ -45,6 +45,7 @@ import lilive.jumper.Main as M
 import javax.swing.border.EmptyBorder
 import javax.swing.border.CompoundBorder
 import javax.swing.JPanel
+import org.freeplane.api.Node
 
 
 class Gui {
@@ -62,6 +63,7 @@ class Gui {
     DisplayResultsSettings drs = new DisplayResultsSettings()
     private DisplaySettingsGui drsGui
     int showNodesLevelCBMnemonic = KeyEvent.VK_L
+    int followSelectedCBMnemonic = KeyEvent.VK_F
 
     // Container for all search options
     private JPanel searchOptionsPanel
@@ -324,7 +326,8 @@ class Gui {
             splitPatternCB.enabled = ! transversal && ! fromStart
         }
         
-        drsGui.showNodesLevelCB.selected = drs.isShowNodesLevel
+        drsGui.showNodesLevelCB.selected = drs.showNodesLevel
+        drsGui.followSelectedCB.selected = drs.followSelected
     }
 
     void toggleOptionsDisplay(){
@@ -378,6 +381,10 @@ class Gui {
         if( idx >= model.getSize() ) idx = model.getSize() - 1
         resultsJList.setSelectedIndex( idx )
         resultsJList.ensureIndexIsVisible( idx )
+        if( drs.followSelected && patternTF.text ){
+            Node node = resultsJList.selectedValue.node
+            M.selectMapNode( node )
+        }
     }
 
     /**
@@ -408,9 +415,18 @@ class Gui {
     }
     
     private void setLevelDisplay( boolean value ){
-        drs.isShowNodesLevel = value
+        drs.showNodesLevel = value
         updateOptions()
         repaintResults()
+    }
+
+    private void setFollowSelected( boolean value ){
+        drs.followSelected = value
+        updateOptions()
+        if( value && patternTF.text ){
+            Node node = resultsJList.selectedValue.node
+            M.selectMapNode( node )
+        }
     }
 
     private initCandidatesOptions(){
@@ -768,7 +784,11 @@ class Gui {
                                 break
                             case showNodesLevelCBMnemonic:
                                 if( drsGui.showNodesLevelCB.enabled )
-                                    setLevelDisplay( ! drs.isShowNodesLevel )
+                                    setLevelDisplay( ! drs.showNodesLevel )
+                                break
+                            case followSelectedCBMnemonic:
+                                if( drsGui.followSelectedCB.enabled )
+                                    setFollowSelected( ! drs.followSelected )
                                 break
                             case removeClonesCBMnemonic:
                                 if( removeClonesCB.enabled )

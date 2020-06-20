@@ -30,7 +30,6 @@ class SNode {
     CoreMatch coreMatch                           // Result of the last search over this core text node
     FullMatch fullMatch                           // Result of the last search over this node (core, details, note, attributes)
     StackMatch stackMatch                         // Result of the last search over this node and its ancestors
-    private int maxDisplayLength = 200            // Maximum coreDisplay length, without indentation
     private Highlight textHighlight               // Core text highlighting
     private Highlight detailsHighlight            // Details text highlighting
     private Highlight noteHighlight               // Note text highlighting
@@ -430,10 +429,10 @@ class SNode {
     
     private void updateCoreDisplayText(){
         if( textHighlight ){
-            coreDisplay = getHighlightedText( text, textHighlight, maxDisplayLength, true )
+            coreDisplay = getHighlightedText( text, textHighlight, M.gui.drs.nodeDisplayLength, true )
             coreDisplay = "<html>${getAncestorsDisplayText()}$coreDisplay</html>"
         } else {
-            coreDisplay = getTruncatedText( text, maxDisplayLength, M.gui.drs.isShowNodesLevel )
+            coreDisplay = getTruncatedText( text, M.gui.drs.nodeDisplayLength, M.gui.drs.showNodesLevel )
             coreDisplay = "<html>$coreDisplay</html>"
         }
         coreDisplayInvalidated = false
@@ -441,16 +440,16 @@ class SNode {
 
     private void updateShortCoreDisplayText(){
         if( textHighlight ){
-            shortCoreDisplay = getHighlightedText( text, textHighlight, M.gui.drs.parentsDisplayLength, false )
+            shortCoreDisplay = getHighlightedText( text, textHighlight, M.gui.drs.ancestorDisplayLength, false )
         } else {
-            shortCoreDisplay = getTruncatedText( text, M.gui.drs.parentsDisplayLength )
+            shortCoreDisplay = getTruncatedText( text, M.gui.drs.ancestorDisplayLength )
         }
         shortCoreDisplayInvalidated = false
     }
 
     private void updateDetailsDisplayText(){
         if( detailsHighlight ){
-            detailsDisplay = getHighlightedText( details, detailsHighlight, maxDisplayLength, true )
+            detailsDisplay = getHighlightedText( details, detailsHighlight, M.gui.drs.nodeDisplayLength, true )
             detailsDisplay = "<html>Details: $detailsDisplay</html>"
         } else {
             detailsDisplay = ""
@@ -460,7 +459,7 @@ class SNode {
     
     private void updateNoteDisplayText(){
         if( noteHighlight ){
-            noteDisplay = getHighlightedText( note, noteHighlight, maxDisplayLength, true )
+            noteDisplay = getHighlightedText( note, noteHighlight, M.gui.drs.nodeDisplayLength, true )
             noteDisplay = "<html>Note: $noteDisplay</html>"
         } else {
             noteDisplay = ""
@@ -477,12 +476,12 @@ class SNode {
                 String n
                 String v
                 if( nameHL || valueHL ){ 
-                    if( nameHL ) n = getHighlightedText( names[i], nameHL, M.gui.drs.namesDisplayLength, false )
-                    else n = getTruncatedText( names[i], M.gui.drs.namesDisplayLength )
-                    if( valueHL ) v = getHighlightedText( values[i], valueHL, M.gui.drs.valuesDisplayLength, true )
-                    else v = getTruncatedText( values[i], M.gui.drs.valuesDisplayLength )
-                    if( attributesDisplay ) attributesDisplay += " \u25cf "
-                    attributesDisplay = "${attributesDisplay}${n} : ${v}"
+                    if( nameHL ) n = getHighlightedText( names[i], nameHL, M.gui.drs.nameDisplayLength, false )
+                    else n = getTruncatedText( names[i], M.gui.drs.nameDisplayLength )
+                    if( valueHL ) v = getHighlightedText( values[i], valueHL, M.gui.drs.valueDisplayLength, true )
+                    else v = getTruncatedText( values[i], M.gui.drs.valueDisplayLength )
+                    if( attributesDisplay ) attributesDisplay += " <font style='color:${M.gui.drs.attributesMarkColor.hex};'>\u25cf</font> "
+                    attributesDisplay = "${attributesDisplay}${n} : <i>${v}</i>"
                 }
             }
             attributesDisplay = "<html>Attributes : $attributesDisplay</html>"
@@ -554,7 +553,7 @@ class SNode {
         if( t.length() > maxLength ) t = t.substring( 0, maxLength - 1 ) + "\u2026"
         t = HtmlUtils.toHTMLEscapedText( t )
         if( addLevel ){
-            t = "<font style='color:${M.gui.drs.separatorColor.hex};'><b>${'\u00bb'*level}</b></font> ${t}"
+            t = "<font style='color:${M.gui.drs.levelMarkColor.hex};'><b>${'\u00bb'*level}</b></font> ${t}"
         }
         return t
     }
@@ -563,7 +562,7 @@ class SNode {
         
         if(
             ! parent
-            || !( M.searchOptions.transversal || M.gui.drs.isShowNodesLevel )
+            || !( M.searchOptions.transversal || M.gui.drs.showNodesLevel )
         )
             return ""
         
@@ -576,16 +575,16 @@ class SNode {
                 cnt++
             } else {
                 if( cnt ){
-                    s = "${n.getShortDisplayText()} <font style='color:${M.gui.drs.separatorColor.hex};'><b>${'\u00bb'*(cnt+1)}</b></font> $s"
+                    s = "${n.getShortDisplayText()} <font style='color:${M.gui.drs.levelMarkColor.hex};'><b>${'\u00bb'*(cnt+1)}</b></font> $s"
                     cnt = 0
                 } else {
-                    s = "${n.getShortDisplayText()} <font style='color:${M.gui.drs.separatorColor.hex};'><b>\u00bb</b></font> $s"
+                    s = "${n.getShortDisplayText()} <font style='color:${M.gui.drs.levelMarkColor.hex};'><b>\u00bb</b></font> $s"
                 }
             }
             n = n.parent
         }
-        if( cnt && M.gui.drs.isShowNodesLevel )
-            s = "<font style='color:${M.gui.drs.separatorColor.hex};'><b>${'\u00bb'*cnt}</b></font> $s"
+        if( cnt && M.gui.drs.showNodesLevel )
+            s = "<font style='color:${M.gui.drs.levelMarkColor.hex};'><b>${'\u00bb'*cnt}</b></font> $s"
         return s
     }
 }
