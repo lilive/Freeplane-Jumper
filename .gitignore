@@ -3,3 +3,4 @@ build
 .#*
 *.temp
 *.bak
+emacs-edition-macros.el
