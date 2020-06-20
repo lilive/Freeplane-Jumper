@@ -59,21 +59,21 @@ You can now use Jumper, you will find it in Menu > Edit > Find > Jumper.
 ---
 
 `[1]` Do the search in another thread to improve GUI reactivity  
-`[1]` Option to center the map on the selected result as the results list is browsed with the arrow keys  
-`[1]` Option to set the search string to the last one when the window open. Select this whole text in the text field, to make it be replaced as soon as the user type someting new.  
 `[ ]` Decide what to do with filtered nodes: use them ? ignore them ? give the choice ?  
 `[ ]` Give the focus to the help window when it opens.  
-`[ ]` Update code comments (SNode)  
-`[ ]` Option to not search before N characters are typed  
+`[ ]` Update code comments  
 `[ ]` Option to search entire words only  
 `[ ]` Option to search only at the beginning of the words  
 `[ ]` Option to order results by level  
+`[?]` Option to not search before N characters are typed  
 `[?]` Jump to next result and jump to previous result without opening the dialog.  
 `[?]` Don't buffer node content (The plain text for each node is buffered to speed up the search. Do we really need it?)  
 `[?]` Allow to search only in nodes with the same style than the currently selected node. Or provide a style selector.
 
 ---
 
+`[X]` Option to center the map on the selected result as the results list is browsed with the arrow keys  
+`[X]` Option to set the search string to the last one when the window open. Select this whole text in the text field, to make it be replaced as soon as the user type someting new.  
 `[X]` Make an addon (easier installation and possible translations)  
 `[X]` Color chooser for details, note, attributes highlighting  
 `[X]` Selected result background color option (different for core text and the rest)  

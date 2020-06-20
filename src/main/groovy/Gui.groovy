@@ -32,6 +32,7 @@ import javax.swing.JDialog
 import javax.swing.JFrame
 import javax.swing.JLabel
 import javax.swing.JList
+import javax.swing.JPanel
 import javax.swing.JRadioButton
 import javax.swing.JScrollPane
 import javax.swing.JSeparator
@@ -39,12 +40,11 @@ import javax.swing.JSlider
 import javax.swing.JTextField
 import javax.swing.KeyStroke
 import javax.swing.UIManager
+import javax.swing.border.CompoundBorder
+import javax.swing.border.EmptyBorder
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 import lilive.jumper.Main as M
-import javax.swing.border.EmptyBorder
-import javax.swing.border.CompoundBorder
-import javax.swing.JPanel
 import org.freeplane.api.Node
 
 
@@ -62,8 +62,9 @@ class Gui {
     private JLabel resultLbl
     DisplayResultsSettings drs = new DisplayResultsSettings()
     private DisplaySettingsGui drsGui
-    int showNodesLevelCBMnemonic = KeyEvent.VK_L
-    int followSelectedCBMnemonic = KeyEvent.VK_F
+    int showNodesLevelCBMnemonic    = KeyEvent.VK_L
+    int followSelectedCBMnemonic    = KeyEvent.VK_F
+    int recallLastPatternCBMnemonic = KeyEvent.VK_P
 
     // Container for all search options
     private JPanel searchOptionsPanel
@@ -105,10 +106,10 @@ class Gui {
     private String noteCBLabel = "in note"
     private JCheckBox attributesNameCB
     private int attributesNameCBMnemonic = KeyEvent.VK_3
-    private String attributesNameCBLabel = "in attributes name"
+    private String attributesNameCBLabel = "in attributes names"
     private JCheckBox attributesValueCB
     private int attributesValueCBMnemonic = KeyEvent.VK_4
-    private String attributesValueCBLabel = "in attributes value"
+    private String attributesValueCBLabel = "in attributes values"
 
     // History controls
     int historyPreviousKey = KeyEvent.VK_UP
@@ -326,8 +327,9 @@ class Gui {
             splitPatternCB.enabled = ! transversal && ! fromStart
         }
         
-        drsGui.showNodesLevelCB.selected = drs.showNodesLevel
-        drsGui.followSelectedCB.selected = drs.followSelected
+        drsGui.showNodesLevelCB.selected    = drs.showNodesLevel
+        drsGui.followSelectedCB.selected    = drs.followSelected
+        drsGui.recallLastPatternCB.selected = drs.recallLastPattern
     }
 
     void toggleOptionsDisplay(){
@@ -428,6 +430,11 @@ class Gui {
             Node node = resultsJList.selectedValue.node
             M.selectMapNode( node )
         }
+    }
+
+    private void setRecallLastPattern( boolean value ){
+        drs.recallLastPattern = value
+        updateOptions()
     }
 
     private initCandidatesOptions(){
@@ -691,27 +698,25 @@ class Gui {
               - <b>Type</b> the text to search<br/>
               - The node list updates to show only the nodes that contains the text<br/>
               - Select a node with the <b>&lt;Up&gt;</b> and <b>&lt;Down&gt;</b> arrow keys, then press <b>&lt;Enter&gt;</b> to jump to it<br/>
-              - You can also select a node with a mouse click.<br/>
+              - You can also select a node with a mouse click<br/>
+              - Press <b>&lt;Esc&gt;</b> to cancel the search and close the window.<br/>
             <br/>
 
             <font size=+2><b>Search options</b></font><br/>
             <br/>
               You enter a search pattern in the upper text field.<br/>
               This pattern is searched differently according to the search options.<br/>
-              <br>
-              <b>1 -</b> The search can be case sensitive or case insensitive.<br/>
-              <br>
-              <b>2 -</b> The pattern can be taken as a single string to search, including its spaces characters, or it can be<br/>
-              break into differents units that are searched in any order. This allow you to find the sentence<br/>
-              <i>"This is a good day in the mountains"</i> by typing <i>"mountain day"</i>.<br/>
-              <br>
-              <b>3 -</b> The pattern can be taken literally, or as a regular expression. You have to know how to use regular<br/>
-              expressions to use this second option.<br>
-              <br>
-              <b>4 -</b> The pattern can be searched transversely, meaning that a node is considering to match the pattern if<br/>
-              it match only some units and if its parents nodes match the rest of the units. For example, the last node of<br/>
-              a branch [<i>Stories</i>]->[<i>Dracula</i>]->[<i>He fear the daylight</i>] will be found with the search pattern <i>"dracula day stories"</i>.<br/> 
-            <br/>
+              <ul>
+                <li>The search can be case sensitive or case insensitive.</li>
+                <li>The pattern can be taken as a single string to search, including its spaces characters, or it can be<br/>
+                    break into differents units that are searched in any order. This allow you to find the sentence<br/>
+                    <i>"This is a good day in the mountains"</i> by typing <i>"mountain day"</i>.</li>
+                <li>The pattern can be taken literally, or as a regular expression. You have to know how to use regular<br/>
+                    expressions to use this second option.</li>
+                <li>The pattern can be searched transversely, meaning that a node is considering to match the pattern if<br/>
+                    it match only some units and if its parents nodes match the rest of the units. For example, the last node of<br/>
+                    a branch [<i>Stories</i>]->[<i>Dracula</i>]->[<i>He fear the daylight</i>] will be found with the search pattern <i>"dracula day stories"</i>.</li>
+            </ul>
 
             <font size=+2><b>History</b></font><br/>
             <br/>
@@ -730,20 +735,22 @@ class Gui {
               ${candidatesOptionsHelpText}
               <br/>
               Change the search method:<br/>
-              ${getShorcutHelpText( regexCBMnemonic, regexCBLabel )}
-              ${getShorcutHelpText( caseSensitiveCBMnemonic, caseSensitiveCBLabel )}
-              ${getShorcutHelpText( fromStartCBMnemonic, fromStartCBLabel )}
-              ${getShorcutHelpText( splitPatternCBMnemonic, splitPatternCBLabel )}
-              ${getShorcutHelpText( transversalCBMnemonic, transversalCBLabel )}
+              ${getShorcutHelpText( regexCBMnemonic         , regexCBLabel         )}
+              ${getShorcutHelpText( caseSensitiveCBMnemonic , caseSensitiveCBLabel )}
+              ${getShorcutHelpText( fromStartCBMnemonic     , fromStartCBLabel     )}
+              ${getShorcutHelpText( splitPatternCBMnemonic  , splitPatternCBLabel  )}
+              ${getShorcutHelpText( transversalCBMnemonic   , transversalCBLabel   )}
               <br/>
               Change the parts of the nodes where to look:<br/>
-              ${getShorcutHelpText( detailsCBMnemonic, detailsCBLabel )}
-              ${getShorcutHelpText( noteCBMnemonic, noteCBLabel )}
-              ${getShorcutHelpText( attributesNameCBMnemonic, attributesNameCBLabel )}
-              ${getShorcutHelpText( attributesValueCBMnemonic, attributesValueCBLabel )}
+              ${getShorcutHelpText( detailsCBMnemonic         , detailsCBLabel         )}
+              ${getShorcutHelpText( noteCBMnemonic            , noteCBLabel            )}
+              ${getShorcutHelpText( attributesNameCBMnemonic  , attributesNameCBLabel  )}
+              ${getShorcutHelpText( attributesValueCBMnemonic , attributesValueCBLabel )}
               <br/>
               How to display the results:<br/>
-              ${getShorcutHelpText( showNodesLevelCBMnemonic, DisplaySettingsGui.showNodesLevelCBLabel )}
+              ${getShorcutHelpText( showNodesLevelCBMnemonic    , DisplaySettingsGui.showNodesLevelCBLabel    )}
+              ${getShorcutHelpText( followSelectedCBMnemonic    , DisplaySettingsGui.followSelectedCBLabel    )}
+              ${getShorcutHelpText( recallLastPatternCBMnemonic , DisplaySettingsGui.recallLastPatternCBLabel )}
             <br/>
           </html>"""
     }
@@ -790,6 +797,10 @@ class Gui {
                             case followSelectedCBMnemonic:
                                 if( drsGui.followSelectedCB.enabled )
                                     setFollowSelected( ! drs.followSelected )
+                                break
+                            case recallLastPatternCBMnemonic:
+                                if( drsGui.recallLastPatternCB.enabled )
+                                    setRecallLastPattern( ! drs.recallLastPattern )
                                 break
                             case removeClonesCBMnemonic:
                                 if( removeClonesCB.enabled )

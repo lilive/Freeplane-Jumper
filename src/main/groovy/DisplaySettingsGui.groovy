@@ -28,8 +28,10 @@ class DisplaySettingsGui {
     private Gui parent
     private JCheckBox showNodesLevelCB
     private JCheckBox followSelectedCB
-    static String showNodesLevelCBLabel = "Show nodes level"
-    static String followSelectedCBLabel = "Focus selected result"
+    private JCheckBox recallLastPatternCB
+    static String showNodesLevelCBLabel    = "Show nodes level in results list"
+    static String followSelectedCBLabel    = "Focus selected result in map view"
+    static String recallLastPatternCBLabel = "Open window with last search pattern"
 
     DisplaySettingsGui( Gui parent ){
 
@@ -43,8 +45,9 @@ class DisplaySettingsGui {
         
         SwingBuilder swing = new SwingBuilder()
 
-        showNodesLevelCB = createShowNodesLevelCB( swing )
-        followSelectedCB = createFollowSelectedCB( swing )
+        showNodesLevelCB    = createShowNodesLevelCB( swing )
+        followSelectedCB    = createFollowSelectedCB( swing )
+        recallLastPatternCB = createRecallLastPatternCB( swing )
         Dimension size = swing.button(" ").getPreferredSize()
         size.width = size.height
         JComponent coreFontSizeSpinner           = createCoreFontSizeSpinner( swing )
@@ -77,6 +80,10 @@ class DisplaySettingsGui {
                 )
                 widget(
                     followSelectedCB,
+                    constraints: gbc( gridx:0, gridy:y++, anchor:GBC.FIRST_LINE_START )
+                )
+                widget(
+                    recallLastPatternCB,
                     constraints: gbc( gridx:0, gridy:y++, anchor:GBC.FIRST_LINE_START )
                 )
                 vbox(
@@ -145,6 +152,19 @@ class DisplaySettingsGui {
             },
             focusable: false,
             toolTipText: "Always center the selected node in the map view"
+        )
+    }
+    
+    private JCheckBox createRecallLastPatternCB( swing ){
+        return swing.checkBox(
+            text: recallLastPatternCBLabel,
+            selected: parent.drs.recallLastPattern,
+            mnemonic: parent.recallLastPatternCBMnemonic,
+            actionPerformed: {
+                e -> parent.setRecallLastPattern( e.source.selected )
+            },
+            focusable: false,
+            toolTipText: "Keep the last search terms between Jumper invocations"
         )
     }
     

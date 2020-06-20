@@ -10,6 +10,7 @@ class DisplayResultsSettings {
     
     boolean showNodesLevel = false
     boolean followSelected = true
+    boolean recallLastPattern = true
     Color highlightColor                 = new Color( "#ffff99" )
     Color levelMarkColor                 = new Color( "#990000" )
     Color attributesMarkColor            = new Color( "#ff0066" )
@@ -89,6 +90,7 @@ class DisplayResultsSettings {
         Map result = [
             "showNodesLevel"                 : showNodesLevel,
             "followSelected"                 : followSelected,
+            "recallLastPattern"              : recallLastPattern,
             "coreFontSize"                   : coreFontSize,
             "detailsFontSize"                : detailsFontSize,
             "nodeDisplayLength"              : nodeDisplayLength,
