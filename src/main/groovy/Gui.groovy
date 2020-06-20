@@ -364,6 +364,7 @@ class Gui {
 
     void setPatternText( String text ){
         patternTF.text = text
+        if( text ) patternTF.select( 0, text.length() )
     }
 
     String getPatternText(){

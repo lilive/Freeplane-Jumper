@@ -60,6 +60,7 @@ class Main {
         LoadedSettings settings = loadSettings()
         gui = new Gui( ui, candidates, settings )
         initCandidates()
+        selectPreviousPattern()
         gui.show()
     }
 
