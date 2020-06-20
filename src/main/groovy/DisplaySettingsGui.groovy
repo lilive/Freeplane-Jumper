@@ -30,8 +30,8 @@ class DisplaySettingsGui {
     private JCheckBox followSelectedCB
     private JCheckBox recallLastPatternCB
     static String showNodesLevelCBLabel    = "Show nodes level in results list"
-    static String followSelectedCBLabel    = "Focus selected result in map view"
-    static String recallLastPatternCBLabel = "Open window with last search pattern"
+    static String followSelectedCBLabel    = "Focus map view on selected result"
+    static String recallLastPatternCBLabel = "Bring back the window with previous search pattern"
 
     DisplaySettingsGui( Gui parent ){
 
