@@ -184,7 +184,7 @@
 <node TEXT="Fix bad string in v0.5.1" ID="ID_1008839979" CREATED="1592434643367" MODIFIED="1592434655068"/>
 </node>
 <node TEXT="v0.6.0" ID="ID_389362358" CREATED="1592694411204" MODIFIED="1592697093943">
-<node TEXT="Options to focus the map view on the node selected in the results list.&#xa;Option to bring back the window with the previous search pattern." ID="ID_1318343405" CREATED="1592694417076" MODIFIED="1592695173288"/>
+<node TEXT="Option to focus the map view on the node selected in the results list.&#xa;Option to bring back the window with the previous search pattern." ID="ID_1318343405" CREATED="1592694417076" MODIFIED="1592697499828"/>
 </node>
 </node>
 <node TEXT="license" POSITION="left" ID="ID_1975958535" CREATED="1592410105197" MODIFIED="1592696412409" TEXT_SHORTENED="true">
