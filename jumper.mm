@@ -1,9 +1,9 @@
 <map version="freeplane 1.8.0">
 <!--To view this file, download free mind mapping software Freeplane from http://freeplane.sourceforge.net -->
-<node TEXT="Jumper" LOCALIZED_STYLE_REF="styles.topic" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1592434632053" LINK="https://github.com/lilive/Freeplane-Jumper" BORDER_WIDTH="3.0 px" BORDER_COLOR_LIKE_EDGE="false" BORDER_COLOR="#192441" BORDER_DASH="CLOSE_DOTS" BACKGROUND_COLOR="#97c7dc" STYLE="rectangle" SHAPE_HORIZONTAL_MARGIN="6.0 pt" SHAPE_VERTICAL_MARGIN="6.0 pt">
+<node TEXT="Jumper" LOCALIZED_STYLE_REF="styles.topic" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1592696412381" LINK="https://github.com/lilive/Freeplane-Jumper" BORDER_WIDTH="3.0 px" BORDER_COLOR_LIKE_EDGE="false" BORDER_COLOR="#192441" BORDER_DASH="CLOSE_DOTS" BACKGROUND_COLOR="#97c7dc" STYLE="rectangle" SHAPE_HORIZONTAL_MARGIN="6.0 pt" SHAPE_VERTICAL_MARGIN="6.0 pt">
 <font SIZE="16" BOLD="true" ITALIC="true"/>
 <hook NAME="MapStyle" background="#cccccc">
-    <properties fit_to_viewport="false" show_icon_for_attributes="true" show_note_icons="true" show_notes_in_map="true" edgeColorConfiguration="#353535ff,#353535ff,#353535ff,#353535ff,#353535ff"/>
+    <properties show_icon_for_attributes="true" fit_to_viewport="false" show_note_icons="true" show_notes_in_map="true" edgeColorConfiguration="#353535ff,#353535ff,#353535ff,#353535ff,#353535ff"/>
 
 <map_styles>
 <stylenode LOCALIZED_TEXT="styles.root_node" STYLE="oval" UNIFORM_SHAPE="true" VGAP_QUANTITY="24.0 pt">
@@ -95,7 +95,7 @@
 <edge WIDTH="thin"/>
 <attribute_layout NAME_WIDTH="119.24999644607315 pt" VALUE_WIDTH="303.74999094754486 pt"/>
 <attribute NAME="name" VALUE="jumper"/>
-<attribute NAME="version" VALUE="v0.5.2"/>
+<attribute NAME="version" VALUE="v0.5.3"/>
 <attribute NAME="author" VALUE="lilive"/>
 <attribute NAME="freeplaneVersionFrom" VALUE="1.8.5"/>
 <attribute NAME="freeplaneVersionTo" VALUE=""/>
@@ -135,8 +135,9 @@
     </ul>
   </body>
 </html>
+
 </richcontent>
-<node TEXT="description" POSITION="left" ID="ID_971223094" CREATED="1592410105126" MODIFIED="1592411299558" TEXT_SHORTENED="true">
+<node TEXT="description" POSITION="left" ID="ID_971223094" CREATED="1592410105126" MODIFIED="1592696412405" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
 <richcontent TYPE="NOTE">
 
@@ -156,10 +157,11 @@
     </p>
   </body>
 </html>
+
 </richcontent>
 <node TEXT="A fully keyboard driven search box that filters the nodes on-the-fly as the user types the search terms, and allows to jump to one of the results." ID="ID_414073752" CREATED="1592410703269" MODIFIED="1592416048652"/>
 </node>
-<node TEXT="changes" POSITION="left" ID="ID_465882181" CREATED="1592410105189" MODIFIED="1592411297238" TEXT_SHORTENED="true">
+<node TEXT="changes" POSITION="left" ID="ID_465882181" CREATED="1592410105189" MODIFIED="1592696412407" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
 <richcontent TYPE="NOTE">
 
@@ -173,6 +175,7 @@
     </p>
   </body>
 </html>
+
 </richcontent>
 <node TEXT="v0.5.0" ID="ID_607298643" CREATED="1592411201957" MODIFIED="1592411205113">
 <node TEXT="Package the Jumper script into an add-on" ID="ID_603689072" CREATED="1592411206917" MODIFIED="1592411230809"/>
@@ -183,8 +186,11 @@
 <node TEXT="v0.5.2" ID="ID_227076356" CREATED="1592434638152" MODIFIED="1592434642367">
 <node TEXT="Fix bad string in v0.5.1" ID="ID_1008839979" CREATED="1592434643367" MODIFIED="1592434655068"/>
 </node>
+<node TEXT="v0.5.3" ID="ID_389362358" CREATED="1592694411204" MODIFIED="1592694415206">
+<node TEXT="Options to focus the map view on the node selected in the results list.&#xa;Option to bring back the window with the previous search pattern." ID="ID_1318343405" CREATED="1592694417076" MODIFIED="1592695173288"/>
 </node>
-<node TEXT="license" POSITION="left" ID="ID_1975958535" CREATED="1592410105197" MODIFIED="1592411295926" TEXT_SHORTENED="true">
+</node>
+<node TEXT="license" POSITION="left" ID="ID_1975958535" CREATED="1592410105197" MODIFIED="1592696412409" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
 <richcontent TYPE="NOTE">
 
@@ -204,10 +210,11 @@
     </p>
   </body>
 </html>
+
 </richcontent>
 <node TEXT="&#xa;This add-on is free software: you can redistribute it and/or modify&#xa;it under the terms of the GNU General Public License as published by&#xa;the Free Software Foundation, either version 2 of the License, or&#xa;(at your option) any later version.&#xa;&#xa;This program is distributed in the hope that it will be useful,&#xa;but WITHOUT ANY WARRANTY; without even the implied warranty of&#xa;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the&#xa;GNU General Public License for more details.&#xa;" ID="ID_1223814638" CREATED="1592410105205" MODIFIED="1592410105209"/>
 </node>
-<node TEXT="preferences.xml" POSITION="left" ID="ID_739746249" CREATED="1592410105216" MODIFIED="1592411294454" TEXT_SHORTENED="true">
+<node TEXT="preferences.xml" POSITION="left" ID="ID_739746249" CREATED="1592410105216" MODIFIED="1592696412411" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
 <richcontent TYPE="NOTE">
 
@@ -224,9 +231,10 @@
     </p>
   </body>
 </html>
+
 </richcontent>
 </node>
-<node TEXT="default.properties" POSITION="left" ID="ID_1995339540" CREATED="1592410105244" MODIFIED="1592411293365" TEXT_SHORTENED="true">
+<node TEXT="default.properties" POSITION="left" ID="ID_1995339540" CREATED="1592410105244" MODIFIED="1592696412413" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
 <richcontent TYPE="NOTE">
 
@@ -248,9 +256,10 @@
     </ul>
   </body>
 </html>
+
 </richcontent>
 </node>
-<node TEXT="translations" POSITION="left" ID="ID_1981447827" CREATED="1592410105250" MODIFIED="1592411393036" TEXT_SHORTENED="true">
+<node TEXT="translations" POSITION="left" ID="ID_1981447827" CREATED="1592410105250" MODIFIED="1592696412419" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
 <richcontent TYPE="NOTE">
 
@@ -275,6 +284,7 @@
     </ul>
   </body>
 </html>
+
 </richcontent>
 <node TEXT="en" ID="ID_1840514888" CREATED="1592410105258" MODIFIED="1592411456025">
 <attribute_layout NAME_WIDTH="128.99999615550053 pt" VALUE_WIDTH="257.2499923333528 pt"/>
@@ -282,7 +292,7 @@
 <attribute NAME="addons.${name}.Jumper" VALUE="Jumper"/>
 </node>
 </node>
-<node TEXT="deinstall" POSITION="left" ID="ID_1559387002" CREATED="1592410105280" MODIFIED="1592411399846">
+<node TEXT="deinstall" POSITION="left" ID="ID_1559387002" CREATED="1592410105280" MODIFIED="1592696412420">
 <edge COLOR="#353535"/>
 <richcontent TYPE="NOTE">
 
@@ -296,13 +306,14 @@
     </p>
   </body>
 </html>
+
 </richcontent>
 <attribute_layout VALUE_WIDTH="238.4999928921463 pt"/>
 <attribute NAME="delete" VALUE="${installationbase}/addons/${name}.script.xml"/>
 <attribute NAME="delete" VALUE="${installationbase}/addons/${name}/lib/Jumper.jar"/>
 <attribute NAME="delete" VALUE="${installationbase}/addons/${name}/scripts/Jumper.groovy"/>
 </node>
-<node TEXT="scripts" FOLDED="true" POSITION="right" ID="ID_1102722640" CREATED="1592410105291" MODIFIED="1592411120438" TEXT_SHORTENED="true">
+<node TEXT="scripts" FOLDED="true" POSITION="right" ID="ID_1102722640" CREATED="1592410105291" MODIFIED="1592696412426" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
 <richcontent TYPE="NOTE">
 
@@ -421,6 +432,7 @@
     </p>
   </body>
 </html>
+
 </richcontent>
 <node TEXT="Jumper.groovy" ID="ID_1411088832" CREATED="1592410873205" MODIFIED="1592411089974">
 <attribute_layout NAME_WIDTH="193.4999942332508 pt" VALUE_WIDTH="168.74999497085824 pt"/>
@@ -435,7 +447,7 @@
 <attribute NAME="execute_scripts_without_network_restriction" VALUE="false"/>
 </node>
 </node>
-<node TEXT="lib" POSITION="right" ID="ID_1567385455" CREATED="1592410105314" MODIFIED="1592410909622" TEXT_SHORTENED="true">
+<node TEXT="lib" POSITION="right" ID="ID_1567385455" CREATED="1592410105314" MODIFIED="1592696412445" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
 <richcontent TYPE="NOTE">
 
@@ -473,10 +485,11 @@
     </p>
   </body>
 </html>
+
 </richcontent>
 <node TEXT="Jumper.jar" ID="ID_1696766086" CREATED="1592410105335" MODIFIED="1592410105336"/>
 </node>
-<node TEXT="zips" POSITION="right" ID="ID_493457497" CREATED="1592410105338" MODIFIED="1592410911398" TEXT_SHORTENED="true">
+<node TEXT="zips" POSITION="right" ID="ID_493457497" CREATED="1592410105338" MODIFIED="1592696412449" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
 <richcontent TYPE="NOTE">
 
@@ -514,9 +527,10 @@
     </p>
   </body>
 </html>
+
 </richcontent>
 </node>
-<node TEXT="images" POSITION="right" ID="ID_1159861672" CREATED="1592410105346" MODIFIED="1592410912806" TEXT_SHORTENED="true">
+<node TEXT="images" POSITION="right" ID="ID_1159861672" CREATED="1592410105346" MODIFIED="1592696412452" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
 <richcontent TYPE="NOTE">
 
@@ -550,6 +564,7 @@
     </p>
   </body>
 </html>
+
 </richcontent>
 </node>
 </node>
