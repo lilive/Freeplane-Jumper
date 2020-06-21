@@ -58,7 +58,7 @@ Jumper has got many options that control where it search, how it search, and how
   Jumper need the file permissions because it save its settings in the Freeplane user directory. The name of the file is `lilive_jumper.json`.  
   Jumper do not modify your maps, there is no risk to loose informations.
   
-- The installer try to set the keyboard shortcut `Ctrl+Shift+J` to start Jumper. If you already use this shortcut for another thing, it ask you if you want to redefine this shortcut. If you answer "no", you probably want to create your own shortcut after restarting Freeplane (see [Start Jumper](#-start-jumper))
+- The installer try to set the keyboard shortcut `Ctrl+Shift+J` to start Jumper. If you already use this shortcut for another thing, it ask you if you want to redefine this shortcut. If you answer "no", you probably want to create your own shortcut after restarting Freeplane (see [Start Jumper](#start-jumper))
 - Restart Freeplane
 - You can now use Jumper.
 
