@@ -4,6 +4,11 @@ This Freeplane add-on provides a search box that filters the nodes on-the-fly as
 
 The goal is to provide a quick way to search for nodes, fully keyboard driven.
 
+> :bell: **Jumper is a young add-on** (but don't worry, you can't loose datas using it)**.  
+> It may be improved. Let me know what you think or propose improvements !**  
+> I will really appreciate any feedback. They will help to keep me motivated to improve or maintain the add-on.  
+> Do you use it ? Just let me know :smile:. You can write to me in [this github thread](https://github.com/lilive/Freeplane-Jumper/issues/1) or in this [dedicated discussion](https://sourceforge.net/p/freeplane/discussion/758437/thread/e7b4594c02/) in the Freeplane forum.
+
 ## Features
 
 - Search in any part of the nodes (core text, details, notes, attributes)
@@ -11,6 +16,7 @@ The goal is to provide a quick way to search for nodes, fully keyboard driven.
 - Case sensitive or insensitive search
 - Plain text or regular expressions search
 - Words can be searched in any order
+- Can focus the map view on the node selected in the results list
 - Search the whole map, only the siblings of the selected node, or its descendants
 - Results updated as you type
 - Matching text is highlighted in the results list
@@ -21,17 +27,29 @@ The goal is to provide a quick way to search for nodes, fully keyboard driven.
 
 ## Usage
 
-Watch the text field at the top of the window in the demo below. This is were you write the words you're looking for. Above the text field you can see the list of the nodes that match. This list is updated as you type the search. Select a result and press enter to jump to it.
+### Usage exemple
+
+Take a look at the text field at the top of the window in the demo below. This is were you write the words you're looking for. Above the text field you can see the list of the nodes that match. This list is updated as you type the search. Select a result and press `Enter` to jump to it.
 
 ![demo](demo.gif)
 
-Click the question mark icon to display the usage instructions.
+### Start Jumper
+
+To start searching with Jumper, you usually run it with a keyboard shortcut. This is better because Jumper is designed to be used with the keyboard. The default keyboard shortcut is `Ctrl+Shift+J`. However, you can run Jumper with the menu `Edit > Find > Jumper`.
+
+During the installation process, you can refuse to assign `Ctrl+Shift+J` to Jumper. In this case, you can define your own keyboard shortcut: do a Ctrl+click on `Edit > Find > Jumper` and select the shortcut you want.
+
+### Search something
+
+When the jumper dialog pop up, just start typing the text you're looking for. Select a node in the results list with the `Up` and `Down` keyboard arrows and press `Enter` to jump to this node.
+
+Jumper has got many options that control where it search, how it search, and how it display the results. Click the question mark icon to open the usage instructions.
 
 ## Installation
 
 - Download `jumper-vX.X.X.addon.mm` from [the last release](https://github.com/lilive/Freeplane-Jumper/releases)
 - Open this file with Freeplane and follow the instructions
-- Jumper require some permissions to works. At Menu > Tools > Preferences > Scripts:
+- Jumper require some permissions to works. At menu `Tools > Preferences > Scripts`:
 
   - Set "script execution enabled" to Yes
   - Check "Permit file read operations"
@@ -40,13 +58,9 @@ Click the question mark icon to display the usage instructions.
   Jumper need the file permissions because it save its settings in the Freeplane user directory. The name of the file is `lilive_jumper.json`.  
   Jumper do not modify your maps, there is no risk to loose informations.
   
-- Restart Freeplane.
-
-You can now use Jumper, you will find it in Menu > Edit > Find > Jumper.
-
-> :bell: **This is a work in progress. Let me know what you think or propose improvements !**  
-> I will appreciate any feedback. They will help to keep me motivated to improve or maintain the script. Do you use it ? Just let me know :smile:  
-> You can write to me in [this github thread](https://github.com/lilive/Freeplane-Jumper/issues/1) or in this [dedicated discussion](https://sourceforge.net/p/freeplane/discussion/758437/thread/e7b4594c02/) in the Freeplane forum.
+- The installer try to set the keyboard shortcut `Ctrl+Shift+J` to start Jumper. If you already use this shortcut for another thing, it ask you if you want to redefine this shortcut. If you answer "no", you probably want to create your own shortcut after restarting Freeplane (see [Start Jumper](#-start-jumper))
+- Restart Freeplane
+- You can now use Jumper.
 
 ## TODO - Ideas
 
@@ -58,6 +72,7 @@ You can now use Jumper, you will find it in Menu > Edit > Find > Jumper.
 
 ---
 
+`[1]` Don't bring back the last search pattern after some time  
 `[1]` Do the search in another thread to improve GUI reactivity  
 `[ ]` Decide what to do with filtered nodes: use them ? ignore them ? give the choice ?  
 `[ ]` Give the focus to the help window when it opens.  
