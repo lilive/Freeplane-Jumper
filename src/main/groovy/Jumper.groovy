@@ -8,7 +8,7 @@ import org.freeplane.api.Node
 import org.freeplane.core.util.LogUtils
 import org.freeplane.plugin.script.proxy.Proxy
 
-class Main {
+class Jumper {
     
     static Node node
     static Proxy.Controller c

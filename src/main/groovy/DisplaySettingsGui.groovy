@@ -20,7 +20,7 @@ import javax.swing.border.Border
 import javax.swing.border.CompoundBorder
 import javax.swing.border.EmptyBorder
 import javax.swing.border.TitledBorder
-import lilive.jumper.Main as M
+import lilive.jumper.Jumper as J
 
 class DisplaySettingsGui {
 

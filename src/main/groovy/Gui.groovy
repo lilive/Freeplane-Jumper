@@ -44,7 +44,7 @@ import javax.swing.border.CompoundBorder
 import javax.swing.border.EmptyBorder
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
-import lilive.jumper.Main as M
+import lilive.jumper.Jumper as J
 import org.freeplane.api.Node
 
 
@@ -307,12 +307,12 @@ class Gui {
     void updateOptions(){
         
         candidatesOptions.each{
-            it.radioButton.selected = ( it.type == M.candidatesType )
+            it.radioButton.selected = ( it.type == J.candidatesType )
         }
         
-        removeClonesCB.selected = M.isRemoveClones
+        removeClonesCB.selected = J.isRemoveClones
         
-        M.searchOptions.with{
+        J.searchOptions.with{
             
             regexCB.selected           = useRegex
             caseSensitiveCB.selected   = caseSensitive
@@ -386,7 +386,7 @@ class Gui {
         resultsJList.ensureIndexIsVisible( idx )
         if( drs.followSelected && patternTF.text ){
             Node node = resultsJList.selectedValue.node
-            M.selectMapNode( node )
+            J.selectMapNode( node )
         }
     }
 
@@ -428,7 +428,7 @@ class Gui {
         updateOptions()
         if( value && patternTF.text ){
             Node node = resultsJList.selectedValue.node
-            M.selectMapNode( node )
+            J.selectMapNode( node )
         }
     }
 
@@ -442,19 +442,19 @@ class Gui {
         candidatesOptions = []
         
         candidatesOptions << new CandidatesOption(
-            M.ALL_NODES, "Whole map", allNodesMnemonic,
+            J.ALL_NODES, "Whole map", allNodesMnemonic,
             "Search in the whole map"
         )
         candidatesOptions << new CandidatesOption(
-            M.SIBLINGS, "Siblings", siblingsMnemonic,
+            J.SIBLINGS, "Siblings", siblingsMnemonic,
             "Search in the siblings of the selected node"
         )
         candidatesOptions << new CandidatesOption(
-            M.DESCENDANTS, "Descendants", descendantsMnemonic,
+            J.DESCENDANTS, "Descendants", descendantsMnemonic,
             "Search in the descendants of the selected node"
         )
         candidatesOptions << new CandidatesOption(
-            M.SIBLINGS_AND_DESCENDANTS, "Both siblings and descendants", siblingsAndDescendantsMnemonic,
+            J.SIBLINGS_AND_DESCENDANTS, "Both siblings and descendants", siblingsAndDescendantsMnemonic,
             "Search in the siblings of the selected node, and their descendants"
         )
     }
@@ -508,9 +508,9 @@ class Gui {
     private JCheckBox createRemoveClonesCB( swing ){
         return swing.checkBox(
             text: removeClonesCBLabel,
-            selected: M.isRemoveClones,
+            selected: J.isRemoveClones,
             mnemonic: removeClonesCBMnemonic,
-            actionPerformed: { e -> M.setClonesDisplay( e.source.selected ) },
+            actionPerformed: { e -> J.setClonesDisplay( e.source.selected ) },
             focusable: false,
             toolTipText: "Uncheck to display also the clones in the results"
         )
@@ -521,9 +521,9 @@ class Gui {
             id: Integer.toString( option.type ),
             text: option.text,
             buttonGroup: group,
-            selected: M.candidatesType == option.type,
+            selected: J.candidatesType == option.type,
             mnemonic: option.mnemonic,
-            actionPerformed: { e -> M.setCandidatesType( Integer.parseInt( e.source.name ) ) },
+            actionPerformed: { e -> J.setCandidatesType( Integer.parseInt( e.source.name ) ) },
             focusable: false,
             toolTipText: option.toolTip
         )
@@ -532,9 +532,9 @@ class Gui {
     private JCheckBox createRegexSearchCB( swing ){
         return swing.checkBox(
             text: regexCBLabel,
-            selected: M.searchOptions.useRegex,
+            selected: J.searchOptions.useRegex,
             mnemonic: regexCBMnemonic,
-            actionPerformed: { e -> M.setRegexSearch( e.source.selected ) },
+            actionPerformed: { e -> J.setRegexSearch( e.source.selected ) },
             focusable: false,
             toolTipText: "Check to use the search string as a regular expression"
         )
@@ -543,9 +543,9 @@ class Gui {
     private JCheckBox createCaseSensitiveSearchCB( swing ){
         return swing.checkBox(
             text: caseSensitiveCBLabel,
-            selected: M.searchOptions.caseSensitive,
+            selected: J.searchOptions.caseSensitive,
             mnemonic: caseSensitiveCBMnemonic,
-            actionPerformed: { e -> M.setCaseSensitiveSearch( e.source.selected ) },
+            actionPerformed: { e -> J.setCaseSensitiveSearch( e.source.selected ) },
             focusable: false,
             toolTipText: "<html>Check to make the difference between<br>uppercase and lowercase letters</html>"
         )
@@ -554,9 +554,9 @@ class Gui {
     private JCheckBox createSearchFromStartCB( swing ){
         return swing.checkBox(
             text: fromStartCBLabel,
-            selected: M.searchOptions.fromStart,
+            selected: J.searchOptions.fromStart,
             mnemonic: fromStartCBMnemonic,
-            actionPerformed: { e -> M.setSearchFromStart( e.source.selected ) },
+            actionPerformed: { e -> J.setSearchFromStart( e.source.selected ) },
             focusable: false,
             toolTipText: "<html>Check to find only nodes where the search string<br>is at the beginning of the node</html>"
         )
@@ -565,10 +565,10 @@ class Gui {
     private JCheckBox createSplitPatternCB( swing ){
         return swing.checkBox(
             text: splitPatternCBLabel,
-            selected: M.searchOptions.splitPattern,
+            selected: J.searchOptions.splitPattern,
             mnemonic: splitPatternCBMnemonic,
-            actionPerformed: { e -> M.setSplitPattern( e.source.selected ) },
-            enabled: ! M.searchOptions.fromStart && ! M.searchOptions.transversal,
+            actionPerformed: { e -> J.setSplitPattern( e.source.selected ) },
+            enabled: ! J.searchOptions.fromStart && ! J.searchOptions.transversal,
             focusable: false,
             toolTipText: "<html>If checked, the search string is split into words (or smaller regular expressions).<br>" +
                 "A node is considering to match if it contains all of them, in any order.</html>"
@@ -578,9 +578,9 @@ class Gui {
     private JCheckBox createTransversalSearchCB( swing ){
         return swing.checkBox(
             text: transversalCBLabel,
-            selected: M.searchOptions.transversal,
+            selected: J.searchOptions.transversal,
             mnemonic: transversalCBMnemonic,
-            actionPerformed: { e -> M.setTransversalSearch( e.source.selected ) },
+            actionPerformed: { e -> J.setTransversalSearch( e.source.selected ) },
             focusable: false,
             toolTipText: """<html>
                     Check to also find nodes that don't match the entire pattern<br>
@@ -592,9 +592,9 @@ class Gui {
     private JCheckBox createDetailsCB( swing ){
         return swing.checkBox(
             text: detailsCBLabel,
-            selected: M.searchOptions.useDetails,
+            selected: J.searchOptions.useDetails,
             mnemonic: detailsCBMnemonic,
-            actionPerformed: { e -> M.setDetailsSearch( e.source.selected ) },
+            actionPerformed: { e -> J.setDetailsSearch( e.source.selected ) },
             focusable: false,
             toolTipText: "Check to search into the nodes details"
         )
@@ -603,9 +603,9 @@ class Gui {
     private JCheckBox createNoteCB( swing ){
         return swing.checkBox(
             text: noteCBLabel,
-            selected: M.searchOptions.useNote,
+            selected: J.searchOptions.useNote,
             mnemonic: noteCBMnemonic,
-            actionPerformed: { e -> M.setNoteSearch( e.source.selected ) },
+            actionPerformed: { e -> J.setNoteSearch( e.source.selected ) },
             focusable: false,
             toolTipText: "Check to search into the nodes note"
         )
@@ -614,9 +614,9 @@ class Gui {
     private JCheckBox createAttributesNameCB( swing ){
         return swing.checkBox(
             text: attributesNameCBLabel,
-            selected: M.searchOptions.useAttributesName,
+            selected: J.searchOptions.useAttributesName,
             mnemonic: attributesNameCBMnemonic,
-            actionPerformed: { e -> M.setAttributesNameSearch( e.source.selected ) },
+            actionPerformed: { e -> J.setAttributesNameSearch( e.source.selected ) },
             focusable: false,
             toolTipText: "Check to search into the attributes name"
         )
@@ -625,9 +625,9 @@ class Gui {
     private JCheckBox createAttributesValueCB( swing ){
         return swing.checkBox(
             text: attributesValueCBLabel,
-            selected: M.searchOptions.useAttributesValue,
+            selected: J.searchOptions.useAttributesValue,
             mnemonic: attributesValueCBMnemonic,
-            actionPerformed: { e -> M.setAttributesValueSearch( e.source.selected ) },
+            actionPerformed: { e -> J.setAttributesValueSearch( e.source.selected ) },
             focusable: false,
             toolTipText: "Check to search into the attributes value"
         )
@@ -785,10 +785,10 @@ class Gui {
                         boolean keyUsed = true
                         switch( key ){
                             case historyPreviousKey:
-                                M.selectPreviousPattern()
+                                J.selectPreviousPattern()
                                 break
                             case historyNextKey:
-                                M.selectNextPattern()
+                                J.selectNextPattern()
                                 break
                             case showNodesLevelCBMnemonic:
                                 if( drsGui.showNodesLevelCB.enabled )
@@ -804,48 +804,48 @@ class Gui {
                                 break
                             case removeClonesCBMnemonic:
                                 if( removeClonesCB.enabled )
-                                    M.setClonesDisplay( ! M.isRemoveClones )
+                                    J.setClonesDisplay( ! J.isRemoveClones )
                                 break
                             case regexCBMnemonic:
                                 if( regexCB.enabled )
-                                    M.setRegexSearch( ! M.searchOptions.useRegex )
+                                    J.setRegexSearch( ! J.searchOptions.useRegex )
                                 break
                             case caseSensitiveCBMnemonic:
                                 if( caseSensitiveCB.enabled )
-                                    M.setCaseSensitiveSearch( ! M.searchOptions.caseSensitive )
+                                    J.setCaseSensitiveSearch( ! J.searchOptions.caseSensitive )
                                 break
                             case fromStartCBMnemonic:
                                 if( fromStartCB.enabled )
-                                    M.setSearchFromStart( ! M.searchOptions.fromStart )
+                                    J.setSearchFromStart( ! J.searchOptions.fromStart )
                                 break
                             case splitPatternCBMnemonic:
                                 if( splitPatternCB.enabled )
-                                    M.setSplitPattern( ! M.searchOptions.splitPattern )
+                                    J.setSplitPattern( ! J.searchOptions.splitPattern )
                                 break
                             case transversalCBMnemonic:
                                 if( transversalCB.enabled )
-                                    M.setTransversalSearch( ! M.searchOptions.transversal )
+                                    J.setTransversalSearch( ! J.searchOptions.transversal )
                                 break
                             case detailsCBMnemonic:
                                 if( detailsCB.enabled )
-                                    M.setDetailsSearch( ! M.searchOptions.useDetails )
+                                    J.setDetailsSearch( ! J.searchOptions.useDetails )
                                 break
                             case noteCBMnemonic:
                                 if( noteCB.enabled )
-                                    M.setNoteSearch( ! M.searchOptions.useNote )
+                                    J.setNoteSearch( ! J.searchOptions.useNote )
                                 break
                             case attributesNameCBMnemonic:
                                 if( attributesNameCB.enabled )
-                                    M.setAttributesNameSearch( ! M.searchOptions.useAttributesName )
+                                    J.setAttributesNameSearch( ! J.searchOptions.useAttributesName )
                                 break
                             case attributesValueCBMnemonic:
                                 if( attributesValueCB.enabled )
-                                    M.setAttributesValueSearch( ! M.searchOptions.useAttributesValue )
+                                    J.setAttributesValueSearch( ! J.searchOptions.useAttributesValue )
                                 break
                             default:
                                 CandidatesOption option = candidatesOptions.find{ it.mnemonic == key }
                                 if( option ){
-                                    M.setCandidatesType( option.type )
+                                    J.setCandidatesType( option.type )
                                 } else {
                                     keyUsed = false
                                 }
@@ -879,7 +879,7 @@ class Gui {
                 // ENTER to jump to the selected node
                 @Override public void keyReleased(KeyEvent e){
                     int key = e.getKeyCode()
-                    if( key == KeyEvent.VK_ENTER ) M.jumpToSelectedResult()
+                    if( key == KeyEvent.VK_ENTER ) J.jumpToSelectedResult()
                 }
             }
         )
@@ -893,7 +893,7 @@ class Gui {
             onEscPressID,
             new AbstractAction(){
                 @Override public void actionPerformed( ActionEvent e ){
-                    M.end()
+                    J.end()
                 }
             }
         )
@@ -905,13 +905,13 @@ class Gui {
         tf.getDocument().addDocumentListener(
             new DocumentListener() {
                 @Override public void changedUpdate(DocumentEvent e) {
-                    M.search( tf.text )
+                    J.search( tf.text )
                 }
                 @Override public void removeUpdate(DocumentEvent e) {
-                    M.search( tf.text )
+                    J.search( tf.text )
                 }
                 @Override public void insertUpdate(DocumentEvent e) {
-                    M.search( tf.text )
+                    J.search( tf.text )
                 }
             }
         )
@@ -922,7 +922,7 @@ class Gui {
         l.addMouseListener(
             new MouseAdapter(){
                 @Override public void mouseClicked(MouseEvent e){
-                    M.jumpToSelectedResult()
+                    J.jumpToSelectedResult()
                 }
             }
         )
@@ -933,7 +933,7 @@ class Gui {
             new WindowAdapter(){
                 @Override
                 public void windowClosing( WindowEvent event ){
-                    M.end()
+                    J.end()
                 }
             }
         )

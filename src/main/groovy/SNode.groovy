@@ -5,7 +5,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 import org.freeplane.api.Node
 import org.freeplane.core.util.HtmlUtils
-import lilive.jumper.Main as M
+import lilive.jumper.Jumper as J
 import org.freeplane.api.Convertible
 
 // A node that can be found
@@ -429,10 +429,10 @@ class SNode {
     
     private void updateCoreDisplayText(){
         if( textHighlight ){
-            coreDisplay = getHighlightedText( text, textHighlight, M.gui.drs.nodeDisplayLength, true )
+            coreDisplay = getHighlightedText( text, textHighlight, J.gui.drs.nodeDisplayLength, true )
             coreDisplay = "<html>${getAncestorsDisplayText()}$coreDisplay</html>"
         } else {
-            coreDisplay = getTruncatedText( text, M.gui.drs.nodeDisplayLength, M.gui.drs.showNodesLevel )
+            coreDisplay = getTruncatedText( text, J.gui.drs.nodeDisplayLength, J.gui.drs.showNodesLevel )
             coreDisplay = "<html>$coreDisplay</html>"
         }
         coreDisplayInvalidated = false
@@ -440,16 +440,16 @@ class SNode {
 
     private void updateShortCoreDisplayText(){
         if( textHighlight ){
-            shortCoreDisplay = getHighlightedText( text, textHighlight, M.gui.drs.ancestorDisplayLength, false )
+            shortCoreDisplay = getHighlightedText( text, textHighlight, J.gui.drs.ancestorDisplayLength, false )
         } else {
-            shortCoreDisplay = getTruncatedText( text, M.gui.drs.ancestorDisplayLength )
+            shortCoreDisplay = getTruncatedText( text, J.gui.drs.ancestorDisplayLength )
         }
         shortCoreDisplayInvalidated = false
     }
 
     private void updateDetailsDisplayText(){
         if( detailsHighlight ){
-            detailsDisplay = getHighlightedText( details, detailsHighlight, M.gui.drs.nodeDisplayLength, true )
+            detailsDisplay = getHighlightedText( details, detailsHighlight, J.gui.drs.nodeDisplayLength, true )
             detailsDisplay = "<html>Details: $detailsDisplay</html>"
         } else {
             detailsDisplay = ""
@@ -459,7 +459,7 @@ class SNode {
     
     private void updateNoteDisplayText(){
         if( noteHighlight ){
-            noteDisplay = getHighlightedText( note, noteHighlight, M.gui.drs.nodeDisplayLength, true )
+            noteDisplay = getHighlightedText( note, noteHighlight, J.gui.drs.nodeDisplayLength, true )
             noteDisplay = "<html>Note: $noteDisplay</html>"
         } else {
             noteDisplay = ""
@@ -476,11 +476,11 @@ class SNode {
                 String n
                 String v
                 if( nameHL || valueHL ){ 
-                    if( nameHL ) n = getHighlightedText( names[i], nameHL, M.gui.drs.nameDisplayLength, false )
-                    else n = getTruncatedText( names[i], M.gui.drs.nameDisplayLength )
-                    if( valueHL ) v = getHighlightedText( values[i], valueHL, M.gui.drs.valueDisplayLength, true )
-                    else v = getTruncatedText( values[i], M.gui.drs.valueDisplayLength )
-                    if( attributesDisplay ) attributesDisplay += " <font style='color:${M.gui.drs.attributesMarkColor.hex};'>\u25cf</font> "
+                    if( nameHL ) n = getHighlightedText( names[i], nameHL, J.gui.drs.nameDisplayLength, false )
+                    else n = getTruncatedText( names[i], J.gui.drs.nameDisplayLength )
+                    if( valueHL ) v = getHighlightedText( values[i], valueHL, J.gui.drs.valueDisplayLength, true )
+                    else v = getTruncatedText( values[i], J.gui.drs.valueDisplayLength )
+                    if( attributesDisplay ) attributesDisplay += " <font style='color:${J.gui.drs.attributesMarkColor.hex};'>\u25cf</font> "
                     attributesDisplay = "${attributesDisplay}${n} : <i>${v}</i>"
                 }
             }
@@ -522,7 +522,7 @@ class SNode {
         // Get the highlighted text to display
         Interval displayed = new Interval( start, end )
         int i = start
-        String style = "style='background-color:${M.gui.drs.highlightColor.hex};'"
+        String style = "style='background-color:${J.gui.drs.highlightColor.hex};'"
         String result = ""
         hl.getParts().each{
             Interval itv = it.getIntersection( displayed )
@@ -553,7 +553,7 @@ class SNode {
         if( t.length() > maxLength ) t = t.substring( 0, maxLength - 1 ) + "\u2026"
         t = HtmlUtils.toHTMLEscapedText( t )
         if( addLevel ){
-            t = "<font style='color:${M.gui.drs.levelMarkColor.hex};'><b>${'\u00bb'*level}</b></font> ${t}"
+            t = "<font style='color:${J.gui.drs.levelMarkColor.hex};'><b>${'\u00bb'*level}</b></font> ${t}"
         }
         return t
     }
@@ -562,7 +562,7 @@ class SNode {
         
         if(
             ! parent
-            || !( M.searchOptions.transversal || M.gui.drs.showNodesLevel )
+            || !( J.searchOptions.transversal || J.gui.drs.showNodesLevel )
         )
             return ""
         
@@ -571,20 +571,20 @@ class SNode {
         int cnt = 0
         
         while( n?.parent ){
-            if( ! n.coreMatch?.isMatchOne || ! M.searchOptions.transversal ){
+            if( ! n.coreMatch?.isMatchOne || ! J.searchOptions.transversal ){
                 cnt++
             } else {
                 if( cnt ){
-                    s = "${n.getShortDisplayText()} <font style='color:${M.gui.drs.levelMarkColor.hex};'><b>${'\u00bb'*(cnt+1)}</b></font> $s"
+                    s = "${n.getShortDisplayText()} <font style='color:${J.gui.drs.levelMarkColor.hex};'><b>${'\u00bb'*(cnt+1)}</b></font> $s"
                     cnt = 0
                 } else {
-                    s = "${n.getShortDisplayText()} <font style='color:${M.gui.drs.levelMarkColor.hex};'><b>\u00bb</b></font> $s"
+                    s = "${n.getShortDisplayText()} <font style='color:${J.gui.drs.levelMarkColor.hex};'><b>\u00bb</b></font> $s"
                 }
             }
             n = n.parent
         }
-        if( cnt && M.gui.drs.showNodesLevel )
-            s = "<font style='color:${M.gui.drs.levelMarkColor.hex};'><b>${'\u00bb'*cnt}</b></font> $s"
+        if( cnt && J.gui.drs.showNodesLevel )
+            s = "<font style='color:${J.gui.drs.levelMarkColor.hex};'><b>${'\u00bb'*cnt}</b></font> $s"
         return s
     }
 }

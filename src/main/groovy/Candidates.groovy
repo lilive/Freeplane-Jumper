@@ -106,7 +106,7 @@ class Candidates extends DefaultListModel<SNode>{
         SNodes results = new SNodes()
         boolean maxReached = false
         candidates.each{
-            if( ! maxReached || it == Main.currentSNode ){
+            if( ! maxReached || it == Jumper.currentSNode ){
                 if( ! it.search( regexps, options ) ) return
                 results << it
                 maxReached = ( results.size() >= numMax - 1 )
@@ -128,7 +128,7 @@ class Candidates extends DefaultListModel<SNode>{
         }
 
         boolean truncated = newResults.size() >= numMax - 1
-        Main.gui.updateResultLabel( results.size(), candidates.size(), truncated )
+        Jumper.gui.updateResultLabel( results.size(), candidates.size(), truncated )
         
         if( getSize() > 0 ) fireIntervalAdded( this, 0, getSize() - 1 )
     }
