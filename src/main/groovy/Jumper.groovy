@@ -16,9 +16,9 @@ class Jumper {
     private Proxy.Controller c
     private SNode currentSNode
     private SMap sMap
-    private Gui gui
     private Candidates candidates
     private boolean isCandidatesDefined = false
+    private Gui gui
     private String lastPattern
 
     private ArrayList<String> history = []
@@ -77,8 +77,12 @@ class Jumper {
     
     public void search( String pattern ){
         lastPattern = pattern
-        candidates.filter( pattern, searchOptions )
-        selectDefaultResult()
+        candidates.filter(
+            pattern,
+            searchOptions,
+            currentSNode,
+            { selectDefaultResult() }
+        )
     }
 
     public Gui getGui(){
@@ -224,7 +228,7 @@ class Jumper {
     //////////////////////////////////////////////////////////////////
     // Private functions /////////////////////////////////////////////
 
-    private init(){
+    private void init(){
         
         long t11 = System.currentTimeMillis()
         
@@ -333,8 +337,6 @@ class Jumper {
     // Update the candidates, according to the selected options.
     private void updateCandidates(){
 
-        print "upd candidates"
-
         if( ! currentSNode ) return
         if( sMap == null ) return
 
@@ -356,8 +358,12 @@ class Jumper {
                 break
         }
         if( isRemoveClones ) removeClones( sNodes )
-        candidates.set( sNodes, gui.getPatternText(), searchOptions )
-        selectDefaultResult()
+        candidates.set(
+            sNodes,
+            gui.getPatternText(), searchOptions,
+            currentSNode,
+            { selectDefaultResult() }
+        )
     }
 
     /**
@@ -404,8 +410,7 @@ class Jumper {
     
     private void searchAgain(){
         if( lastPattern == null ) return
-        candidates.filter( lastPattern, searchOptions )
-        selectDefaultResult()
+        search( lastPattern )
     }
 
     // Restore folding state of the branch of the previously selected node

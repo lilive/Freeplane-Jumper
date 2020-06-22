@@ -3,6 +3,7 @@ package lilive.jumper
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 import javax.swing.DefaultListModel
+import javax.swing.SwingUtilities
 
 /**
  * Carry the datas for the matching nodes GUI list (a JList)
@@ -16,10 +17,17 @@ class Candidates extends DefaultListModel<SNode>{
     private SNodes candidates = []
     private SNodes results = []
     private int numMax = 100
+    private Thread searchThread
 
-    void set( SNodes candidates, String pattern, SearchOptions options ){
+    void set(
+        SNodes candidates,
+        String pattern,
+        SearchOptions options,
+        SNode mandatoryNode,
+        Closure onDone
+    ){
         this.candidates = candidates
-        filter( pattern, options )
+        filter( pattern, options, mandatoryNode, onDone )
     }
     
     @Override
@@ -50,43 +58,69 @@ class Candidates extends DefaultListModel<SNode>{
      * @param pattern The mask to filter all the searched nodes.
      *                This string is interpreted as one or many regex seperated by a space.
      */
-    void filter( String pattern, SearchOptions options ){
-
+    void filter(
+        String pattern,
+        SearchOptions options,
+        SNode mandatoryNode,
+        Closure onDone
+    ){
+        if( searchThread?.isAlive() ) searchThread.join()
+        
         // Reset the search results for all nodes in the map
         if( candidates ) candidates[0].sMap.each{ it.clearPreviousSearch() }
 
-        pattern = pattern.trim()
+        // Get the differents units in the pattern
+        Set<String> units = makePatternUnits( pattern, options )
         if( ! pattern ){
             update( candidates  )
+            onDone()
             return
         }
+
+        clear()
+
+        searchThread = new Thread( new Runnable(){
+            public void run(){
+                // Get the candidates that match
+                SNodes results = regexFilter( units, candidates, options, mandatoryNode )
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        // Update the results
+                        // Get all the nodes that match the patterns
+                        update( results )
+                        onDone()
+                    }
+                })
+            }
+        })
+        searchThread.start()
+    }
+
+    private Set<String> makePatternUnits( String pattern, SearchOptions options ){
         
-        // Get the differents patterns
+        pattern = pattern.trim()
+
+        if( ! pattern ) return null
+        
         Set<String> patterns
         if(
             ( options.splitPattern && ! options.fromStart )
             || options.transversal
         ){
-            patterns = (Set<String>)( pattern.split( /\s+/ ) )
+            return (Set<String>)( pattern.split( /\s+/ ) )
         } else {
-            patterns = [ pattern ]
+            return [ pattern ]
         }
-
-        // Get all the nodes that match the patterns
-        SNodes results = regexFilter( patterns, candidates, options )
-
-        // Update the results
-        update( results )
     }
-
-    private SNodes regexFilter( Set<String> patterns, SNodes candidates, SearchOptions options ){
+    
+    private SNodes regexFilter( Set<String> units, SNodes candidates, SearchOptions options, SNode mandatoryNode ){
 
         boolean oneValidRegex = false
         Set<Pattern> regexps = []
 
         // Convert patterns to regex
         try {
-            regexps.addAll( patterns.collect{
+            regexps.addAll( units.collect{
                 String exp = it
                 if( ! options.useRegex) exp = Pattern.quote( exp )
                 if( options.fromStart ) exp = "^$exp"
@@ -105,9 +139,8 @@ class Candidates extends DefaultListModel<SNode>{
         // the currently selected node is searched
         SNodes results = new SNodes()
         boolean maxReached = false
-        SNode currentSNode = Jumper.get().currentSNode
         candidates.each{
-            if( ! maxReached || it == currentSNode ){
+            if( ! maxReached || it == mandatoryNode ){
                 if( ! it.search( regexps, options ) ) return
                 results << it
                 maxReached = ( results.size() >= numMax - 1 )
