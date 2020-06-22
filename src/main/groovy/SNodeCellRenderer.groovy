@@ -42,7 +42,7 @@ class SNodeCellRenderer extends Box implements ListCellRenderer<SNode> {
         JList<SNode> list, SNode sNode,
         int index, boolean isSelected, boolean cellHasFocus
     ){
-        DisplayResultsSettings drs = Jumper.gui.drs
+        DisplayResultsSettings drs = Jumper.get().gui.drs
         Font coreFont = drs.coreFont
         Font detailsFont = drs.detailsFont
         

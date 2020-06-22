@@ -44,7 +44,7 @@ import javax.swing.border.CompoundBorder
 import javax.swing.border.EmptyBorder
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
-import lilive.jumper.Jumper as J
+import lilive.jumper.Jumper
 import org.freeplane.api.Node
 
 
@@ -117,6 +117,8 @@ class Gui {
 
     Gui( ui, Candidates candidates, LoadedSettings settings ){
 
+        long startTime = System.currentTimeMillis()
+        
         initCandidatesOptions()
         if( settings.drs ) drs = settings.drs
         drs.initFonts()
@@ -132,6 +134,9 @@ class Gui {
         setLocation( ui.frame, settings.winBounds )
 
         if( ! settings.showOptions ) toggleOptionsDisplay()
+
+        long endTime = System.currentTimeMillis()
+        print "Gui() execution time: ${endTime-startTime} ms"
     }
 
     Map getSaveMap(){
@@ -305,12 +310,14 @@ class Gui {
     
     // Update the controls according to the script current options values
     void updateOptions(){
+
+        Jumper J = Jumper.get()
         
         candidatesOptions.each{
             it.radioButton.selected = ( it.type == J.candidatesType )
         }
         
-        removeClonesCB.selected = J.isRemoveClones
+        removeClonesCB.selected =J.isRemoveClones
         
         J.searchOptions.with{
             
@@ -386,7 +393,7 @@ class Gui {
         resultsJList.ensureIndexIsVisible( idx )
         if( drs.followSelected && patternTF.text ){
             Node node = resultsJList.selectedValue.node
-            J.selectMapNode( node )
+            Jumper.get().selectMapNode( node )
         }
     }
 
@@ -428,7 +435,7 @@ class Gui {
         updateOptions()
         if( value && patternTF.text ){
             Node node = resultsJList.selectedValue.node
-            J.selectMapNode( node )
+            Jumper.get().selectMapNode( node )
         }
     }
 
@@ -440,6 +447,7 @@ class Gui {
     private initCandidatesOptions(){
         
         candidatesOptions = []
+        Jumper J = Jumper.get()
         
         candidatesOptions << new CandidatesOption(
             J.ALL_NODES, "Whole map", allNodesMnemonic,
@@ -506,6 +514,7 @@ class Gui {
     }
     
     private JCheckBox createRemoveClonesCB( swing ){
+        Jumper J = Jumper.get()
         return swing.checkBox(
             text: removeClonesCBLabel,
             selected: J.isRemoveClones,
@@ -517,6 +526,7 @@ class Gui {
     }
 
     private JRadioButton createCandidatesOptionRadioButton( swing, group, CandidatesOption option ){
+        Jumper J = Jumper.get()
         return swing.radioButton(
             id: Integer.toString( option.type ),
             text: option.text,
@@ -530,6 +540,7 @@ class Gui {
     }
 
     private JCheckBox createRegexSearchCB( swing ){
+        Jumper J = Jumper.get()
         return swing.checkBox(
             text: regexCBLabel,
             selected: J.searchOptions.useRegex,
@@ -541,6 +552,7 @@ class Gui {
     }
 
     private JCheckBox createCaseSensitiveSearchCB( swing ){
+        Jumper J = Jumper.get()
         return swing.checkBox(
             text: caseSensitiveCBLabel,
             selected: J.searchOptions.caseSensitive,
@@ -552,6 +564,7 @@ class Gui {
     }
 
     private JCheckBox createSearchFromStartCB( swing ){
+        Jumper J = Jumper.get()
         return swing.checkBox(
             text: fromStartCBLabel,
             selected: J.searchOptions.fromStart,
@@ -563,6 +576,7 @@ class Gui {
     }
 
     private JCheckBox createSplitPatternCB( swing ){
+        Jumper J = Jumper.get()
         return swing.checkBox(
             text: splitPatternCBLabel,
             selected: J.searchOptions.splitPattern,
@@ -576,6 +590,7 @@ class Gui {
     }
 
     private JCheckBox createTransversalSearchCB( swing ){
+        Jumper J = Jumper.get()
         return swing.checkBox(
             text: transversalCBLabel,
             selected: J.searchOptions.transversal,
@@ -590,6 +605,7 @@ class Gui {
     }
 
     private JCheckBox createDetailsCB( swing ){
+        Jumper J = Jumper.get()
         return swing.checkBox(
             text: detailsCBLabel,
             selected: J.searchOptions.useDetails,
@@ -601,6 +617,7 @@ class Gui {
     }
 
     private JCheckBox createNoteCB( swing ){
+        Jumper J = Jumper.get()
         return swing.checkBox(
             text: noteCBLabel,
             selected: J.searchOptions.useNote,
@@ -612,6 +629,7 @@ class Gui {
     }
 
     private JCheckBox createAttributesNameCB( swing ){
+        Jumper J = Jumper.get()
         return swing.checkBox(
             text: attributesNameCBLabel,
             selected: J.searchOptions.useAttributesName,
@@ -623,6 +641,7 @@ class Gui {
     }
 
     private JCheckBox createAttributesValueCB( swing ){
+        Jumper J = Jumper.get()
         return swing.checkBox(
             text: attributesValueCBLabel,
             selected: J.searchOptions.useAttributesValue,
@@ -780,7 +799,10 @@ class Gui {
 
                 // Keys to choose a node in the nodes list
                 @Override public void keyPressed(KeyEvent e){
+                    
                     int key = e.getKeyCode()
+                    Jumper J = Jumper.get()
+                    
                     if( e.isControlDown() || e.isAltDown() ){
                         boolean keyUsed = true
                         switch( key ){
@@ -879,7 +901,7 @@ class Gui {
                 // ENTER to jump to the selected node
                 @Override public void keyReleased(KeyEvent e){
                     int key = e.getKeyCode()
-                    if( key == KeyEvent.VK_ENTER ) J.jumpToSelectedResult()
+                    if( key == KeyEvent.VK_ENTER ) Jumper.get().jumpToSelectedResult()
                 }
             }
         )
@@ -893,7 +915,7 @@ class Gui {
             onEscPressID,
             new AbstractAction(){
                 @Override public void actionPerformed( ActionEvent e ){
-                    J.end()
+                    Jumper.get().end()
                 }
             }
         )
@@ -905,13 +927,13 @@ class Gui {
         tf.getDocument().addDocumentListener(
             new DocumentListener() {
                 @Override public void changedUpdate(DocumentEvent e) {
-                    J.search( tf.text )
+                    Jumper.get().search( tf.text )
                 }
                 @Override public void removeUpdate(DocumentEvent e) {
-                    J.search( tf.text )
+                    Jumper.get().search( tf.text )
                 }
                 @Override public void insertUpdate(DocumentEvent e) {
-                    J.search( tf.text )
+                    Jumper.get().search( tf.text )
                 }
             }
         )
@@ -922,7 +944,7 @@ class Gui {
         l.addMouseListener(
             new MouseAdapter(){
                 @Override public void mouseClicked(MouseEvent e){
-                    J.jumpToSelectedResult()
+                    Jumper.get().jumpToSelectedResult()
                 }
             }
         )
@@ -933,7 +955,7 @@ class Gui {
             new WindowAdapter(){
                 @Override
                 public void windowClosing( WindowEvent event ){
-                    J.end()
+                    Jumper.get().end()
                 }
             }
         )

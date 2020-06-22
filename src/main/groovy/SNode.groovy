@@ -5,7 +5,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 import org.freeplane.api.Node
 import org.freeplane.core.util.HtmlUtils
-import lilive.jumper.Jumper as J
+import lilive.jumper.Jumper
 import org.freeplane.api.Convertible
 
 // A node that can be found
@@ -428,6 +428,7 @@ class SNode {
     }
     
     private void updateCoreDisplayText(){
+        Jumper J = Jumper.get()
         if( textHighlight ){
             coreDisplay = getHighlightedText( text, textHighlight, J.gui.drs.nodeDisplayLength, true )
             coreDisplay = "<html>${getAncestorsDisplayText()}$coreDisplay</html>"
@@ -439,6 +440,7 @@ class SNode {
     }
 
     private void updateShortCoreDisplayText(){
+        Jumper J = Jumper.get()
         if( textHighlight ){
             shortCoreDisplay = getHighlightedText( text, textHighlight, J.gui.drs.ancestorDisplayLength, false )
         } else {
@@ -448,6 +450,7 @@ class SNode {
     }
 
     private void updateDetailsDisplayText(){
+        Jumper J = Jumper.get()
         if( detailsHighlight ){
             detailsDisplay = getHighlightedText( details, detailsHighlight, J.gui.drs.nodeDisplayLength, true )
             detailsDisplay = "<html>Details: $detailsDisplay</html>"
@@ -458,6 +461,7 @@ class SNode {
     }
     
     private void updateNoteDisplayText(){
+        Jumper J = Jumper.get()
         if( noteHighlight ){
             noteDisplay = getHighlightedText( note, noteHighlight, J.gui.drs.nodeDisplayLength, true )
             noteDisplay = "<html>Note: $noteDisplay</html>"
@@ -468,6 +472,7 @@ class SNode {
     }
     
     private void updateAttributesDisplayText(){
+        Jumper J = Jumper.get()
         if( namesHighlights || valuesHighlights ){
             attributesDisplay = ""
             for( int i = 0; i < names.size(); i++ ){
@@ -522,7 +527,7 @@ class SNode {
         // Get the highlighted text to display
         Interval displayed = new Interval( start, end )
         int i = start
-        String style = "style='background-color:${J.gui.drs.highlightColor.hex};'"
+        String style = "style='background-color:${Jumper.get().gui.drs.highlightColor.hex};'"
         String result = ""
         hl.getParts().each{
             Interval itv = it.getIntersection( displayed )
@@ -553,12 +558,14 @@ class SNode {
         if( t.length() > maxLength ) t = t.substring( 0, maxLength - 1 ) + "\u2026"
         t = HtmlUtils.toHTMLEscapedText( t )
         if( addLevel ){
-            t = "<font style='color:${J.gui.drs.levelMarkColor.hex};'><b>${'\u00bb'*level}</b></font> ${t}"
+            t = "<font style='color:${Jumper.get().gui.drs.levelMarkColor.hex};'><b>${'\u00bb'*level}</b></font> ${t}"
         }
         return t
     }
 
     private String getAncestorsDisplayText(){
+
+        Jumper J = Jumper.get()
         
         if(
             ! parent

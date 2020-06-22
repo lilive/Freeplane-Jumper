@@ -7,65 +7,67 @@ import java.awt.Rectangle
 import org.freeplane.api.Node
 import org.freeplane.core.util.LogUtils
 import org.freeplane.plugin.script.proxy.Proxy
+import org.freeplane.plugin.script.proxy.ScriptUtils
+import org.freeplane.core.ui.components.UITools
 
 class Jumper {
     
-    static Node node
-    static Proxy.Controller c
-    static SNode currentSNode
-    static SMap sMap
-    static Gui gui
-    static Candidates candidates
-    static String lastPattern
+    Node node
+    Proxy.Controller c
+    SNode currentSNode
+    SMap sMap
+    Gui gui
+    Candidates candidates
+    boolean isCandidatesDefined = false
+    String lastPattern
 
-    static ArrayList<String> history = []
-    static int historyIdx = 0
-    static int historyMaxSize = 200
+    ArrayList<String> history = []
+    int historyIdx = 0
+    int historyMaxSize = 200
     
-    static SearchOptions searchOptions = new SearchOptions()
+    SearchOptions searchOptions = new SearchOptions()
     
-    static int ALL_NODES = 0
-    static int SIBLINGS = 1
-    static int DESCENDANTS = 2
-    static int SIBLINGS_AND_DESCENDANTS = 3
-    static int candidatesType = ALL_NODES
-    static boolean isRemoveClones = false
-    static boolean isCandidatesDefined = false
+    int ALL_NODES = 0
+    int SIBLINGS = 1
+    int DESCENDANTS = 2
+    int SIBLINGS_AND_DESCENDANTS = 3
+    int candidatesType = ALL_NODES
+    boolean isRemoveClones = false
     
-    static ArrayList<Boolean> ancestorsFolding
-    static Node previousSelectedNode
-    static Node jumpToNode
+    ArrayList<Boolean> ancestorsFolding
+    Node previousSelectedNode
+    Node jumpToNode
 
+    private static Jumper instance
+
+    static Jumper get(){ return instance }
+    
+    private Jumper(){
+        node = ScriptUtils.node()
+        c = ScriptUtils.c()
+    }
 
     //////////////////////////////////////////////////////////////////
     // Main public functions /////////////////////////////////////////
-    
-    /**
-     * Init the global variables.
-     * Try to load them from a previous file settings.
-     */
-    static void start( node, c, ui ){
 
-        clear()
+    // Start Jumper
+    static Jumper start(){
+
+        long startTime = System.currentTimeMillis()
+
+        if( instance ) throw new Exception( "Jumper already started" )
+
+        instance = new Jumper()
+        instance.init()
+
+        long endTime = System.currentTimeMillis()
+        print "start() execution time: ${endTime-startTime} ms"
         
-        this.node = node
-        this.c = c
-        sMap = new SMap( node.map.root )
-        currentSNode = sMap.find{ it.node == node }
-        candidates = new Candidates()
-        lastPattern = null
-        isCandidatesDefined = false
-        historyIdx = history.size()
-
-        LoadedSettings settings = loadSettings()
-        gui = new Gui( ui, candidates, settings )
-        initCandidates()
-        if( gui.drs.recallLastPattern ) recallLastPattern( settings.currentPattern )
-        gui.show()
+        return instance
     }
 
     // Jump to the user selected node (if any) and close GUI
-    static void end(){
+    void end(){
         saveSettings()
         gui.dispose()
         if( jumpToNode ) selectMapNode( jumpToNode )
@@ -73,19 +75,19 @@ class Jumper {
         clear()
     }
     
-    static void search( String pattern ){
+    void search( String pattern ){
         lastPattern = pattern
         candidates.filter( pattern, searchOptions )
         selectDefaultResult()
     }
 
-    static void selectPreviousPattern(){
+    void selectPreviousPattern(){
         if( historyIdx <= 0 ) return
         historyIdx--
         gui.setPatternText( history[ historyIdx ] )
     }
     
-    static void selectNextPattern(){
+    void selectNextPattern(){
         if( historyIdx >= history.size() ) return
         historyIdx++
         if( historyIdx == history.size() ) gui.setPatternText( "" )
@@ -93,14 +95,14 @@ class Jumper {
     }
     
     // Try to select the currently selected node in the GUI nodes list.
-    static void selectDefaultResult(){
+    void selectDefaultResult(){
         if( ! candidates?.results ) return
         int selectIdx = candidates.results.findIndexOf{ it == currentSNode }
         if( selectIdx < 0 ) selectIdx = 0
         gui.setSelectedResult( selectIdx )
     }
 
-    static void selectMapNode( Node node ){
+    void selectMapNode( Node node ){
 
         if( previousSelectedNode && node == previousSelectedNode ) return
 
@@ -121,77 +123,77 @@ class Jumper {
     //////////////////////////////////////////////////////////////////
     // Options functions /////////////////////////////////////////////
 
-    static void setCandidatesType( int type ){
+    void setCandidatesType( int type ){
         int previous = candidatesType
         candidatesType = type
         gui.updateOptions()
         if( isCandidatesDefined && previous != type ) updateCandidates()
     }
 
-    static void setRegexSearch( boolean value ){
+    void setRegexSearch( boolean value ){
         boolean previous = searchOptions.useRegex
         searchOptions.useRegex = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
-    static void setCaseSensitiveSearch( boolean value ){
+    void setCaseSensitiveSearch( boolean value ){
         boolean previous = searchOptions.caseSensitive
         searchOptions.caseSensitive = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
-    static void setSearchFromStart( boolean value ){
+    void setSearchFromStart( boolean value ){
         boolean previous = searchOptions.fromStart
         searchOptions.fromStart = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
-    static void setSplitPattern( boolean value ){
+    void setSplitPattern( boolean value ){
         boolean previous = searchOptions.splitPattern
         searchOptions.splitPattern = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
-    static void setTransversalSearch( boolean value ){
+    void setTransversalSearch( boolean value ){
         boolean previous = searchOptions.transversal
         searchOptions.transversal = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
-    static void setDetailsSearch( boolean value ){
+    void setDetailsSearch( boolean value ){
         boolean previous = searchOptions.useDetails
         searchOptions.useDetails = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
-    static void setNoteSearch( boolean value ){
+    void setNoteSearch( boolean value ){
         boolean previous = searchOptions.useNote
         searchOptions.useNote = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
-    static void setAttributesNameSearch( boolean value ){
+    void setAttributesNameSearch( boolean value ){
         boolean previous = searchOptions.useAttributesName
         searchOptions.useAttributesName = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
-    static void setAttributesValueSearch( boolean value ){
+    void setAttributesValueSearch( boolean value ){
         boolean previous = searchOptions.useAttributesValue
         searchOptions.useAttributesValue = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
-    static void setClonesDisplay( boolean showOnlyOne ){
+    void setClonesDisplay( boolean showOnlyOne ){
         boolean previous = isRemoveClones
         isRemoveClones = showOnlyOne
         gui.updateOptions()
@@ -202,24 +204,33 @@ class Jumper {
     //////////////////////////////////////////////////////////////////
     // Private functions /////////////////////////////////////////////
 
-    /**
-     * Clear some global variables.
-     * This is needed because they are persistant between script calls
-     */
-    private static void clear(){
+    private init(){
         
-        node = null
-        c = null
-        currentSNode = null
-        sMap = null
-        gui = null
-        candidates = null
-        ancestorsFolding = null
-        previousSelectedNode = null
-        jumpToNode = null
+        long t11 = System.currentTimeMillis()
+        
+        sMap = new SMap( node.map.root )
+        currentSNode = sMap.find{ it.node == node }
+        candidates = new Candidates()
+        lastPattern = null
+        isCandidatesDefined = false
+        historyIdx = history.size()
+
+        LoadedSettings settings = loadSettings()
+        gui = new Gui( UITools, candidates, settings )
+        initCandidates()
+        if( gui.drs.recallLastPattern ) recallLastPattern( settings.currentPattern )
+
+        long t12 = System.currentTimeMillis()
+        print "initializations execution time: ${t12-t11} ms"
+
+        gui.show()
     }
 
-    private static void saveSettings(){
+    private void clear(){
+        instance = null
+    }
+
+    private void saveSettings(){
         
         File file = getSettingsFile()
         
@@ -252,7 +263,7 @@ class Jumper {
         }
     }
     
-    private static LoadedSettings loadSettings(){
+    private LoadedSettings loadSettings(){
 
         if( gui ) throw new Exception( "Load settings before gui creation" )
         
@@ -287,17 +298,22 @@ class Jumper {
         return settings
     }
 
-    private static void initCandidates(){
+    private void initCandidates(){
+        long startTime = System.currentTimeMillis()
         if( isCandidatesDefined ) return
         updateCandidates()
+        long endTime = System.currentTimeMillis()
+        print "initCandidates() execution time: ${endTime-startTime} ms"
     }
 
-    private static File getSettingsFile(){
+    private File getSettingsFile(){
         File file = new File( c.getUserDirectory().toString() + File.separator + 'lilive_jumper.json' )
     }
 
     // Update the candidates, according to the selected options.
-    private static void updateCandidates(){
+    private void updateCandidates(){
+
+        print "upd candidates"
 
         if( ! currentSNode ) return
         if( sMap == null ) return
@@ -329,7 +345,7 @@ class Jumper {
      * If a node has some clones, keep the one at the minimal level
      * with the minimal ID
      */
-    private static void removeClones( SNodes sNodes ){
+    private void removeClones( SNodes sNodes ){
 
         // Compare 2 nodes by level than by ID
         Comparator firstClone = {
@@ -353,34 +369,34 @@ class Jumper {
         }
     }
 
-    private static void addToHistory( String pattern ){
+    private void addToHistory( String pattern ){
         if( ! pattern ) return
         history.remove( pattern )
         history << pattern
         if( history.size() > historyMaxSize ) history = history[ (-historyMaxSize)..-1]
     }
 
-    private static recallLastPattern( String pattern ){
+    private recallLastPattern( String pattern ){
         if( ! pattern ) return
         if( history && history.last() == pattern ) selectPreviousPattern()
         else gui.setPatternText( pattern )
     }
     
-    private static void searchAgain(){
+    private void searchAgain(){
         if( lastPattern == null ) return
         candidates.filter( lastPattern, searchOptions )
         selectDefaultResult()
     }
 
     // Restore folding state of the branch of the previously selected node
-    private static void restoreFolding(){
+    private void restoreFolding(){
         if( previousSelectedNode ){
             Node n = previousSelectedNode
             while( n = n.parent ) n.setFolded( ancestorsFolding.pop() )
         }
     }
     
-    private static void jumpToSelectedResult(){
+    private void jumpToSelectedResult(){
         int idx = gui.getSelectedResult()
         if( idx >= 0 ){
             addToHistory( gui.getPatternText() )

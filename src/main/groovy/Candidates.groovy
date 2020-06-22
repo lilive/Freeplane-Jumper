@@ -105,8 +105,9 @@ class Candidates extends DefaultListModel<SNode>{
         // the currently selected node is searched
         SNodes results = new SNodes()
         boolean maxReached = false
+        SNode currentSNode = Jumper.get().currentSNode
         candidates.each{
-            if( ! maxReached || it == Jumper.currentSNode ){
+            if( ! maxReached || it == currentSNode ){
                 if( ! it.search( regexps, options ) ) return
                 results << it
                 maxReached = ( results.size() >= numMax - 1 )
@@ -128,7 +129,7 @@ class Candidates extends DefaultListModel<SNode>{
         }
 
         boolean truncated = newResults.size() >= numMax - 1
-        Jumper.gui.updateResultLabel( results.size(), candidates.size(), truncated )
+        Jumper.get().gui.updateResultLabel( results.size(), candidates.size(), truncated )
         
         if( getSize() > 0 ) fireIntervalAdded( this, 0, getSize() - 1 )
     }

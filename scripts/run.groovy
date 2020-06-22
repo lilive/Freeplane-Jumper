@@ -15,7 +15,7 @@ in the Freeplane user directory. The name of the file is lilive_jumper.json
 author: lilive
 */
 
-lilive.jumper.Jumper.start( node, c, ui )
+lilive.jumper.Jumper.start()
 
 
  
