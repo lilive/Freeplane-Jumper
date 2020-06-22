@@ -433,10 +433,10 @@ class SNode {
         Jumper J = Jumper.get()
         if( textHighlight ){
             coreDisplay = getHighlightedText( text, textHighlight, J.gui.drs.nodeDisplayLength, true )
-            coreDisplay = "<html><nobr>${getAncestorsDisplayText()}$coreDisplay</html>"
+            coreDisplay = "<html><nobr>${getAncestorsDisplayText()}$coreDisplay</nobr></html>"
         } else {
             coreDisplay = getTruncatedText( text, J.gui.drs.nodeDisplayLength, J.gui.drs.showNodesLevel )
-            coreDisplay = "<html><nobr>$coreDisplay</html>"
+            coreDisplay = "<html><nobr>$coreDisplay</nobr></html>"
         }
         coreDisplayInvalidated = false
     }
@@ -455,7 +455,7 @@ class SNode {
         Jumper J = Jumper.get()
         if( detailsHighlight ){
             detailsDisplay = getHighlightedText( details, detailsHighlight, J.gui.drs.nodeDisplayLength, true )
-            detailsDisplay = "<html><nobr>Details: $detailsDisplay</html>"
+            detailsDisplay = "<html><nobr>Details: $detailsDisplay</nobr></html>"
         } else {
             detailsDisplay = ""
         }
@@ -466,7 +466,7 @@ class SNode {
         Jumper J = Jumper.get()
         if( noteHighlight ){
             noteDisplay = getHighlightedText( note, noteHighlight, J.gui.drs.nodeDisplayLength, true )
-            noteDisplay = "<html><nobr>Note: $noteDisplay</html>"
+            noteDisplay = "<html><nobr>Note: $noteDisplay</nobr></html>"
         } else {
             noteDisplay = ""
         }
@@ -491,7 +491,7 @@ class SNode {
                     attributesDisplay = "${attributesDisplay}${n} : <i>${v}</i>"
                 }
             }
-            attributesDisplay = "<html><nobr>Attributes : $attributesDisplay</html>"
+            attributesDisplay = "<html><nobr>Attributes : $attributesDisplay</nobr></html>"
         } else {
             attributesDisplay = ""
         }
