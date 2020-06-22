@@ -12,35 +12,35 @@ import org.freeplane.core.ui.components.UITools
 
 class Jumper {
     
-    Node node
-    Proxy.Controller c
-    SNode currentSNode
-    SMap sMap
-    Gui gui
-    Candidates candidates
-    boolean isCandidatesDefined = false
-    String lastPattern
+    private Node node
+    private Proxy.Controller c
+    private SNode currentSNode
+    private SMap sMap
+    private Gui gui
+    private Candidates candidates
+    private boolean isCandidatesDefined = false
+    private String lastPattern
 
-    ArrayList<String> history = []
-    int historyIdx = 0
-    int historyMaxSize = 200
+    private ArrayList<String> history = []
+    private int historyIdx = 0
+    private final int historyMaxSize = 200
     
-    SearchOptions searchOptions = new SearchOptions()
+    private SearchOptions searchOptions = new SearchOptions()
     
-    int ALL_NODES = 0
-    int SIBLINGS = 1
-    int DESCENDANTS = 2
-    int SIBLINGS_AND_DESCENDANTS = 3
-    int candidatesType = ALL_NODES
-    boolean isRemoveClones = false
+    public final int ALL_NODES = 0
+    public final int SIBLINGS = 1
+    public final int DESCENDANTS = 2
+    public final int SIBLINGS_AND_DESCENDANTS = 3
+    private int candidatesType = ALL_NODES
+    private boolean isRemoveClones = false
     
-    ArrayList<Boolean> ancestorsFolding
-    Node previousSelectedNode
-    Node jumpToNode
+    private ArrayList<Boolean> ancestorsFolding
+    private Node previousSelectedNode
+    private Node jumpToNode
 
     private static Jumper instance
 
-    static Jumper get(){ return instance }
+    public static Jumper get(){ return instance }
     
     private Jumper(){
         node = ScriptUtils.node()
@@ -51,7 +51,7 @@ class Jumper {
     // Main public functions /////////////////////////////////////////
 
     // Start Jumper
-    static Jumper start(){
+    public static Jumper start(){
 
         long startTime = System.currentTimeMillis()
 
@@ -67,7 +67,7 @@ class Jumper {
     }
 
     // Jump to the user selected node (if any) and close GUI
-    void end(){
+    public void end(){
         saveSettings()
         gui.dispose()
         if( jumpToNode ) selectMapNode( jumpToNode )
@@ -75,19 +75,27 @@ class Jumper {
         clear()
     }
     
-    void search( String pattern ){
+    public void search( String pattern ){
         lastPattern = pattern
         candidates.filter( pattern, searchOptions )
         selectDefaultResult()
     }
 
-    void selectPreviousPattern(){
+    public Gui getGui(){
+        return gui
+    }
+
+    public SNode getCurrentSNode(){
+        return currentSNode
+    }
+    
+    public void selectPreviousPattern(){
         if( historyIdx <= 0 ) return
         historyIdx--
         gui.setPatternText( history[ historyIdx ] )
     }
     
-    void selectNextPattern(){
+    public void selectNextPattern(){
         if( historyIdx >= history.size() ) return
         historyIdx++
         if( historyIdx == history.size() ) gui.setPatternText( "" )
@@ -95,14 +103,14 @@ class Jumper {
     }
     
     // Try to select the currently selected node in the GUI nodes list.
-    void selectDefaultResult(){
+    public void selectDefaultResult(){
         if( ! candidates?.results ) return
         int selectIdx = candidates.results.findIndexOf{ it == currentSNode }
         if( selectIdx < 0 ) selectIdx = 0
         gui.setSelectedResult( selectIdx )
     }
 
-    void selectMapNode( Node node ){
+    public void selectMapNode( Node node ){
 
         if( previousSelectedNode && node == previousSelectedNode ) return
 
@@ -123,81 +131,93 @@ class Jumper {
     //////////////////////////////////////////////////////////////////
     // Options functions /////////////////////////////////////////////
 
-    void setCandidatesType( int type ){
+    public void setCandidatesType( int type ){
         int previous = candidatesType
         candidatesType = type
         gui.updateOptions()
         if( isCandidatesDefined && previous != type ) updateCandidates()
     }
 
-    void setRegexSearch( boolean value ){
+    public int getCandidatesType(){
+        return candidatesType
+    }
+
+    public void setRegexSearch( boolean value ){
         boolean previous = searchOptions.useRegex
         searchOptions.useRegex = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
-    void setCaseSensitiveSearch( boolean value ){
+    public void setCaseSensitiveSearch( boolean value ){
         boolean previous = searchOptions.caseSensitive
         searchOptions.caseSensitive = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
-    void setSearchFromStart( boolean value ){
+    public void setSearchFromStart( boolean value ){
         boolean previous = searchOptions.fromStart
         searchOptions.fromStart = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
-    void setSplitPattern( boolean value ){
+    public void setSplitPattern( boolean value ){
         boolean previous = searchOptions.splitPattern
         searchOptions.splitPattern = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
-    void setTransversalSearch( boolean value ){
+    public void setTransversalSearch( boolean value ){
         boolean previous = searchOptions.transversal
         searchOptions.transversal = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
-    void setDetailsSearch( boolean value ){
+    public void setDetailsSearch( boolean value ){
         boolean previous = searchOptions.useDetails
         searchOptions.useDetails = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
-    void setNoteSearch( boolean value ){
+    public void setNoteSearch( boolean value ){
         boolean previous = searchOptions.useNote
         searchOptions.useNote = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
-    void setAttributesNameSearch( boolean value ){
+    public void setAttributesNameSearch( boolean value ){
         boolean previous = searchOptions.useAttributesName
         searchOptions.useAttributesName = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
-    void setAttributesValueSearch( boolean value ){
+    public void setAttributesValueSearch( boolean value ){
         boolean previous = searchOptions.useAttributesValue
         searchOptions.useAttributesValue = value
         gui.updateOptions()
         if( previous != value ) searchAgain()
     }
 
-    void setClonesDisplay( boolean showOnlyOne ){
+    public SearchOptions getSearchOptions(){
+        return searchOptions
+    }
+
+    public void setClonesDisplay( boolean showOnlyOne ){
         boolean previous = isRemoveClones
         isRemoveClones = showOnlyOne
         gui.updateOptions()
         if( isCandidatesDefined && previous != showOnlyOne ) updateCandidates()
+    }
+
+    public boolean getIsRemoveClones(){
+        return isRemoveClones
     }
 
 
