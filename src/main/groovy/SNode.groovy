@@ -149,6 +149,8 @@ class SNode {
 
         if( fullMatch ) throw new Exception( "Don't search a same node twice. Call clearPreviousSearch() between searches." )
 
+        highlightInvalidated = true
+        
         if( options.transversal ){
             if( stackMatch ) throw new Exception( "Don't search a same node twice. Call clearPreviousSearch() between searches." )
             singleFullSearch( regexps, options )
@@ -288,7 +290,7 @@ class SNode {
         if( coreMatch?.isMatchOne ){
             textHL = buildHightlight( coreMatch.matchers )
         }
-        if( fullMatch?.isMatch ){
+        if( fullMatch?.isMatchOne ){
             detailsHL = buildHightlight( fullMatch.detailsMatchers )
             noteHL = buildHightlight( fullMatch.noteMatchers )
             namesHL = buildHightlights( fullMatch.namesMatchers )
@@ -431,10 +433,10 @@ class SNode {
         Jumper J = Jumper.get()
         if( textHighlight ){
             coreDisplay = getHighlightedText( text, textHighlight, J.gui.drs.nodeDisplayLength, true )
-            coreDisplay = "<html>${getAncestorsDisplayText()}$coreDisplay</html>"
+            coreDisplay = "<html><nobr>${getAncestorsDisplayText()}$coreDisplay</html>"
         } else {
             coreDisplay = getTruncatedText( text, J.gui.drs.nodeDisplayLength, J.gui.drs.showNodesLevel )
-            coreDisplay = "<html>$coreDisplay</html>"
+            coreDisplay = "<html><nobr>$coreDisplay</html>"
         }
         coreDisplayInvalidated = false
     }
@@ -453,7 +455,7 @@ class SNode {
         Jumper J = Jumper.get()
         if( detailsHighlight ){
             detailsDisplay = getHighlightedText( details, detailsHighlight, J.gui.drs.nodeDisplayLength, true )
-            detailsDisplay = "<html>Details: $detailsDisplay</html>"
+            detailsDisplay = "<html><nobr>Details: $detailsDisplay</html>"
         } else {
             detailsDisplay = ""
         }
@@ -464,7 +466,7 @@ class SNode {
         Jumper J = Jumper.get()
         if( noteHighlight ){
             noteDisplay = getHighlightedText( note, noteHighlight, J.gui.drs.nodeDisplayLength, true )
-            noteDisplay = "<html>Note: $noteDisplay</html>"
+            noteDisplay = "<html><nobr>Note: $noteDisplay</html>"
         } else {
             noteDisplay = ""
         }
@@ -489,7 +491,7 @@ class SNode {
                     attributesDisplay = "${attributesDisplay}${n} : <i>${v}</i>"
                 }
             }
-            attributesDisplay = "<html>Attributes : $attributesDisplay</html>"
+            attributesDisplay = "<html><nobr>Attributes : $attributesDisplay</html>"
         } else {
             attributesDisplay = ""
         }
