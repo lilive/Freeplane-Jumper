@@ -53,15 +53,15 @@ class Jumper {
     // Start Jumper
     public static Jumper start(){
 
-        long startTime = System.currentTimeMillis()
+        // long startTime = System.currentTimeMillis()
 
         if( instance ) throw new Exception( "Jumper already started" )
 
         instance = new Jumper()
         instance.init()
 
-        long endTime = System.currentTimeMillis()
-        print "start() execution time: ${endTime-startTime} ms"
+        // long endTime = System.currentTimeMillis()
+        // print "start() execution time: ${endTime-startTime} ms"
         
         return instance
     }
@@ -230,7 +230,7 @@ class Jumper {
 
     private void init(){
         
-        long t11 = System.currentTimeMillis()
+        // long t11 = System.currentTimeMillis()
         
         sMap = new SMap( node.map.root )
         currentSNode = sMap.find{ it.node == node }
@@ -244,8 +244,8 @@ class Jumper {
         initCandidates()
         if( gui.drs.recallLastPattern ) recallLastPattern( settings.currentPattern )
 
-        long t12 = System.currentTimeMillis()
-        print "initializations execution time: ${t12-t11} ms"
+        // long t12 = System.currentTimeMillis()
+        // print "initializations execution time: ${t12-t11} ms"
 
         gui.show()
     }
@@ -323,11 +323,11 @@ class Jumper {
     }
 
     private void initCandidates(){
-        long startTime = System.currentTimeMillis()
+        // long startTime = System.currentTimeMillis()
         if( isCandidatesDefined ) return
         updateCandidates()
-        long endTime = System.currentTimeMillis()
-        print "initCandidates() execution time: ${endTime-startTime} ms"
+        // long endTime = System.currentTimeMillis()
+        // print "initCandidates() execution time: ${endTime-startTime} ms"
     }
 
     private File getSettingsFile(){

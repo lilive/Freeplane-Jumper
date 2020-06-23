@@ -117,7 +117,7 @@ class Gui {
 
     Gui( ui, Candidates candidates, LoadedSettings settings ){
 
-        long startTime = System.currentTimeMillis()
+        // long startTime = System.currentTimeMillis()
         
         initCandidatesOptions()
         if( settings.drs ) drs = settings.drs
@@ -135,8 +135,8 @@ class Gui {
 
         if( ! settings.showOptions ) toggleOptionsDisplay()
 
-        long endTime = System.currentTimeMillis()
-        print "Gui() execution time: ${endTime-startTime} ms"
+        // long endTime = System.currentTimeMillis()
+        // print "Gui() execution time: ${endTime-startTime} ms"
     }
 
     Map getSaveMap(){
