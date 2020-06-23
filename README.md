@@ -89,19 +89,6 @@ Jumper has got many options that control where it search, how it search, and how
 `[X]` Do the search in another thread to improve GUI reactivity  
 `[X]` Option to center the map on the selected result as the results list is browsed with the arrow keys  
 `[X]` Option to set the search string to the last one when the window open. Select this whole text in the text field, to make it be replaced as soon as the user type someting new.  
-`[X]` Make an addon (easier installation and possible translations)  
-`[X]` Color chooser for details, note, attributes highlighting  
-`[X]` Selected result background color option (different for core text and the rest)  
-`[X]` Hide/Show options  
-`[X]` Show level in all cases  
-`[X]` Validate each result display text independently (or just core and rest)  
-`[X]` Display options in another window  
-`[X]` Options to search in node notes, details, attributes  
-`[X]` Spacing or lines between results  
-`[X]` Allow to do the search not only in node text, but in branch text.  
-`[X]` Show nodes parents in the search result list.  
-`[X]` Don't use keyboard shortcuts that conflict with common ones like Ctrl-A, Ctrl-V, Ctrl-C  
-`[X]` Choose the size of the anscestors display in transversal mode
 
 ## Compilation from the sources
 
