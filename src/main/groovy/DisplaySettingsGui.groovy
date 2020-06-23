@@ -30,7 +30,7 @@ class DisplaySettingsGui {
     private JCheckBox recallLastPatternCB
     static String showNodesLevelCBLabel    = "Show nodes level in results list"
     static String followSelectedCBLabel    = "Focus map view on selected result"
-    static String recallLastPatternCBLabel = "Bring back the window with previous search pattern"
+    static String recallLastPatternCBLabel = "Bring back the window with the previous search pattern"
 
     DisplaySettingsGui( Gui parent ){
 
@@ -44,11 +44,13 @@ class DisplaySettingsGui {
         
         SwingBuilder swing = new SwingBuilder()
 
+        Dimension size = swing.button(" ").getPreferredSize()
+        size.width = size.height
+        
         showNodesLevelCB    = createShowNodesLevelCB( swing )
         followSelectedCB    = createFollowSelectedCB( swing )
         recallLastPatternCB = createRecallLastPatternCB( swing )
-        Dimension size = swing.button(" ").getPreferredSize()
-        size.width = size.height
+        JComponent lastPatternDurationSpinner    = createLastPatternDurationSpinner( swing )
         JComponent coreFontSizeSpinner           = createCoreFontSizeSpinner( swing )
         JComponent detailsFontSizeSpinner        = createDetailsFontSizeSpinner( swing )
         JComponent nodeDisplayLengthSpinner      = createNodeDisplayLengthSpinner( swing )
@@ -83,6 +85,10 @@ class DisplaySettingsGui {
                 )
                 widget(
                     recallLastPatternCB,
+                    constraints: gbc( gridx:0, gridy:y++, anchor:GBC.FIRST_LINE_START )
+                )
+                widget(
+                    lastPatternDurationSpinner,
                     constraints: gbc( gridx:0, gridy:y++, anchor:GBC.FIRST_LINE_START )
                 )
                 vbox(
@@ -167,6 +173,14 @@ class DisplaySettingsGui {
         )
     }
     
+    private JComponent createLastPatternDurationSpinner( swing ){
+        return createLabeledSpinner(
+            swing, "...except after this number of seconds (0 to ignore)",
+            parent.drs.lastPatternDuration, 0, 6000,
+            { e -> parent.drs.lastPatternDuration = e.source.value }
+        )
+    }
+
     private JComponent createCoreFontSizeSpinner( swing ){
         return createLabeledSpinner(
             swing, "Core text",

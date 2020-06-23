@@ -250,7 +250,13 @@ class Jumper {
         LoadedSettings settings = loadSettings()
         gui = new Gui( UITools, candidates, settings )
         initCandidates()
-        if( gui.drs.recallLastPattern ) recallLastPattern( settings.currentPattern )
+        if( gui.drs.recallLastPattern ){
+            recallLastPattern(
+                settings.currentPattern,
+                settings.saveTime,
+                gui.drs.lastPatternDuration
+            )
+        }
 
         // long t12 = System.currentTimeMillis()
         // print "initializations execution time: ${t12-t11} ms"
@@ -273,6 +279,7 @@ class Jumper {
             isRemoveClones : isRemoveClones,
             history        : history,
             currentPattern : gui.getPatternText() ?: null,
+            saveTime       : System.currentTimeMillis() / 1000,
             searchOptions  : searchOptions,
             gui            : gui.getSaveMap()
         ]
@@ -309,9 +316,10 @@ class Jumper {
             Map s = new JsonSlurper().parseText( file.text )
             candidatesType = s.candidatesType ?: candidatesType
             if( s.isRemoveClones != null ) isRemoveClones = s.isRemoveClones
-            if( s.searchOptions  != null ) searchOptions  = new SearchOptions( s.searchOptions )
-            history = s.history ?: history
+            if( s.searchOptions  != null ) searchOptions = new SearchOptions( s.searchOptions )
             if( s.currentPattern != null ) settings.currentPattern = s.currentPattern
+            if( s.saveTime       != null ) settings.saveTime = s.saveTime
+            history = s.history ?: history
             if( s.gui ) s.gui.with{
                 if( showOptions != null ) settings.showOptions = showOptions
                 if( drs ) settings.drs = DisplayResultsSettings.fromMap( drs )
@@ -418,8 +426,19 @@ class Jumper {
         if( history.size() > historyMaxSize ) history = history[ (-historyMaxSize)..-1]
     }
 
-    private recallLastPattern( String pattern ){
+    private void recallLastPattern(
+        String pattern,
+        Integer patternTime,
+        int patternDuration )
+    {
         if( ! pattern ) return
+        if(
+            patternTime != null
+            && patternDuration != 0
+            && System.currentTimeMillis() / 1000 > patternTime + patternDuration
+        ){
+            return
+        }
         if( history && history.last() == pattern ) selectPreviousPattern()
         else gui.setPatternText( pattern )
     }

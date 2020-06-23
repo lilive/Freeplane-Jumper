@@ -7,5 +7,6 @@ class LoadedSettings {
     Rectangle winBounds
     boolean showOptions = true
     String currentPattern
+    Integer saveTime
     DisplayResultsSettings drs
 }

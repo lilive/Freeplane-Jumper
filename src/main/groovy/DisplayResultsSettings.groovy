@@ -8,9 +8,10 @@ import groovy.swing.SwingBuilder
 
 class DisplayResultsSettings {
     
-    boolean showNodesLevel = false
-    boolean followSelected = true
+    boolean showNodesLevel    = false
+    boolean followSelected    = true
     boolean recallLastPattern = true
+    int lastPatternDuration = 60
     Color highlightColor                 = new Color( "#ffff99" )
     Color levelMarkColor                 = new Color( "#990000" )
     Color attributesMarkColor            = new Color( "#ff0066" )
@@ -91,6 +92,7 @@ class DisplayResultsSettings {
             "showNodesLevel"                 : showNodesLevel,
             "followSelected"                 : followSelected,
             "recallLastPattern"              : recallLastPattern,
+            "lastPatternDuration"            : lastPatternDuration,
             "coreFontSize"                   : coreFontSize,
             "detailsFontSize"                : detailsFontSize,
             "nodeDisplayLength"              : nodeDisplayLength,
