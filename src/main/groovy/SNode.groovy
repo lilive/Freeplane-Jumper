@@ -270,13 +270,14 @@ class SNode {
         stackMatch.matches = fullMatch.matches.clone()
         stackMatch.isMatch = ( stackMatch.matches.size() == numPatterns )
 
-        SNode node = this
-        while( node = node.parent ){
+        SNode node = this.parent
+        while( node && node.parent ){
             if( ! node.coreMatch ) node.singleCoreSearch( regexps )
             if( ! stackMatch.isMatch ){
                 stackMatch.matches.addAll( node.coreMatch.matches )
                 stackMatch.isMatch = ( stackMatch.matches.size() == numPatterns )
             }
+            node = node.parent
         }
     }
 
