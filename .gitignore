@@ -5,3 +5,4 @@ lib
 *.temp
 *.bak
 emacs-edition-macros.el
+display-downloads.bat
