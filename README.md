@@ -73,10 +73,9 @@ Jumper has got many options that control where it search, how it search, and how
 ---
 
 `[ ]` Decide what to do with filtered nodes: use them ? ignore them ? give the choice ?  
-`[ ]` Give the focus to the help window when it opens.  
 `[ ]` Update code comments  
-`[ ]` Option to search entire words only, or only at the beginning of the words  
-`[ ]` Option to order results by level  
+`[?]` Option to search entire words only, or only at the beginning of the words  
+`[?]` Option to order results by level  
 `[?]` Option to not search before N characters are typed  
 `[?]` Jump to next result and jump to previous result without opening the dialog.  
 `[?]` Don't buffer node content (The plain text for each node is buffered to speed up the search. Do we really need it?)  
@@ -84,6 +83,7 @@ Jumper has got many options that control where it search, how it search, and how
 
 ---
 
+`[X]` Give the focus to the help window when it opens.  
 `[X]` Option to not bring back the last search pattern after some time  
 `[X]` Do not use the root node for transversal match
 `[X]` Do the search in another thread to improve GUI reactivity  
