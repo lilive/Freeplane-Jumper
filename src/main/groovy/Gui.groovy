@@ -366,9 +366,6 @@ class Gui {
 
     void toggleHelp(){
         if( helpWin ) helpWin.visible = ! helpWin.visible
-        win.toFront()
-        win.requestFocus()
-        patternTF.requestFocus()
     }
 
     void setPatternText( String text ){
