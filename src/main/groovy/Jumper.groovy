@@ -81,7 +81,15 @@ class Jumper {
             pattern,
             searchOptions,
             currentSNode,
-            { selectDefaultResult() }
+            {
+                isMore ->
+                selectDefaultResult()
+                gui.updateResultLabel(
+                    candidates.getSize(),
+                    candidates.getAllSize(),
+                    isMore
+                )
+            }
         )
     }
 
@@ -362,7 +370,15 @@ class Jumper {
             sNodes,
             gui.getPatternText(), searchOptions,
             currentSNode,
-            { selectDefaultResult() }
+            {
+                isMore ->
+                selectDefaultResult()
+                gui.updateResultLabel(
+                    candidates.getSize(),
+                    candidates.getAllSize(),
+                    isMore
+                )
+            }
         )
     }
 

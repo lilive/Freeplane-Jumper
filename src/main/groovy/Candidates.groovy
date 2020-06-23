@@ -19,6 +19,11 @@ class Candidates extends DefaultListModel<SNode>{
     private int numMax = 30
     private Thread searchThread
 
+    private class Result {
+        SNodes nodes = new SNodes()   // nodes in the result
+        boolean isMoreResults = false
+    }
+
     /**
      * Defined the nodes where to search and run a first search.
      * @param candidates The nodes where to search.
@@ -51,6 +56,11 @@ class Candidates extends DefaultListModel<SNode>{
         else return 0
     }
 
+    // Return the number of candidates
+    int getAllSize(){
+        return candidates.size()
+    }
+
     /**
      * Call this to trigger the GUI update when the already displayed results
      * must be redraw. For exemple when the highlight color change, or when
@@ -65,6 +75,7 @@ class Candidates extends DefaultListModel<SNode>{
     
     /**
      * Set the results list with the candidates that match a search pattern.
+     * The results list will not contain more than numMax nodes.
      * @param pattern The search string.
      * @param options Settings for the search strategy.
      *          Regex or not ? Case sensitive ? Etc.
@@ -76,6 +87,9 @@ class Candidates extends DefaultListModel<SNode>{
      * @param onDone Closure to call after the search.
      *          Useful because the search is done in a new Thread.
      *          onDone will be executed in the Swing EDT.
+     *          The closure must take one boolean as parameter. This boolean
+     *          will be set to true if the filter has found more than
+     *          numMax nodes.
      */
     void filter(
         String pattern,
@@ -95,7 +109,7 @@ class Candidates extends DefaultListModel<SNode>{
         // Get the differents units in the pattern
         Set<String> units = makePatternUnits( pattern, options )
         if( ! pattern ){
-            applyFilterResults( candidates, onDone )
+            applyFilterResult( makeResult( candidates, mandatoryNode ), onDone )
             return
         }
 
@@ -104,15 +118,18 @@ class Candidates extends DefaultListModel<SNode>{
         searchThread = new Thread( new Runnable(){
             public void run(){
                 boolean done = true
-                SNodes results
+                Result result
                 // Get the candidates that match
                 try{
-                    results = regexFilter( units, candidates, options, mandatoryNode )
+                    result = regexFilter(
+                        units, candidates,
+                        options, mandatoryNode
+                    )
                 } catch (InterruptedException e) {
                     done = false
                 }
                 // Update the object
-                if( done ) applyFilterResults( results, onDone )
+                if( done ) applyFilterResult( result, onDone )
             }
         }, "filter thread" )
         
@@ -147,7 +164,9 @@ class Candidates extends DefaultListModel<SNode>{
 
     /**
      * Return the candidates that match a list of pattern units.
+     * The results list will not contain more than numMax nodes.
      * @param units One or more strings to search in the candidates.
+     * @param candidates The nodes to filter
      * @param options Settings for the search strategy.
      *          Regex or not ? Case sensitive ? Etc.
      *          The units are converted to regex according to
@@ -155,7 +174,7 @@ class Candidates extends DefaultListModel<SNode>{
      *          @see SearchOptions
      * @param mandatoryNode @see filter()
      */
-    private SNodes regexFilter(
+    private Result regexFilter(
         Set<String> units, SNodes candidates,
         SearchOptions options, SNode mandatoryNode
     ) throws InterruptedException {
@@ -176,53 +195,75 @@ class Candidates extends DefaultListModel<SNode>{
             } )
         } catch (PatternSyntaxException e) {}
 
-        // Return all candidates if the pattern contains only invalid regex
-        if( ! oneValidRegex ) return candidates
+        // Return unfiltered candidates if the pattern contains only invalid regex
+        if( ! oneValidRegex ) return makeResult( candidates, mandatoryNode )
         
         // Get the candidates that match the regular expressions.
         // Don't get more than numMax results, but be sure that
         // the currently selected node is searched.
-        SNodes results = new SNodes()
         boolean maxReached = false
+        Result result = new Result()
         candidates.each{
             if( ! maxReached || it == mandatoryNode ){
-                if( ! it.search( regexps, options ) ) return
-                results << it
-                maxReached = ( results.size() >= numMax - 1 )
+                if( it.search( regexps, options ) ){
+                    result.nodes << it
+                    maxReached = ( result.nodes.size() >= numMax - 1 )
+                }
             }
             if (Thread.interrupted()) throw new InterruptedException()
         }
+        result.isMoreResults = maxReached
         
-        return results
+        return result
     }
 
+    /**
+     * Create an object Result that contains 0 to numMax nodes, including
+     * the mandatoryNode.
+     * @param nodes The nodes to include in the Result. This list will be
+     *          truncated if it is longer than numMax.
+     * @param mandatoryNode A node to keep in the Result even if nodes are
+     *          truncated. mandatoryNode is ignored if it isn't in nodes.
+     */
+    private Result makeResult( SNodes nodes, SNode mandatoryNode ){
+        Result result = new Result()
+        if( nodes.size() <= numMax ){
+            result.nodes = nodes.collect()
+            result.isMoreResults = false
+        } else {
+            result.nodes = nodes[ 0..(numMax-1) ]
+            if(
+                mandatoryNode
+                && mandatoryNode in nodes
+                && !( mandatoryNode in result.nodes )
+            ){
+                result.nodes.pop()
+                result.nodes << mandatoryNode
+            }
+            result.isMoreResults = true
+        }
+        return result
+    }
     
-    // Update the object with these results, and call a post opration.
+    // Update the object with these result, and call a post operation.
     // All is done inside the Swing EDT.
-    private void applyFilterResults( SNodes results, Closure after ){
+    // @param result The result of the search.
+    // @param onDone @see filter()
+    private void applyFilterResult( Result result, Closure onDone ){
         SwingUtilities.invokeLater( new Runnable(){
             public void run() {
-                update( results )
-                after()
+                boolean truncated = update( result.nodes )
+                onDone( result.isMoreResults )
             }
         })
     }
 
     // Update the object with these results and fire the events
     // for the GUI update.
+    // @return true if newResults is bigger than numMax.
     private void update( SNodes newResults ){
-
         if( getSize() > 0 ) fireIntervalRemoved( this, 0, getSize() - 1 )
-
-        if( newResults.size() <= numMax ){
-            results = newResults.collect()
-        } else {
-            results = newResults[ 0..(numMax-1) ]
-        }
-
-        boolean truncated = newResults.size() >= numMax - 1
-        Jumper.get().gui.updateResultLabel( results.size(), candidates.size(), truncated )
-        
+        results = newResults.collect()
         if( getSize() > 0 ) fireIntervalAdded( this, 0, getSize() - 1 )
     }
 }
