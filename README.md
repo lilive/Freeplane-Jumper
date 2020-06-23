@@ -72,13 +72,10 @@ Jumper has got many options that control where it search, how it search, and how
 
 ---
 
-`[1]` Don't bring back the last search pattern after some time  
-`[1]` Do the search in another thread to improve GUI reactivity  
 `[ ]` Decide what to do with filtered nodes: use them ? ignore them ? give the choice ?  
 `[ ]` Give the focus to the help window when it opens.  
 `[ ]` Update code comments  
-`[ ]` Option to search entire words only  
-`[ ]` Option to search only at the beginning of the words  
+`[ ]` Option to search entire words only, or only at the beginning of the words  
 `[ ]` Option to order results by level  
 `[?]` Option to not search before N characters are typed  
 `[?]` Jump to next result and jump to previous result without opening the dialog.  
@@ -87,6 +84,9 @@ Jumper has got many options that control where it search, how it search, and how
 
 ---
 
+`[X]` Option to not bring back the last search pattern after some time  
+`[X]` Do not use the root node for transversal match
+`[X]` Do the search in another thread to improve GUI reactivity  
 `[X]` Option to center the map on the selected result as the results list is browsed with the arrow keys  
 `[X]` Option to set the search string to the last one when the window open. Select this whole text in the text field, to make it be replaced as soon as the user type someting new.  
 `[X]` Make an addon (easier installation and possible translations)  
