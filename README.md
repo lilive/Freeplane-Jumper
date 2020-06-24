@@ -37,7 +37,7 @@ Take a look at the text field at the top of the window in the demo below. This i
 
 To start searching with Jumper, you usually run it with a keyboard shortcut. This is better because Jumper is designed to be used with the keyboard. The default keyboard shortcut is `Ctrl+Shift+J`. However, you can run Jumper with the menu `Edit > Find > Jumper`.
 
-During the installation process, you can refuse to assign `Ctrl+Shift+J` and choose another one.
+During the installation process, you can refuse to assign `Ctrl+Shift+J` to Jumper and choose another one.
 
 ### Search something
 
@@ -58,7 +58,7 @@ Jumper has got many options that control where it search, how it search, and how
   Jumper need the file permissions because it save its settings in the Freeplane user directory. The name of the file is `lilive_jumper.json`.  
   Jumper do not modify your maps, there is no risk to loose informations.
   
-- The installer try to set the keyboard shortcut `Ctrl+Shift+J` to start Jumper. If you already use this shortcut for another thing, you are asked if you want to use it for Jumper. If you answer "no" you are asked for the shortcut you want instead.
+- The installer propose you to use the keyboard shortcut `Ctrl+Shift+J` to start Jumper. If you already use this shortcut for another thing, you are asked if you want to use it for Jumper. If you answer "no" you are asked for another shortcut you want instead.
 - Restart Freeplane
 - You can now use Jumper.
 
