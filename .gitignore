@@ -6,3 +6,4 @@ lib
 *.bak
 emacs-edition-macros.el
 display-downloads.bat
+Thumbs.db
