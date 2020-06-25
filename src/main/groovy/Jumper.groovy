@@ -220,8 +220,8 @@ class Jumper {
 
     public void setAllDetailsSearch( boolean check ){
         searchOptions.with{
-            if( check && allDetailsTrue() ) print 1
-            if( ! check && allDetailsFalse() ) print 2
+            if( check && allDetailsTrue() ) return
+            if( ! check && allDetailsFalse() ) return
             useDetails         = check
             useNote            = check
             useAttributesName  = check
