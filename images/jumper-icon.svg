@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+<g id="shadow" opacity="0.7">
+	<path d="M8,11.012l-1.508,1.5l6.25,0.692l-6.09-6.596l-6.071,7.624l-0.419-0.28l5.561-9.69c0,0,9.462,9.839,9.73,10.173
+		c0.27,0.332-0.009,1.187-0.384,1.135c-0.373-0.05-11.404-1.673-11.404-1.673l3.246-3.765L8,11.012z"/>
+	<polygon points="8,11.012 13.389,6.591 16,10.146 16,2.252 7.646,2.204 11.456,4.667 6.911,10.131 	"/>
+</g>
+<g id="arrow">
+	<path fill="#CE5BBE" d="M8.078,10.726l-1.264,1.045l5.423,0.893L6.28,6.204L0.581,13.31l-0.419-0.28l5.561-9.69
+		c0,0,9.462,9.839,9.73,10.173c0.27,0.332-0.009,1.187-0.384,1.135c-0.373-0.05-11.404-1.673-11.404-1.673l3.246-3.765L8.078,10.726
+		z"/>
+	<polygon fill="#CE5BBE" points="8.078,10.726 13.389,5.668 16,9.224 16,1.329 7.646,1.281 11.456,3.744 6.911,9.208 	"/>
+</g>
+</svg>
