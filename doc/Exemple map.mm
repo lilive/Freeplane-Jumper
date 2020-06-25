@@ -1,7 +1,7 @@
 <map version="freeplane 1.8.0">
 <!--To view this file, download free mind mapping software Freeplane from http://freeplane.sourceforge.net -->
 <node TEXT="Jumper&#xa;example" LOCALIZED_STYLE_REF="styles.topic" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1591784341202" BORDER_WIDTH="3.0 px" BORDER_COLOR_LIKE_EDGE="false" BORDER_COLOR="#192441" BORDER_DASH="CLOSE_DOTS" STYLE="rectangle" SHAPE_HORIZONTAL_MARGIN="6.0 pt" SHAPE_VERTICAL_MARGIN="6.0 pt"><hook NAME="MapStyle" background="#89a5e9">
-    <properties fit_to_viewport="false" show_icon_for_attributes="true" show_note_icons="true" show_notes_in_map="true" edgeColorConfiguration="#353535ff,#353535ff,#353535ff,#353535ff,#353535ff"/>
+    <properties fit_to_viewport="false" show_icon_for_attributes="true" show_note_icons="true" show_notes_in_map="true" edgeColorConfiguration="#353535ff,#353535ff,#353535ff,#353535ff,#353535ff" BookmarksKeys="{}"/>
 
 <map_styles>
 <stylenode LOCALIZED_TEXT="styles.root_node" STYLE="oval" UNIFORM_SHAPE="true" VGAP_QUANTITY="24.0 pt">
@@ -93,7 +93,20 @@
 <edge WIDTH="thin"/>
 <node TEXT="Projects" STYLE_REF="Ligne 1" FOLDED="true" POSITION="right" ID="ID_1216447785" CREATED="1591786232822" MODIFIED="1591788410291">
 <font BOLD="true"/>
-<node TEXT="Go to the moon" STYLE_REF="Ligne 1" FOLDED="true" ID="ID_343368502" CREATED="1591786247846" MODIFIED="1591788083677">
+<node TEXT="Go to the moon" STYLE_REF="Ligne 1" FOLDED="true" ID="ID_343368502" CREATED="1591786247846" MODIFIED="1593111971195"><richcontent TYPE="NOTE">
+
+<html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      I know this is a dream.
+    </p>
+  </body>
+</html>
+
+</richcontent>
 <node TEXT="Find a rocket" ID="ID_1695672999" CREATED="1591786255606" MODIFIED="1591786259450"/>
 <node TEXT="Get a proper suit" ID="ID_962889803" CREATED="1591786259974" MODIFIED="1591786267034"/>
 <node TEXT="Bring some tea" ID="ID_450957114" CREATED="1591786267542" MODIFIED="1591786273145"/>
@@ -106,7 +119,7 @@
 <node TEXT="I&apos;m a little concerned about the temperature" ID="ID_716343010" CREATED="1591786406934" MODIFIED="1591786420954"/>
 <node TEXT="Bring some really hot tea" ID="ID_1994395175" CREATED="1591786421910" MODIFIED="1591786430457"/>
 </node>
-<node TEXT="Africa" FOLDED="true" ID="ID_1639950710" CREATED="1591786432134" MODIFIED="1591786439562">
+<node TEXT="Africa" FOLDED="true" ID="ID_1639950710" CREATED="1591786432134" MODIFIED="1593111363851">
 <node TEXT="What about a trip to Africa next Christmas ?" ID="ID_1301596661" CREATED="1591786441846" MODIFIED="1591786524201"/>
 <node TEXT="Todo: Do some researches about Christmas in other cultures" ID="ID_839312517" CREATED="1591786525063" MODIFIED="1591786574538"/>
 </node>
@@ -118,7 +131,7 @@
 <node TEXT="Save some money for swim lessons" ID="ID_1634127849" CREATED="1591786626359" MODIFIED="1591786658857"/>
 <node TEXT="Find a nice spot, perhaps some paradise island" ID="ID_1190865244" CREATED="1591787628055" MODIFIED="1591787650459"/>
 </node>
-<node TEXT="Girlfriends" ID="ID_1031764850" CREATED="1591786662567" MODIFIED="1591788475039">
+<node TEXT="Girlfriends" FOLDED="true" ID="ID_1031764850" CREATED="1591786662567" MODIFIED="1591788475039">
 <icon BUILTIN="bookmark"/>
 <font BOLD="true"/>
 <node TEXT="I think summer can be a good season to find someone" FOLDED="true" ID="ID_868350186" CREATED="1591786687638" MODIFIED="1591792889185">
@@ -137,7 +150,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 </node>
 </node>
@@ -149,12 +161,7 @@
 <node TEXT="To do later, I&apos;m need to live more to make an interesting book" ID="ID_1359471608" CREATED="1591786909415" MODIFIED="1591786943631"/>
 </node>
 <node TEXT="Travels" STYLE_REF="Ligne 1" FOLDED="true" ID="ID_1801322762" CREATED="1591787589208" MODIFIED="1591788410290" VSHIFT_QUANTITY="29.999999105930357 pt">
-<node ID="ID_1693214883" TREE_ID="ID_343368502">
-<node ID="ID_1504275315" TREE_ID="ID_1695672999"/>
-<node ID="ID_776420524" TREE_ID="ID_962889803"/>
-<node ID="ID_1886965900" TREE_ID="ID_450957114"/>
-<node ID="ID_1904600262" TREE_ID="ID_1480534960"/>
-</node>
+<node TEXT="Moon" ID="ID_1874119457" CREATED="1593111310282" MODIFIED="1593111360247" LINK="#ID_343368502"/>
 <node ID="ID_1465650576" TREE_ID="ID_1197334077">
 <node ID="ID_839204848" TREE_ID="ID_349996908"/>
 <node ID="ID_654437500" TREE_ID="ID_716343010"/>
@@ -169,9 +176,9 @@
 </node>
 <node TEXT="Food" STYLE_REF="Ligne 3" FOLDED="true" POSITION="right" ID="ID_220538901" CREATED="1591786949719" MODIFIED="1591788093097">
 <font BOLD="true"/>
-<node TEXT="What do I like ?" STYLE_REF="Ligne 3" ID="ID_613281358" CREATED="1591786953590" MODIFIED="1591788235213">
+<node TEXT="What do I like ?" STYLE_REF="Ligne 3" FOLDED="true" ID="ID_613281358" CREATED="1591786953590" MODIFIED="1591788235213">
 <node TEXT="Pepperoni" ID="ID_37696076" CREATED="1591786963383" MODIFIED="1591786981887"/>
-<node TEXT="Tea" ID="ID_529823722" CREATED="1591786984343" MODIFIED="1591788605320">
+<node TEXT="Tea" FOLDED="true" ID="ID_529823722" CREATED="1591786984343" MODIFIED="1591788605320">
 <icon BUILTIN="bookmark"/>
 <font BOLD="true"/>
 <node TEXT="Green tea is my favorite" ID="ID_1866935231" CREATED="1591787100327" MODIFIED="1591787117738"/>
@@ -181,6 +188,19 @@
 </node>
 </node>
 <node TEXT="Potatoes" ID="ID_463310947" CREATED="1591786987158" MODIFIED="1591786996874"/>
+<node TEXT="Apple pie" FOLDED="true" ID="ID_942398833" CREATED="1593104660836" MODIFIED="1593104683818">
+<node TEXT="Recipe" ID="ID_1405751031" CREATED="1593104685668" MODIFIED="1593105120335">
+<attribute_layout NAME_WIDTH="50.24999850243334 pt" VALUE_WIDTH="116.24999653548012 pt"/>
+<attribute NAME="flour" VALUE="315g"/>
+<attribute NAME="salt" VALUE="1 teaspoon"/>
+<attribute NAME="butter" VALUE="1.5 stick"/>
+<attribute NAME="water" VALUE="8 tablespoons"/>
+<attribute NAME="apples" VALUE="1kg"/>
+<attribute NAME="sugar" VALUE="150g"/>
+<attribute NAME="egg" VALUE="1" OBJECT="org.freeplane.features.format.FormattedNumber|1"/>
+</node>
+</node>
+<node TEXT="Sugar cookies" ID="ID_1767219948" CREATED="1593105168596" MODIFIED="1593105173431"/>
 </node>
 <node TEXT="What do I hate ?" STYLE_REF="Ligne 3" FOLDED="true" ID="ID_1265557498" CREATED="1591787003463" MODIFIED="1591788237836">
 <node TEXT="Coffee" ID="ID_516571129" CREATED="1591787016583" MODIFIED="1591787030106"/>
@@ -197,7 +217,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 </node>
 </node>
@@ -233,16 +252,16 @@
 </node>
 <node TEXT="Solution : avoid persons and places that you don&apos;t like" ID="ID_1985574157" CREATED="1591787429207" MODIFIED="1591787486890"/>
 <node TEXT="Love can be more than to have a girlfriend" FOLDED="true" ID="ID_1351288936" CREATED="1591787834152" MODIFIED="1591787858795">
-<node TEXT="How to meet a girlfriend ?" ID="ID_1382087880" CREATED="1591788873512" MODIFIED="1591788952428">
-<node TEXT="Tip 1" ID="ID_691659169" CREATED="1591788920248" MODIFIED="1591788924651">
+<node TEXT="How to meet a girlfriend ?" FOLDED="true" ID="ID_1382087880" CREATED="1591788873512" MODIFIED="1591788952428">
+<node TEXT="Tip 1" FOLDED="true" ID="ID_691659169" CREATED="1591788920248" MODIFIED="1591788924651">
 <node ID="ID_898571535" TREE_ID="ID_1900489830"/>
 </node>
-<node TEXT="Tip 2" ID="ID_507231339" CREATED="1591788982392" MODIFIED="1591788984860">
+<node TEXT="Tip 2" FOLDED="true" ID="ID_507231339" CREATED="1591788982392" MODIFIED="1591788984860">
 <node ID="ID_1461836176" TREE_ID="ID_868350186">
 <node ID="ID_1154282147" TREE_ID="ID_1150841588"/>
 </node>
 </node>
-<node TEXT="Tip 3" ID="ID_1196054025" CREATED="1591789028712" MODIFIED="1591789031516">
+<node TEXT="Tip 3" FOLDED="true" ID="ID_1196054025" CREATED="1591789028712" MODIFIED="1591789031516">
 <node ID="ID_490374922" TREE_ID="ID_1670541920"/>
 </node>
 </node>
