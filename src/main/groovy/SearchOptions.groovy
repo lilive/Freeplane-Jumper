@@ -2,7 +2,7 @@ package lilive.jumper
 
 
 class SearchOptions {
-    boolean useRegex = true
+    boolean useRegex = false
     boolean caseSensitive = false
     boolean fromStart = false
     boolean splitPattern = true
