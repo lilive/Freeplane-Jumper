@@ -100,3 +100,8 @@ If you want to build the add-on installation file `jumper-vX.X.X.addon.mm` yours
 - `gradle build` will create the file lib/bookmarks.jar
 
 Now you can open `jumper.mm` with Freeplane and package the addon with [Tools > Developer Tools > Package add-on for publication](https://freeplane.sourceforge.io/wiki/index.php/Add-ons_(Develop)). This will create the file `jumper-vX.X.X.addon.mm`. Open this file with Freeplane to install the add-on.
+
+## Credits
+
+- Thanks to Freeplane users who have given me feedbacks and support during the development (special mention to sfpcom for the add-on name :wink:)
+- And of course many thanks to Freeplane developers !
