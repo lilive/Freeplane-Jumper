@@ -1,8 +1,12 @@
-# Jumper - The jumping filter for Freeplane
+# ![logo](images/jumper-logo.png) Jumper - the jumping filter for Freeplane
 
 A search box that filters the nodes on-the-fly as the user types the search terms, and allows to jump to one of the results.
 
-This Freeplane add-on provides an easy and quick way to search for nodes in Freeplane maps. Press Jumper shortcut, type some text snippets, and you will instantly see all the nodes (or branches !) that contain them in the Jumper window. Select one of this node to select it in the map.
+## Presentation
+
+This Freeplane add-on provides an easy and quick way to search for nodes in Freeplane maps. Press Jumper shortcut, type some text snippets, and you will instantly see all the nodes (or branches !) that contain them in the Jumper window. Select one of these nodes to select it in the map.
+
+[![link to video](doc/demo-link.png)](https://vimeo.com/432653512)
 
 > :bell: I will really appreciate any feedback. They will help to keep me motivated to improve or maintain the add-on.  
 > Do you use it ? Just let me know :smile:. You can write to me in [this github thread](https://github.com/lilive/Freeplane-Jumper/issues/1) or in this [dedicated discussion](https://sourceforge.net/p/freeplane/discussion/758437/thread/e7b4594c02/) in the Freeplane forum.  
@@ -27,23 +31,17 @@ This Freeplane add-on provides an easy and quick way to search for nodes in Free
 
 ## Usage
 
-### Usage exemple
-
-Take a look at the text field at the top of the window in the demo below. This is were you write the words you're looking for. Above the text field you can see the list of the nodes that match. This list is updated as you type the search. Select a result and press `Enter` to jump to it.
-
-![demo](demo.gif)
-
 ### Start Jumper
 
 To start searching with Jumper, you usually run it with a keyboard shortcut. This is better because Jumper is designed to be used with the keyboard. The default keyboard shortcut is `Ctrl+Shift+J`. However, you can run Jumper with the menu `Edit > Find > Jumper`.
 
 During the installation process, you can refuse to assign `Ctrl+Shift+J` to Jumper and choose another one.
 
-### Search something
+### Search & jump
 
 When the jumper dialog pop up, just start typing the text you're looking for. Select a node in the results list with the `Up` and `Down` keyboard arrows and press `Enter` to jump to this node.
 
-Jumper has got many options that control where it search, how it search, and how it display the results. Click the question mark icon to open the usage instructions.
+Jumper has got many options that control where it searches, how it searches, and how it displays the results. Click the question mark icon to open the usage instructions.
 
 ## Installation
 
