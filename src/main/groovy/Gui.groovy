@@ -76,9 +76,12 @@ class Gui {
     private int siblingsMnemonic = KeyEvent.VK_S
     private int descendantsMnemonic = KeyEvent.VK_D
     private int siblingsAndDescendantsMnemonic = KeyEvent.VK_B
-    private JCheckBox removeClonesCB
-    private int removeClonesCBMnemonic = KeyEvent.VK_K
-    private String removeClonesCBLabel = "Keep only one clone"
+    private JCheckBox discardClonesCB
+    private int discardClonesCBMnemonic = KeyEvent.VK_K
+    private String discardClonesCBLabel = "Keep only one clone"
+    private JCheckBox discardHiddenNodesCB
+    private int discardHiddenNodesCBMnemonic = KeyEvent.VK_H
+    private String discardHiddenNodesCBLabel = "Discard hidden nodes"
 
     // Search method options controls
     private JCheckBox regexCB
@@ -89,7 +92,7 @@ class Gui {
     private String caseSensitiveCBLabel = "Case sensitive search"
     private JCheckBox fromStartCB
     private int fromStartCBMnemonic = KeyEvent.VK_G
-    private String fromStartCBLabel = "Search at beginning of nodes"
+    private String fromStartCBLabel = "Search at beginning of text"
     private JCheckBox splitPatternCB
     private int splitPatternCBMnemonic = KeyEvent.VK_U
     private String splitPatternCBLabel = "Multiple pattern"
@@ -160,16 +163,17 @@ class Gui {
         patternTF = createPatternTextField( swing, drs.coreFont, drs.patternFontSize )
         resultsJList = createResultsJList( swing, candidates )
         JButton toggleOptionsButton = createToggleOptionsButton( swing )
-        removeClonesCB = createRemoveClonesCB( swing )
-        regexCB = createRegexSearchCB( swing )
-        caseSensitiveCB = createCaseSensitiveSearchCB( swing )
-        fromStartCB = createSearchFromStartCB( swing )
-        splitPatternCB = createSplitPatternCB( swing )
-        transversalCB = createTransversalSearchCB( swing )
-        detailsCB = createDetailsCB( swing )
-        noteCB = createNoteCB( swing )
-        attributesNameCB = createAttributesNameCB( swing )
-        attributesValueCB = createAttributesValueCB( swing )
+        discardClonesCB      = createDiscardClonesCB( swing )
+        discardHiddenNodesCB = createDiscardHiddenClonesCB( swing )
+        regexCB              = createRegexSearchCB( swing )
+        caseSensitiveCB      = createCaseSensitiveSearchCB( swing )
+        fromStartCB          = createSearchFromStartCB( swing )
+        splitPatternCB       = createSplitPatternCB( swing )
+        transversalCB        = createTransversalSearchCB( swing )
+        detailsCB            = createDetailsCB( swing )
+        noteCB               = createNoteCB( swing )
+        attributesNameCB     = createAttributesNameCB( swing )
+        attributesValueCB    = createAttributesValueCB( swing )
         JButton toggleDisplaySettingsButton = createToggleDisplaySettingsButton( swing )
         JButton helpButton = createHelpButton( swing )
 
@@ -245,7 +249,8 @@ class Gui {
                             boxLayout( axis: BoxLayout.Y_AXIS )
                             label( "<html><b>Nodes to search</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
                             candidatesOptions.each{ widget( it.radioButton ) }
-                            widget( removeClonesCB )
+                            widget( discardClonesCB )
+                            widget( discardHiddenNodesCB )
                         }
                         
                         separator(
@@ -317,7 +322,8 @@ class Gui {
             it.radioButton.selected = ( it.type == J.candidatesType )
         }
         
-        removeClonesCB.selected =J.isRemoveClones
+        discardClonesCB.selected      = J.discardClones
+        discardHiddenNodesCB.selected = J.discardHiddenNodes
         
         J.searchOptions.with{
             
@@ -510,15 +516,30 @@ class Gui {
         )
     }
     
-    private JCheckBox createRemoveClonesCB( swing ){
+    private JCheckBox createDiscardClonesCB( swing ){
         Jumper J = Jumper.get()
         return swing.checkBox(
-            text: removeClonesCBLabel,
-            selected: J.isRemoveClones,
-            mnemonic: removeClonesCBMnemonic,
-            actionPerformed: { e -> J.setClonesDisplay( e.source.selected ) },
+            text: discardClonesCBLabel,
+            selected: J.discardClones,
+            mnemonic: discardClonesCBMnemonic,
+            actionPerformed: { e -> J.discardClones = e.source.selected },
             focusable: false,
             toolTipText: "Uncheck to display also the clones in the results"
+        )
+    }
+
+    private JCheckBox createDiscardHiddenClonesCB( swing ){
+        Jumper J = Jumper.get()
+        return swing.checkBox(
+            text: discardHiddenNodesCBLabel,
+            selected: J.discardHiddenNodes,
+            mnemonic: discardHiddenNodesCBMnemonic,
+            actionPerformed: { e -> J.discardHiddenNodes = e.source.selected },
+            focusable: false,
+            toolTipText: """<html>
+                Check to ignore hidden nodes (meaning the nodes<br/>
+                that do not match the active Freeplane filter)
+            </html>"""
         )
     }
 
@@ -568,7 +589,7 @@ class Gui {
             mnemonic: fromStartCBMnemonic,
             actionPerformed: { e -> J.setSearchFromStart( e.source.selected ) },
             focusable: false,
-            toolTipText: "<html>Check to find only nodes where the search string<br>is at the beginning of the node</html>"
+            toolTipText: "<html>Check to find only nodes where the search string<br>is at the beginning of the text</html>"
         )
     }
 
@@ -706,69 +727,79 @@ class Gui {
         candidatesOptions.each{
             candidatesOptionsHelpText += getShorcutHelpText( it.mnemonic, it.text )
         }
-        candidatesOptionsHelpText += getShorcutHelpText( removeClonesCBMnemonic, removeClonesCBLabel )
+        candidatesOptionsHelpText += getShorcutHelpText( discardClonesCBMnemonic, discardClonesCBLabel )
+        candidatesOptionsHelpText += getShorcutHelpText( discardHiddenNodesCBMnemonic, discardHiddenNodesCBLabel )
 
         return """<html>
-            <font size=+2><b>Usage</b></font><br/>
-            <br/>
-              - <b>Type</b> the text to search<br/>
-              - The node list updates to show only the nodes that contains the text<br/>
-              - Select a node with the <b>&lt;Up&gt;</b> and <b>&lt;Down&gt;</b> arrow keys, then press <b>&lt;Enter&gt;</b> to jump to it<br/>
-              - You can also select a node with a mouse click<br/>
-              - Press <b>&lt;Esc&gt;</b> to cancel the search and close the window.<br/>
-            <br/>
 
-            <font size=+2><b>Search options</b></font><br/>
-            <br/>
-              You enter a search pattern in the upper text field.<br/>
-              This pattern is searched differently according to the search options.<br/>
-              <ul>
-                <li>The search can be case sensitive or case insensitive.</li>
-                <li>The pattern can be taken as a single string to search, including its spaces characters, or it can be<br/>
-                    break into differents units that are searched in any order. This allow you to find the sentence<br/>
-                    <i>"This is a good day in the mountains"</i> by typing <i>"mountain day"</i>.</li>
-                <li>The pattern can be taken literally, or as a regular expression. You have to know how to use regular<br/>
-                    expressions to use this second option.</li>
-                <li>The pattern can be searched transversely, meaning that a node is considering to match the pattern if<br/>
-                    it match only some units and if its parents nodes match the rest of the units. For example, the last node of<br/>
-                    a branch [<i>Stories</i>]->[<i>Dracula</i>]->[<i>He fear the daylight</i>] will be found with the search pattern <i>"dracula day stories"</i>.</li>
-            </ul>
+<font size=+2><b>Usage</b></font><br/><br/>
 
-            <font size=+2><b>History</b></font><br/>
-            <br/>
-              You can use a previously search string.<br/>
-              Press <b>&lt;Alt-Up&gt;</b> and <b>&lt;Alt-Down&gt;</b> to navigate in the search history.<br/>
-              <b>&lt;Ctrl-Up&gt;</b> and <b>&lt;Ctrl-Down&gt;</b> also works.<br/>
-            <br/>
+    - <b>Type</b> the text to search<br/>
+    - The node list updates to show only the nodes that contains the text<br/>
+    - Select a node with the <b>&lt;Up&gt;</b> and <b>&lt;Down&gt;</b> arrow keys, then press <b>&lt;Enter&gt;</b> to jump to it<br/>
+    - You can also select a node with a mouse click<br/>
+    - Press <b>&lt;Esc&gt;</b> to cancel the search and close the window.<br/><br/>
 
-            <font size=+2><b>Shortcuts</b></font><br/>
-            <br/>
-              ${getShorcutHelpText( toggleOptionsDisplayMnemonic, "Show/Hide the search options", false )}
-              <br/>
-              You can use a keyboard shortcut to toggle each search option.<br/>
-              All shortcuts works either with <b>Alt</b> and <b>Ctrl</b>.<br/>
-              <br/>
-              ${candidatesOptionsHelpText}
-              <br/>
-              Change the search method:<br/>
-              ${getShorcutHelpText( regexCBMnemonic         , regexCBLabel         )}
-              ${getShorcutHelpText( caseSensitiveCBMnemonic , caseSensitiveCBLabel )}
-              ${getShorcutHelpText( fromStartCBMnemonic     , fromStartCBLabel     )}
-              ${getShorcutHelpText( splitPatternCBMnemonic  , splitPatternCBLabel  )}
-              ${getShorcutHelpText( transversalCBMnemonic   , transversalCBLabel   )}
-              <br/>
-              Change the parts of the nodes where to look:<br/>
-              ${getShorcutHelpText( detailsCBMnemonic         , detailsCBLabel         )}
-              ${getShorcutHelpText( noteCBMnemonic            , noteCBLabel            )}
-              ${getShorcutHelpText( attributesNameCBMnemonic  , attributesNameCBLabel  )}
-              ${getShorcutHelpText( attributesValueCBMnemonic , attributesValueCBLabel )}
-              <br/>
-              How to display the results:<br/>
-              ${getShorcutHelpText( showNodesLevelCBMnemonic    , DisplaySettingsGui.showNodesLevelCBLabel    )}
-              ${getShorcutHelpText( followSelectedCBMnemonic    , DisplaySettingsGui.followSelectedCBLabel    )}
-              ${getShorcutHelpText( recallLastPatternCBMnemonic , DisplaySettingsGui.recallLastPatternCBLabel )}
-            <br/>
-          </html>"""
+<font size=+2><b>Search options</b></font><br/><br/>
+
+    You enter a search pattern in the upper text field.<br/>
+    This pattern is searched differently according to the search options.<br/>
+    <ul>
+      <li>
+        The search can be case sensitive or case insensitive.
+      </li>
+      <li>
+        The pattern can be taken as a single string to search, including its spaces characters, or it can be<br/>
+        broken into differents \"units\" that are searched in any order.<br/>
+        This allows you to find the sentence <i>"This is a good day in the mountains"</i><br/>
+        by typing <i>"mountain day"</i>.
+      </li>
+      <li>
+        The pattern can be taken literally, or as a regular expression. You have to know how to use regular<br/>
+        expressions to use this second option.
+      </li>
+      <li>
+        The pattern can be searched transversely, meaning that a node is considering to match the pattern if<br/>
+        it match only some \"units\" and if its parents nodes match the rest of the \"units\".<br/>
+        For example, the last node of a branch [<i>Stories</i>]->[<i>Dracula</i>]->[<i>He fear the daylight</i>]<br/>
+        will be found with the search pattern <i>"dracula day stories"</i>.
+      </li>
+    </ul>
+    
+<font size=+2><b>History</b></font><br/><br/>
+
+    You can use a previously search string.<br/>
+    Press <b>&lt;Alt-Up&gt;</b> and <b>&lt;Alt-Down&gt;</b> to navigate in the search history.<br/>
+    <b>&lt;Ctrl-Up&gt;</b> and <b>&lt;Ctrl-Down&gt;</b> also works.<br/><br/>
+  
+<font size=+2><b>Shortcuts</b></font><br/><br/>
+
+    ${getShorcutHelpText( toggleOptionsDisplayMnemonic, "Show/Hide the search options", false )}<br/>
+    
+    You can use a keyboard shortcut to toggle each search option.<br/>
+    All shortcuts works either with <b>Alt</b> and <b>Ctrl</b>.<br/><br/>
+    
+    ${candidatesOptionsHelpText}<br/>
+    
+    Change the search method:<br/>
+    ${getShorcutHelpText( regexCBMnemonic         , regexCBLabel         )}
+    ${getShorcutHelpText( caseSensitiveCBMnemonic , caseSensitiveCBLabel )}
+    ${getShorcutHelpText( fromStartCBMnemonic     , fromStartCBLabel     )}
+    ${getShorcutHelpText( splitPatternCBMnemonic  , splitPatternCBLabel  )}
+    ${getShorcutHelpText( transversalCBMnemonic   , transversalCBLabel   )}<br/>
+    
+    Change the parts of the nodes where to look:<br/>
+    ${getShorcutHelpText( detailsCBMnemonic         , detailsCBLabel         )}
+    ${getShorcutHelpText( noteCBMnemonic            , noteCBLabel            )}
+    ${getShorcutHelpText( attributesNameCBMnemonic  , attributesNameCBLabel  )}
+    ${getShorcutHelpText( attributesValueCBMnemonic , attributesValueCBLabel )}<br/>
+    
+    How to display the results:<br/>
+    ${getShorcutHelpText( showNodesLevelCBMnemonic    , DisplaySettingsGui.showNodesLevelCBLabel    )}
+    ${getShorcutHelpText( followSelectedCBMnemonic    , DisplaySettingsGui.followSelectedCBLabel    )}
+    ${getShorcutHelpText( recallLastPatternCBMnemonic , DisplaySettingsGui.recallLastPatternCBLabel )}<br/>
+    
+</html>"""
     }
 
     // Get a small question mark icon from the theme
@@ -821,9 +852,13 @@ class Gui {
                                 if( drsGui.recallLastPatternCB.enabled )
                                     setRecallLastPattern( ! drs.recallLastPattern )
                                 break
-                            case removeClonesCBMnemonic:
-                                if( removeClonesCB.enabled )
-                                    J.setClonesDisplay( ! J.isRemoveClones )
+                            case discardClonesCBMnemonic:
+                                if( discardClonesCB.enabled )
+                                    J.discardClones = ! J.discardClones
+                                break
+                            case discardHiddenNodesCBMnemonic:
+                                if( discardHiddenNodesCB.enabled )
+                                    J.discardHiddenNodes = ! J.discardHiddenNodes
                                 break
                             case regexCBMnemonic:
                                 if( regexCB.enabled )

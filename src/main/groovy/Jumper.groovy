@@ -32,7 +32,8 @@ class Jumper {
     public final int DESCENDANTS = 2
     public final int SIBLINGS_AND_DESCENDANTS = 3
     private int candidatesType = ALL_NODES
-    private boolean isRemoveClones = false
+    private boolean discardClones = false
+    private boolean discardHiddenNodes = true
     
     private ArrayList<Boolean> ancestorsFolding
     private Node previousSelectedNode
@@ -221,15 +222,26 @@ class Jumper {
         return searchOptions
     }
 
-    public void setClonesDisplay( boolean showOnlyOne ){
-        boolean previous = isRemoveClones
-        isRemoveClones = showOnlyOne
+    public void setDiscardClones( boolean value ){
+        boolean previous = discardClones
+        discardClones = value
         gui.updateOptions()
-        if( isCandidatesDefined && previous != showOnlyOne ) updateCandidates()
+        if( isCandidatesDefined && previous != value ) updateCandidates()
     }
 
-    public boolean getIsRemoveClones(){
-        return isRemoveClones
+    public boolean getDiscardClones(){
+        return discardClones
+    }
+
+    public void setDiscardHiddenNodes( boolean value ){
+        boolean previous = discardHiddenNodes
+        discardHiddenNodes = value
+        gui.updateOptions()
+        if( isCandidatesDefined && previous != value ) updateCandidates()
+    }
+
+    public boolean getDiscardHiddenNodes(){
+        return discardHiddenNodes
     }
 
 
@@ -275,13 +287,14 @@ class Jumper {
         DisplayResultsSettings drs = gui.drs
         
         Map datas = [
-            candidatesType : candidatesType,
-            isRemoveClones : isRemoveClones,
-            history        : history,
-            currentPattern : gui.getPatternText() ?: null,
-            saveTime       : System.currentTimeMillis() / 1000,
-            searchOptions  : searchOptions,
-            gui            : gui.getSaveMap()
+            candidatesType     : candidatesType,
+            discardClones      : discardClones,
+            discardHiddenNodes : discardHiddenNodes,
+            history            : history,
+            currentPattern     : gui.getPatternText() ?: null,
+            saveTime           : System.currentTimeMillis() / 1000,
+            searchOptions      : searchOptions,
+            gui                : gui.getSaveMap()
         ]
 
         try{ 
@@ -315,10 +328,11 @@ class Jumper {
         try{
             Map s = new JsonSlurper().parseText( file.text )
             candidatesType = s.candidatesType ?: candidatesType
-            if( s.isRemoveClones != null ) isRemoveClones = s.isRemoveClones
-            if( s.searchOptions  != null ) searchOptions = new SearchOptions( s.searchOptions )
-            if( s.currentPattern != null ) settings.currentPattern = s.currentPattern
-            if( s.saveTime       != null ) settings.saveTime = s.saveTime
+            if( s.discardClones      != null ) discardClones            = s.discardClones
+            if( s.discardHiddenNodes != null ) discardHiddenNodes       = s.discardHiddenNodes
+            if( s.searchOptions      != null ) searchOptions            = new SearchOptions( s.searchOptions )
+            if( s.currentPattern     != null ) settings.currentPattern  = s.currentPattern
+            if( s.saveTime           != null ) settings.saveTime        = s.saveTime
             history = s.history ?: history
             if( s.gui ) s.gui.with{
                 if( showOptions != null ) settings.showOptions = showOptions
@@ -356,6 +370,8 @@ class Jumper {
         if( ! currentSNode ) return
         if( sMap == null ) return
 
+        print "update"
+        
         isCandidatesDefined = true
         SNodes sNodes
         
@@ -373,7 +389,8 @@ class Jumper {
                 sNodes = sMap.getSiblingsAndDescendantsNodes( currentSNode )
                 break
         }
-        if( isRemoveClones ) removeClones( sNodes )
+        if( discardClones      ) removeClones( sNodes )
+        if( discardHiddenNodes ) removeHiddenNodes( sNodes )
         candidates.set(
             sNodes,
             gui.getPatternText(), searchOptions,
@@ -417,6 +434,16 @@ class Jumper {
             clones.sort( firstClone )
             if( sNode.node != clones[0] ) return true
         }
+    }
+
+    // Keep only visibles nodes.
+    private void removeHiddenNodes( SNodes sNodes ){
+        print "remove hidden before ${sNodes.size()}"
+        sNodes.removeAll{
+            SNode sNode ->
+            ! sNode.node.isVisible()
+        }
+        print "remove hidden after ${sNodes.size()}"
     }
 
     private void addToHistory( String pattern ){
