@@ -72,7 +72,6 @@ Jumper has got many options that control where it search, how it search, and how
 
 ---
 
-`[ ]` Decide what to do with filtered nodes: use them ? ignore them ? give the choice ?  
 `[ ]` Update code comments  
 `[?]` Option to search entire words only, or only at the beginning of the words  
 `[?]` Option to order results by level  
@@ -83,6 +82,7 @@ Jumper has got many options that control where it search, how it search, and how
 
 ---
 
+`[X]` Option to search in nodes hidden by Freeplane filter  
 `[X]` Give the focus to the help window when it opens.  
 `[X]` Option to not bring back the last search pattern after some time  
 `[X]` Do not use the root node for transversal match
