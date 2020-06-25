@@ -4,6 +4,7 @@ lib
 .#*
 *.temp
 *.bak
+*.mp4
 emacs-edition-macros.el
 display-downloads.bat
 Thumbs.db
