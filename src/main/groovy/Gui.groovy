@@ -421,7 +421,7 @@ class Gui {
     
     void updateResultLabel( int numDisplayed, int numTotal, boolean maybeMore ){
         if( ! resultLbl ) return
-        String text = "<html><b>${numDisplayed}</b> nodes found amoung <b>${numTotal}</b> nodes."
+        String text = "<html><b>${numDisplayed}</b> node${numDisplayed!=1 ? 's':''} found amoung <b>${numTotal}</b> node${numTotal!=1 ? 's':''}."
         if( maybeMore ) text += " It may be more matches than this."
         text += "<html>"
         resultLbl.text = text
