@@ -218,6 +218,19 @@ class Jumper {
         if( previous != value ) searchAgain()
     }
 
+    public void setAllDetailsSearch( boolean check ){
+        searchOptions.with{
+            if( check && allDetailsTrue() ) print 1
+            if( ! check && allDetailsFalse() ) print 2
+            useDetails         = check
+            useNote            = check
+            useAttributesName  = check
+            useAttributesValue = check
+            gui.updateOptions()
+            searchAgain()
+        }
+    }
+
     public SearchOptions getSearchOptions(){
         return searchOptions
     }
@@ -370,8 +383,6 @@ class Jumper {
         if( ! currentSNode ) return
         if( sMap == null ) return
 
-        print "update"
-        
         isCandidatesDefined = true
         SNodes sNodes
         
@@ -438,12 +449,10 @@ class Jumper {
 
     // Keep only visibles nodes.
     private void removeHiddenNodes( SNodes sNodes ){
-        print "remove hidden before ${sNodes.size()}"
         sNodes.removeAll{
             SNode sNode ->
             ! sNode.node.isVisible()
         }
-        print "remove hidden after ${sNodes.size()}"
     }
 
     private void addToHistory( String pattern ){

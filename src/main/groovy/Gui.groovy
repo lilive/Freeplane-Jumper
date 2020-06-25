@@ -72,47 +72,56 @@ class Gui {
 
     // Which nodes to search options controls
     private ArrayList<CandidatesOption> candidatesOptions
-    private int allNodesMnemonic = KeyEvent.VK_M
-    private int siblingsMnemonic = KeyEvent.VK_S
-    private int descendantsMnemonic = KeyEvent.VK_D
-    private int siblingsAndDescendantsMnemonic = KeyEvent.VK_B
+    private int       allNodesMnemonic = KeyEvent.VK_M
+    private int       siblingsMnemonic = KeyEvent.VK_S
+    private int       descendantsMnemonic = KeyEvent.VK_D
+    private int       siblingsAndDescendantsMnemonic = KeyEvent.VK_B
     private JCheckBox discardClonesCB
-    private int discardClonesCBMnemonic = KeyEvent.VK_K
-    private String discardClonesCBLabel = "Keep only one clone"
+    private int       discardClonesCBMnemonic = KeyEvent.VK_K
+    private String    discardClonesCBLabel = "Keep only one clone"
     private JCheckBox discardHiddenNodesCB
-    private int discardHiddenNodesCBMnemonic = KeyEvent.VK_H
-    private String discardHiddenNodesCBLabel = "Discard hidden nodes"
+    private int       discardHiddenNodesCBMnemonic = KeyEvent.VK_H
+    private String    discardHiddenNodesCBLabel = "Discard hidden nodes"
 
     // Search method options controls
     private JCheckBox regexCB
-    private int regexCBMnemonic = KeyEvent.VK_R
-    private String regexCBLabel = "Use regular expressions"
+    private int       regexCBMnemonic = KeyEvent.VK_R
+    private String    regexCBLabel = "Use regular expressions"
     private JCheckBox caseSensitiveCB
-    private int caseSensitiveCBMnemonic = KeyEvent.VK_I
-    private String caseSensitiveCBLabel = "Case sensitive search"
+    private int       caseSensitiveCBMnemonic = KeyEvent.VK_I
+    private String    caseSensitiveCBLabel = "Case sensitive search"
     private JCheckBox fromStartCB
-    private int fromStartCBMnemonic = KeyEvent.VK_G
-    private String fromStartCBLabel = "Search at beginning of text"
+    private int       fromStartCBMnemonic = KeyEvent.VK_G
+    private String    fromStartCBLabel = "Search at beginning of text"
     private JCheckBox splitPatternCB
-    private int splitPatternCBMnemonic = KeyEvent.VK_U
-    private String splitPatternCBLabel = "Multiple pattern"
+    private int       splitPatternCBMnemonic = KeyEvent.VK_U
+    private String    splitPatternCBLabel = "Multiple pattern"
     private JCheckBox transversalCB
-    private int transversalCBMnemonic = KeyEvent.VK_T
-    private String transversalCBLabel = "Transversal search"
+    private int       transversalCBMnemonic = KeyEvent.VK_T
+    private String    transversalCBLabel = "Transversal search"
 
     // Which parts of the nodes to search options controls
     private JCheckBox detailsCB
-    private int detailsCBMnemonic = KeyEvent.VK_1
-    private String detailsCBLabel = "in details"
+    private int       detailsCBMnemonic = KeyEvent.VK_1
+    private String    detailsCBLabel = "in details"
     private JCheckBox noteCB
-    private int noteCBMnemonic = KeyEvent.VK_2
-    private String noteCBLabel = "in note"
+    private int       noteCBMnemonic = KeyEvent.VK_2
+    private String    noteCBLabel = "in note"
     private JCheckBox attributesNameCB
-    private int attributesNameCBMnemonic = KeyEvent.VK_3
-    private String attributesNameCBLabel = "in attributes names"
+    private int       attributesNameCBMnemonic = KeyEvent.VK_3
+    private String    attributesNameCBLabel = "in attributes names"
     private JCheckBox attributesValueCB
-    private int attributesValueCBMnemonic = KeyEvent.VK_4
-    private String attributesValueCBLabel = "in attributes values"
+    private int       attributesValueCBMnemonic = KeyEvent.VK_4
+    private String    attributesValueCBLabel = "in attributes values"
+    private JButton   checkAllDetailsBtn
+    private int       checkAllDetailsBtnMnemonic = KeyEvent.VK_5
+    private String    checkAllDetailsBtnLabel = "All"
+    private JButton   uncheckAllDetailsBtn
+    private int       uncheckAllDetailsBtnMnemonic = KeyEvent.VK_6
+    private String    uncheckAllDetailsBtnLabel = "None"
+    private JButton   toggleAllDetailsBtn
+    private int       toggleAllDetailsBtnMnemonic = KeyEvent.VK_7
+    private String    toggleAllDetailsBtnLabel = "Toggle all"
 
     // History controls
     int historyPreviousKey = KeyEvent.VK_UP
@@ -174,6 +183,10 @@ class Gui {
         noteCB               = createNoteCB( swing )
         attributesNameCB     = createAttributesNameCB( swing )
         attributesValueCB    = createAttributesValueCB( swing )
+        checkAllDetailsBtn   = createCheckAllDetailsBtn( swing )
+        uncheckAllDetailsBtn = createUncheckAllDetailsBtn( swing )
+        toggleAllDetailsBtn  = createToggleAllDetailsBtn( swing )
+        checkAllDetailsBtn.setPreferredSize( uncheckAllDetailsBtn.getPreferredSize() )
         JButton toggleDisplaySettingsButton = createToggleDisplaySettingsButton( swing )
         JButton helpButton = createHelpButton( swing )
 
@@ -278,17 +291,24 @@ class Gui {
                         )
 
                         // Where to search in nodes
-                        panel(
-                            border: emptyBorder( 0, 8, 0, 32 ),
+                        vbox(
+                            border: emptyBorder( 0, 8, 0, 0 ),
                             constraints: gbc( gridx:x++, gridy:0, anchor:GBC.FIRST_LINE_START, weightx:0 )
                         ){
-                            boxLayout( axis: BoxLayout.Y_AXIS )
                             label( "<html><b>Where to search</b></html>", border: emptyBorder( 4, 0, 4, 0 ) )
                             label( "Search in the node text and...")
                             widget( detailsCB )
                             widget( noteCB )
                             widget( attributesNameCB )
                             widget( attributesValueCB )
+                            hbox( alignmentX: Component.LEFT_ALIGNMENT ){
+                                widget( checkAllDetailsBtn )
+                                hstrut()
+                                widget( uncheckAllDetailsBtn )
+                                hstrut()
+                                widget( toggleAllDetailsBtn )
+                                hglue()
+                            }
                         }
                     }
                 }
@@ -338,11 +358,14 @@ class Gui {
             attributesValueCB.selected = useAttributesValue
             
             splitPatternCB.enabled = ! transversal && ! fromStart
+            checkAllDetailsBtn.enabled = ! allDetailsTrue()
+            uncheckAllDetailsBtn.enabled = ! allDetailsFalse()
         }
         
         drsGui.showNodesLevelCB.selected    = drs.showNodesLevel
         drsGui.followSelectedCB.selected    = drs.followSelected
         drsGui.recallLastPatternCB.selected = drs.recallLastPattern
+
     }
 
     void toggleOptionsDisplay(){
@@ -670,6 +693,41 @@ class Gui {
         )
     }
 
+    private JButton createCheckAllDetailsBtn( swing ){
+        Jumper J = Jumper.get()
+        return swing.button(
+            text: checkAllDetailsBtnLabel,
+            mnemonic: checkAllDetailsBtnMnemonic,
+            enabled: ! J.searchOptions.allDetailsTrue(),
+            focusable: false,
+            toolTipText: "Click to search in details, notes and attributes",
+            actionPerformed: { e -> J.setAllDetailsSearch( true ) }
+        )
+    }
+
+    private JButton createUncheckAllDetailsBtn( swing ){
+        Jumper J = Jumper.get()
+        return swing.button(
+            text: uncheckAllDetailsBtnLabel,
+            mnemonic: uncheckAllDetailsBtnMnemonic,
+            enabled: ! J.searchOptions.allDetailsFalse(),
+            focusable: false,
+            toolTipText: "Click to search only in nodes core text",
+            actionPerformed: { e -> J.setAllDetailsSearch( false ) }
+        )
+    }
+
+    private JButton createToggleAllDetailsBtn( swing ){
+        Jumper J = Jumper.get()
+        return swing.button(
+            text: toggleAllDetailsBtnLabel,
+            mnemonic: toggleAllDetailsBtnMnemonic,
+            focusable: false,
+            toolTipText: "Click to toggle the search in details, notes and attributes",
+            actionPerformed: { e -> J.setAllDetailsSearch( J.searchOptions.allDetailsFalse() ) }
+        )
+    }
+
     private JButton createToggleDisplaySettingsButton( swing ){
         return swing.button(
             text: "Display settings",
@@ -792,7 +850,11 @@ class Gui {
     ${getShorcutHelpText( detailsCBMnemonic         , detailsCBLabel         )}
     ${getShorcutHelpText( noteCBMnemonic            , noteCBLabel            )}
     ${getShorcutHelpText( attributesNameCBMnemonic  , attributesNameCBLabel  )}
-    ${getShorcutHelpText( attributesValueCBMnemonic , attributesValueCBLabel )}<br/>
+    ${getShorcutHelpText( attributesValueCBMnemonic , attributesValueCBLabel )}
+    There is also 3 buttons to change them all:<br/>
+    ${getShorcutHelpText( checkAllDetailsBtnMnemonic   , checkAllDetailsBtnLabel   )}
+    ${getShorcutHelpText( uncheckAllDetailsBtnMnemonic , uncheckAllDetailsBtnLabel )}
+    ${getShorcutHelpText( toggleAllDetailsBtnMnemonic  , toggleAllDetailsBtnLabel  )}<br/>
     
     How to display the results:<br/>
     ${getShorcutHelpText( showNodesLevelCBMnemonic    , DisplaySettingsGui.showNodesLevelCBLabel    )}
@@ -895,6 +957,18 @@ class Gui {
                             case attributesValueCBMnemonic:
                                 if( attributesValueCB.enabled )
                                     J.setAttributesValueSearch( ! J.searchOptions.useAttributesValue )
+                                break
+                            case checkAllDetailsBtnMnemonic:
+                                if( checkAllDetailsBtn.enabled )
+                                    J.setAllDetailsSearch( true )
+                                break
+                            case uncheckAllDetailsBtnMnemonic:
+                                if( uncheckAllDetailsBtn.enabled )
+                                    J.setAllDetailsSearch( false )
+                                break
+                            case toggleAllDetailsBtnMnemonic:
+                                if( toggleAllDetailsBtn.enabled )
+                                    J.setAllDetailsSearch( J.searchOptions.allDetailsFalse() )
                                 break
                             default:
                                 CandidatesOption option = candidatesOptions.find{ it.mnemonic == key }
