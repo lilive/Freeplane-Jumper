@@ -3,7 +3,7 @@
 <node TEXT="jumper" LOCALIZED_STYLE_REF="styles.topic" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1593125703567" LINK="https://github.com/lilive/Freeplane-Jumper" BORDER_WIDTH="3.0 px" BORDER_COLOR_LIKE_EDGE="false" BORDER_COLOR="#192441" BORDER_DASH="CLOSE_DOTS" BACKGROUND_COLOR="#97c7dc" STYLE="rectangle" SHAPE_HORIZONTAL_MARGIN="6.0 pt" SHAPE_VERTICAL_MARGIN="6.0 pt">
 <font SIZE="16" BOLD="true" ITALIC="true"/>
 <hook NAME="MapStyle" background="#cccccc">
-    <properties fit_to_viewport="false" show_icon_for_attributes="true" show_note_icons="true" show_notes_in_map="true" edgeColorConfiguration="#353535ff,#353535ff,#353535ff,#353535ff,#353535ff"/>
+    <properties show_icon_for_attributes="true" fit_to_viewport="false" show_note_icons="true" show_notes_in_map="true" edgeColorConfiguration="#353535ff,#353535ff,#353535ff,#353535ff,#353535ff"/>
 
 <map_styles>
 <stylenode LOCALIZED_TEXT="styles.root_node" STYLE="oval" UNIFORM_SHAPE="true" VGAP_QUANTITY="24.0 pt">
@@ -135,7 +135,6 @@
     </ul>
   </body>
 </html>
-
 </richcontent>
 <node TEXT="description" POSITION="left" ID="ID_971223094" CREATED="1592410105126" MODIFIED="1593125703584" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
@@ -157,9 +156,8 @@
     </p>
   </body>
 </html>
-
 </richcontent>
-<node TEXT="A fully keyboard driven search box that filters the nodes on-the-fly as the user types the search terms, and allows to jump to one of the results.&#xa;&#xa;Jumper, the Jumping Filter, provides an easy and quick way to search for nodes in Freeplane maps. Press Jumper shortcut, type some text snippets, and you will instantly see all the nodes (or branches !) that contain them in the Jumper window. Select one of these nodes to select it in the map.&#xa;&#xa;Main features:&#xa;- Search results updated as you type&#xa;- Matching text is highlighted in the results list&#xa;- Regular search of transversal search (find words or text snippets across a branch)&#xa;- Words or text snippets can be searched in any order&#xa;- Search in any part of the nodes (core text, details, notes, attributes)&#xa;- Plain text or regular expressions search, case sensitive or insensitive&#xa;- Can focus the map view on the node selected in the results list&#xa;- Search the whole map, only the siblings of the selected node, or its descendants&#xa;- Search history&#xa;- Keyboard shortcuts for all the search options&#xa;- Persistent search settings&#xa;- Many options to customize the results appearence" ID="ID_414073752" CREATED="1592410703269" MODIFIED="1593124545213"/>
+<node TEXT="A fully keyboard driven search box that filters the nodes on-the-fly as the user types the search terms, and allows to jump to one of the results.&#xa;&#xa;Jumper, the Jumping Filter, provides an easy and quick way to search for nodes in Freeplane maps. Press Jumper shortcut, type some text snippets, and you will instantly see all the nodes (or branches !) that contain them in the Jumper window. Select one of these nodes to select it in the map.&#xa;&#xa;Main features:&#xa;- Search results updated as you type&#xa;- Matching text is highlighted in the results list&#xa;- Regular search or transversal search (find words or text snippets across a branch)&#xa;- Words or text snippets can be searched in any order&#xa;- Search in any part of the nodes (core text, details, notes, attributes)&#xa;- Plain text or regular expressions search, case sensitive or insensitive&#xa;- Can focus the map view on the node selected in the results list&#xa;- Search the whole map, only the siblings of the selected node, or its descendants&#xa;- Search history&#xa;- Keyboard shortcuts for all the search options&#xa;- Persistent search settings&#xa;- Many options to customize the results appearence" ID="ID_414073752" CREATED="1592410703269" MODIFIED="1593128411608"/>
 </node>
 <node TEXT="changes" POSITION="left" ID="ID_465882181" CREATED="1592410105189" MODIFIED="1593125703586" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
@@ -175,7 +173,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 <node TEXT="v0.5.0" ID="ID_607298643" CREATED="1592411201957" MODIFIED="1592411205113">
 <node TEXT="Package the Jumper script into an add-on" ID="ID_603689072" CREATED="1592411206917" MODIFIED="1592411230809"/>
@@ -216,7 +213,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 <node TEXT="&#xa;This add-on is free software: you can redistribute it and/or modify&#xa;it under the terms of the GNU General Public License as published by&#xa;the Free Software Foundation, either version 2 of the License, or&#xa;(at your option) any later version.&#xa;&#xa;This program is distributed in the hope that it will be useful,&#xa;but WITHOUT ANY WARRANTY; without even the implied warranty of&#xa;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the&#xa;GNU General Public License for more details.&#xa;" ID="ID_1223814638" CREATED="1592410105205" MODIFIED="1592410105209"/>
 </node>
@@ -237,7 +233,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 </node>
 <node TEXT="default.properties" POSITION="left" ID="ID_1995339540" CREATED="1592410105244" MODIFIED="1593125703597">
@@ -262,7 +257,6 @@
     </ul>
   </body>
 </html>
-
 </richcontent>
 <attribute_layout NAME_WIDTH="171.74999488145127 pt" VALUE_WIDTH="194.9999941885473 pt"/>
 <attribute NAME="addons.jumper.run_on_single_node.icon" VALUE="/images/jumper-icon.svg"/>
@@ -292,7 +286,6 @@
     </ul>
   </body>
 </html>
-
 </richcontent>
 <node TEXT="en" ID="ID_1840514888" CREATED="1592410105258" MODIFIED="1593003206920">
 <attribute_layout NAME_WIDTH="128.99999615550053 pt" VALUE_WIDTH="257.2499923333528 pt"/>
@@ -314,7 +307,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 <attribute_layout VALUE_WIDTH="238.4999928921463 pt"/>
 <attribute NAME="delete" VALUE="${installationbase}/addons/${name}.script.xml"/>
@@ -444,7 +436,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 <node TEXT="run.groovy" ID="ID_1411088832" CREATED="1592410873205" MODIFIED="1593003277382">
 <attribute_layout NAME_WIDTH="193.4999942332508 pt" VALUE_WIDTH="168.74999497085824 pt"/>
@@ -497,7 +488,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 <node TEXT="jumper.jar" ID="ID_1699451871" CREATED="1592740425847" MODIFIED="1592740425849"/>
 </node>
@@ -539,7 +529,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 </node>
 <node TEXT="images" POSITION="right" ID="ID_1159861672" CREATED="1592410105346" MODIFIED="1593125703655">
@@ -576,7 +565,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 <node TEXT="jumper.png" ID="ID_1206323572" CREATED="1592991516201" MODIFIED="1592991633902"/>
 <node TEXT="jumper-screenshot-1.png" ID="ID_624984387" CREATED="1592995661805" MODIFIED="1592995663561"/>

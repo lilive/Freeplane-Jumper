@@ -18,7 +18,7 @@ This Freeplane add-on provides an easy and quick way to search for nodes in Free
 
 - Search results updated as you type
 - Matching text is highlighted in the results list
-- Regular search of transversal search (find words or text snippets across a branch)
+- Regular search or transversal search (find words or text snippets across a branch)
 - Words or text snippets can be searched in any order
 - Search in any part of the nodes (core text, details, notes, attributes)
 - Plain text or regular expressions search, case sensitive or insensitive
