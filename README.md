@@ -1,29 +1,29 @@
 # Jumper - The jumping filter for Freeplane
 
-This Freeplane add-on provides a search box that filters the nodes on-the-fly as the user types the search terms, and allows to jump to one of the results.
+A search box that filters the nodes on-the-fly as the user types the search terms, and allows to jump to one of the results.
 
-The goal is to provide a quick way to search for nodes, fully keyboard driven.
+This Freeplane add-on provides an easy and quick way to search for nodes in Freeplane maps. Press Jumper shortcut, type some text snippets, and you will instantly see all the nodes (or branches !) that contain them in the Jumper window. Select one of this node to select it in the map.
 
-> :bell: **Jumper is a young add-on** (but don't worry, you can't loose datas using it)**.  
-> It may be improved. Let me know what you think or propose improvements !**  
-> I will really appreciate any feedback. They will help to keep me motivated to improve or maintain the add-on.  
-> Do you use it ? Just let me know :smile:. You can write to me in [this github thread](https://github.com/lilive/Freeplane-Jumper/issues/1) or in this [dedicated discussion](https://sourceforge.net/p/freeplane/discussion/758437/thread/e7b4594c02/) in the Freeplane forum.
+> :bell: I will really appreciate any feedback. They will help to keep me motivated to improve or maintain the add-on.  
+> Do you use it ? Just let me know :smile:. You can write to me in [this github thread](https://github.com/lilive/Freeplane-Jumper/issues/1) or in this [dedicated discussion](https://sourceforge.net/p/freeplane/discussion/758437/thread/e7b4594c02/) in the Freeplane forum.  
+> Do you feel that something may be improved ? Have you found something that do not seems to work as expected ? Tell me !
 
-## Features
+> :bell: Jumper doesn't modify your maps, you can use it without fear of data loss.
 
+## Main features
+
+- Search results updated as you type
+- Matching text is highlighted in the results list
+- Regular search of transversal search (find words or text snippets across a branch)
+- Words or text snippets can be searched in any order
 - Search in any part of the nodes (core text, details, notes, attributes)
-- Regular search of transversal search (find words across a branch)
-- Case sensitive or insensitive search
-- Plain text or regular expressions search
-- Words can be searched in any order
+- Plain text or regular expressions search, case sensitive or insensitive
 - Can focus the map view on the node selected in the results list
 - Search the whole map, only the siblings of the selected node, or its descendants
-- Results updated as you type
-- Matching text is highlighted in the results list
 - Search history
 - Keyboard shortcuts for all the search options
 - Persistent search settings
-- Options to customize the results appearence
+- Many options to customize the results appearence
 
 ## Usage
 
