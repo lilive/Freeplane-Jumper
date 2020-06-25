@@ -44,10 +44,10 @@ class DisplayResultsSettings {
         
         coreFont           = new SwingBuilder().label().getFont()
         coreFontSize       = coreFont.getSize()
-        detailsFontSize    = coreFontSize - 2
+        detailsFontSize    = Math.round( coreFontSize * 0.85 )
         baseFontSize       = coreFontSize
-        minFontSize        = coreFontSize - 6
-        maxFontSize        = coreFontSize + 12
+        minFontSize        = Math.round( coreFontSize * 0.5 )
+        maxFontSize        = Math.round( coreFontSize * 2.5 )
         patternFontSize    = coreFontSize
         patternMinFontSize = coreFontSize
         detailsFont = coreFont.deriveFont( (float)detailsFontSize )
