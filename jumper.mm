@@ -1,9 +1,9 @@
 <map version="freeplane 1.8.0">
 <!--To view this file, download free mind mapping software Freeplane from http://freeplane.sourceforge.net -->
-<node TEXT="jumper" LOCALIZED_STYLE_REF="styles.topic" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1593125703567" LINK="https://github.com/lilive/Freeplane-Jumper" BORDER_WIDTH="3.0 px" BORDER_COLOR_LIKE_EDGE="false" BORDER_COLOR="#192441" BORDER_DASH="CLOSE_DOTS" BACKGROUND_COLOR="#97c7dc" STYLE="rectangle" SHAPE_HORIZONTAL_MARGIN="6.0 pt" SHAPE_VERTICAL_MARGIN="6.0 pt">
+<node TEXT="jumper" LOCALIZED_STYLE_REF="styles.topic" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1593196655849" LINK="https://github.com/lilive/Freeplane-Jumper" BORDER_WIDTH="3.0 px" BORDER_COLOR_LIKE_EDGE="false" BORDER_COLOR="#192441" BORDER_DASH="CLOSE_DOTS" BACKGROUND_COLOR="#97c7dc" STYLE="rectangle" SHAPE_HORIZONTAL_MARGIN="6.0 pt" SHAPE_VERTICAL_MARGIN="6.0 pt">
 <font SIZE="16" BOLD="true" ITALIC="true"/>
 <hook NAME="MapStyle" background="#cccccc">
-    <properties show_icon_for_attributes="true" fit_to_viewport="false" show_note_icons="true" show_notes_in_map="true" edgeColorConfiguration="#353535ff,#353535ff,#353535ff,#353535ff,#353535ff"/>
+    <properties fit_to_viewport="false" show_icon_for_attributes="true" show_note_icons="true" show_notes_in_map="true" edgeColorConfiguration="#353535ff,#353535ff,#353535ff,#353535ff,#353535ff"/>
 
 <map_styles>
 <stylenode LOCALIZED_TEXT="styles.root_node" STYLE="oval" UNIFORM_SHAPE="true" VGAP_QUANTITY="24.0 pt">
@@ -95,7 +95,7 @@
 <edge WIDTH="thin"/>
 <attribute_layout NAME_WIDTH="119.24999644607315 pt" VALUE_WIDTH="303.74999094754486 pt"/>
 <attribute NAME="name" VALUE="jumper"/>
-<attribute NAME="version" VALUE="v1.0.0"/>
+<attribute NAME="version" VALUE="v1.0.1"/>
 <attribute NAME="author" VALUE="lilive"/>
 <attribute NAME="freeplaneVersionFrom" VALUE="1.8.5"/>
 <attribute NAME="freeplaneVersionTo" VALUE=""/>
@@ -191,6 +191,9 @@
 </node>
 <node TEXT="v1.0.0" ID="ID_1143582783" CREATED="1593091078042" MODIFIED="1593091081365">
 <node TEXT="All the planned features are now implemented. It seems that Jumper deserves a version number 1.0.0 !&#xa;In this version:&#xa;- Icons for the add-on package and for the Freeplane menu entry&#xa;- New option to search or not in nodes hidden by Freeplane filter&#xa;- New buttons to quickly change details search options" ID="ID_571347316" CREATED="1593091083306" MODIFIED="1593110399514"/>
+</node>
+<node TEXT="v1.0.1" ID="ID_1185990293" CREATED="1593196660921" MODIFIED="1593196664503">
+<node TEXT="- Fix problem with AltGr key&#xa;- By default, search also in details, notes and attributes" ID="ID_1010136158" CREATED="1593196666137" MODIFIED="1593196726541"/>
 </node>
 </node>
 <node TEXT="license" FOLDED="true" POSITION="left" ID="ID_1975958535" CREATED="1592410105197" MODIFIED="1593125703591" TEXT_SHORTENED="true">
