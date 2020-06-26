@@ -9,9 +9,9 @@ class SearchOptions {
     boolean splitPattern = true
     boolean transversal = true
     boolean useDetails = true
-    boolean useNote = false
-    boolean useAttributesName = false
-    boolean useAttributesValue = false
+    boolean useNote = true
+    boolean useAttributesName = true
+    boolean useAttributesValue = true
 
     public boolean allDetailsTrue(){
         return useDetails && useNote && useAttributesName && useAttributesValue
