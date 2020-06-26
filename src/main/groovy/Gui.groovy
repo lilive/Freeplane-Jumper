@@ -892,7 +892,11 @@ class Gui {
                     
                     int key = e.getKeyCode()
                     Jumper J = Jumper.get()
-                    
+
+                    // With my french keyboard AltGr is send as Ctrl+Alt
+                    if( e.isControlDown() && e.isAltDown() ) return
+                    if( e.isAltGraphDown() ) return
+                        
                     if( e.isControlDown() || e.isAltDown() ){
                         boolean keyUsed = true
                         switch( key ){
