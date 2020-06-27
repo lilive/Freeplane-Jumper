@@ -1,6 +1,6 @@
 # ![logo](images/jumper-logo.png) Jumper - the jumping filter for Freeplane
 
-A search box that filters the nodes on-the-fly as the user types the search terms, and allows to jump to one of the results.
+A search box for quick navigation in maps. It filters the nodes on-the-fly as the user types the search terms, and allows to jump to one of the results.
 
 ## Presentation
 
@@ -71,6 +71,7 @@ Jumper has got many options that control where it searches, how it searches, and
 ---
 
 `[ ]` Update code comments  
+`[ ]` Warn when restrictives options are on (transversal with no clones, beginning of text)  
 `[?]` Option to search entire words only, or only at the beginning of the words  
 `[?]` Option to order results by level  
 `[?]` Option to not search before N characters are typed  
