@@ -70,6 +70,8 @@ Jumper has got many options that control where it searches, how it searches, and
 
 ---
 
+`[1]` [Improve performances with very big maps](https://sourceforge.net/p/freeplane/discussion/758437/thread/e7b4594c02/?page=1&limit=25#d3aa)  
+`[1]` Solve [font size issue](https://sourceforge.net/p/freeplane/discussion/758437/thread/e7b4594c02/?page=1&limit=25#b0c3)  
 `[ ]` Update code comments  
 `[ ]` Warn when restrictives options are on (transversal with no clones, beginning of text)  
 `[?]` Option to search entire words only, or only at the beginning of the words  
