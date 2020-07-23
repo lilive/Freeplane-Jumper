@@ -10,7 +10,7 @@ class SMap extends SNodes {
     SMap( Node root ){
         super()
         if( ! root ) throw new IllegalArgumentException("root is not defined")
-        this.root = addNode( root, null )
+        this.root = addNode( root, null, 0 )
     }
 
     SNode getRoot(){
@@ -41,11 +41,16 @@ class SMap extends SNodes {
         return sNodes
     }
 
-    private SNode addNode( Node node, SNode parent = null ){
-        SNode sNode = new SNode( node, parent )
+    private SNode addNode( Node node, SNode parent = null, int thread ){
+        Jumper J = Jumper.get()
+        SNode sNode = new SNode( node, parent, thread )
         sNode.sMap = this
         this << sNode
-        node.children.each{ addNode( it, sNode ) }
+        node.children.each{
+            thread++
+            if( thread >= J.numThreads ) thread = 0
+            addNode( it, sNode, thread )
+        }
         return sNode
     }
 

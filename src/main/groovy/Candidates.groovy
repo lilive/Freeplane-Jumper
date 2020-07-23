@@ -17,13 +17,55 @@ class Candidates extends DefaultListModel<SNode>{
     private SNodes candidates = []
     private SNodes results = []
     private int numMax = 30
-    private Thread searchThread
 
     private class Result {
         SNodes nodes = new SNodes()   // nodes in the result
         boolean isMoreResults = false
     }
 
+    private class SearchThread extends Thread {
+        
+        Result result
+        private Set<String> units
+        private SearchOptions options
+        private SNode mandatoryNode
+        private int threadId
+        
+        SearchThread(
+            Set<String> units, SNodes candidates,
+            SearchOptions options, SNode mandatoryNode,
+            int threadId
+        ){
+            super( "Search thread ${threadId}" )
+            this.units = units
+            this.candidates = candidates
+            this.options = options
+            this.mandatoryNode = mandatoryNode
+            this.threadId = threadId
+        }
+
+        @Override
+        public void run(){
+            boolean done = true
+            // Get the candidates that match
+            try{
+                result = regexFilter(
+                    units, candidates,
+                    options, mandatoryNode,
+                    threadId
+                )
+            } catch (InterruptedException e) {
+                done = false
+                result = null
+            }
+            // Update the object
+            if( done ) onSearchThreadDone( this )
+        }
+    }
+
+    private ArrayList<SearchThread> searchThreads = new ArrayList<SearchThread>()
+    private Closure onSearchDone
+    
     /**
      * Defined the nodes where to search and run a first search.
      * @param candidates The nodes where to search.
@@ -97,11 +139,10 @@ class Candidates extends DefaultListModel<SNode>{
         SNode mandatoryNode,
         Closure onDone
     ){
+        onSearchDone = onDone
+        
         // If the previous filter is still processing, stop it
-        if( searchThread?.isAlive() ){
-            searchThread.interrupt()
-            searchThread.join()
-        }
+        stopRunningSearch()
         
         // Reset the search results for all nodes in the map
         if( candidates ) candidates[0].sMap.each{ it.clearPreviousSearch() }
@@ -115,25 +156,16 @@ class Candidates extends DefaultListModel<SNode>{
 
         clear()
 
-        searchThread = new Thread( new Runnable(){
-            public void run(){
-                boolean done = true
-                Result result
-                // Get the candidates that match
-                try{
-                    result = regexFilter(
-                        units, candidates,
-                        options, mandatoryNode
-                    )
-                } catch (InterruptedException e) {
-                    done = false
-                }
-                // Update the object
-                if( done ) applyFilterResult( result, onDone )
-            }
-        }, "filter thread" )
-        
-        searchThread.start()
+        Jumper J = Jumper.get()
+        searchThreads.clear()
+        for( int threadId = 0; threadId < J.numThreads; threadId++ ){
+            SearchThread thread = new SearchThread(
+                units, candidates,
+                options, mandatoryNode, threadId
+            )
+            searchThreads << thread
+            thread.start()
+        }
     }
 
     /**
@@ -176,7 +208,8 @@ class Candidates extends DefaultListModel<SNode>{
      */
     private Result regexFilter(
         Set<String> units, SNodes candidates,
-        SearchOptions options, SNode mandatoryNode
+        SearchOptions options, SNode mandatoryNode,
+        int threadId
     ) throws InterruptedException {
 
         boolean oneValidRegex = false
@@ -204,7 +237,7 @@ class Candidates extends DefaultListModel<SNode>{
         boolean maxReached = false
         Result result = new Result()
         candidates.each{
-            if( ! maxReached || it == mandatoryNode ){
+            if( it.threadId == threadId && ( ! maxReached || it == mandatoryNode ) ){
                 if( it.search( regexps, options ) ){
                     result.nodes << it
                     maxReached = ( result.nodes.size() >= numMax - 1 )
@@ -243,6 +276,35 @@ class Candidates extends DefaultListModel<SNode>{
             result.isMoreResults = true
         }
         return result
+    }
+
+    private void stopRunningSearch(){
+        searchThreads.each{
+            thread ->
+            if( thread.isAlive() ){
+                thread.interrupt()
+                thread.join()
+            }
+        }
+        searchThreads.clear()
+    }
+
+    private boolean isRunningSearch(){
+        return searchThreads.any{ it.isAlive() }
+    }
+
+    private void onSearchThreadDone( SearchThread thread ){
+        boolean lastThread = ! searchThreads.any{ it.isAlive() && it != thread }
+        if( lastThread ){
+            Result result = new Result()
+            searchThreads.each{
+                if( it.result ){
+                    result.nodes += it.result.nodes
+                    result.isMoreResults = result.isMoreResults || it.result.isMoreResults
+                }
+            }
+            applyFilterResult( result, onSearchDone )
+        }
     }
     
     // Update the object with these result, and call a post operation.

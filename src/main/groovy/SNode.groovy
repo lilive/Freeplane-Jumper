@@ -22,6 +22,7 @@ class SNode {
     String detailsDisplay    // text to display in GUI for node details text
     String noteDisplay       // text to display in GUI for node note text
     String attributesDisplay // text to display in GUI for node note text
+    int threadId
 
     SMap sMap                // A reference to the sMap
     SNode parent             // The SNode for node.parent
@@ -30,30 +31,28 @@ class SNode {
     CoreMatch coreMatch                           // Result of the last search over this core text node
     FullMatch fullMatch                           // Result of the last search over this node (core, details, note, attributes)
     StackMatch stackMatch                         // Result of the last search over this node and its ancestors
+
+    private boolean plainTextReady = false
+    
     private Highlight textHighlight               // Core text highlighting
     private Highlight detailsHighlight            // Details text highlighting
     private Highlight noteHighlight               // Note text highlighting
     private ArrayList<Highlight> namesHighlights  // Attributes names highlighting
     private ArrayList<Highlight> valuesHighlights // Attributes values highlighting
     private boolean highlightInvalidated          // Is highlight up to date ?
+    
     private boolean coreDisplayInvalidated        // Is core display text up to date ?
     private boolean shortCoreDisplayInvalidated
     private boolean detailsDisplayInvalidated
     private boolean noteDisplayInvalidated
     private boolean attributesDisplayInvalidated
     
-    SNode( Node node, SNode parent ){
+    SNode( Node node, SNode parent, int threadId ){
         this.node = node
         this.parent = parent
+        this.threadId = threadId
         children = []
         if( parent ) parent.children << this
-        text = getNodePlainText( node )
-        if( node.details ) details = node.details.plain.replaceAll("\n", " ")
-        if( node.note    ) note    = node.note.plain.replaceAll("\n", " ")
-        if( node.attributes ){
-            names  = node.attributes.names.collect()
-            values = getNodeValues( node, names.size() )
-        }
         highlightInvalidated = true
         coreDisplay       = ""
         detailsDisplay    = ""
@@ -62,6 +61,21 @@ class SNode {
         invalidateDisplay()
     }
 
+    private void createPlainText(){
+        
+        if( plainTextReady ) return
+        
+        text = getNodePlainText( node )
+        if( node.details ) details = node.details.plain.replaceAll("\n", " ")
+        if( node.note    ) note    = node.note.plain.replaceAll("\n", " ")
+        if( node.attributes ){
+            names  = node.attributes.names.collect()
+            values = getNodeValues( node, names.size() )
+        }
+        
+        plainTextReady = true
+    }
+    
     private String getNodePlainText( Node node ){
         try{
             return node.plainText.replaceAll("\n", " ")
@@ -149,6 +163,7 @@ class SNode {
 
         if( fullMatch ) throw new Exception( "Don't search a same node twice. Call clearPreviousSearch() between searches." )
 
+        createPlainText()
         highlightInvalidated = true
         
         if( options.transversal ){
