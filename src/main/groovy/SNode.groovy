@@ -22,7 +22,6 @@ class SNode {
     String detailsDisplay    // text to display in GUI for node details text
     String noteDisplay       // text to display in GUI for node note text
     String attributesDisplay // text to display in GUI for node note text
-    int threadId
 
     SMap sMap                // A reference to the sMap
     SNode parent             // The SNode for node.parent
@@ -47,10 +46,9 @@ class SNode {
     private boolean noteDisplayInvalidated
     private boolean attributesDisplayInvalidated
     
-    SNode( Node node, SNode parent, int threadId ){
+    SNode( Node node, SNode parent ){
         this.node = node
         this.parent = parent
-        this.threadId = threadId
         children = []
         if( parent ) parent.children << this
         highlightInvalidated = true
@@ -61,7 +59,7 @@ class SNode {
         invalidateDisplay()
     }
 
-    private void createPlainText(){
+    public void init(){
         
         if( plainTextReady ) return
         
@@ -125,7 +123,7 @@ class SNode {
         return attributesDisplay
     }
 
-    private getShortDisplayText(){
+    private String getShortDisplayText(){
         if( highlightInvalidated ) updateHighlight()
         if( shortCoreDisplayInvalidated ) updateShortCoreDisplayText()
         return shortCoreDisplay
@@ -163,7 +161,7 @@ class SNode {
 
         if( fullMatch ) throw new Exception( "Don't search a same node twice. Call clearPreviousSearch() between searches." )
 
-        createPlainText()
+        init()
         highlightInvalidated = true
         
         if( options.transversal ){

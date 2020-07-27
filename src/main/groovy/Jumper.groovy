@@ -26,8 +26,6 @@ class Jumper {
     private Candidates candidates // The SNodes where to search
     
     private Gui gui
-
-    public final int numThreads = 4
     
     // The last searched pattern
     private String lastPattern
