@@ -74,7 +74,8 @@ Jumper has got many options that control where it searches, how it searches, and
 `[1]` Solve [font size issue](https://sourceforge.net/p/freeplane/discussion/758437/thread/e7b4594c02/?page=1&limit=25#b0c3)  
 `[ ]` Update code comments  
 `[ ]` Warn when restrictives options are on (transversal with no clones, beginning of text)  
-`[?]` Option to search entire words only, or only at the beginning of the words  
+`[ ]` Option to search entire words only, or only at the beginning of the words  
+`[ ]` Quotes to find exact phrase when not using regular expressions  
 `[?]` Option to order results by level  
 `[?]` Option to not search before N characters are typed  
 `[?]` Jump to next result and jump to previous result without opening the dialog.  
