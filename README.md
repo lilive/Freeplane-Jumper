@@ -78,9 +78,9 @@ Jumper has got many options that control where it searches, how it searches, and
 `[ ]` Quotes to find exact phrase when not using regular expressions  
 `[?]` Option to order results by level  
 `[?]` Option to not search before N characters are typed  
-`[?]` Jump to next result and jump to previous result without opening the dialog.  
 `[?]` Don't buffer node content (The plain text for each node is buffered to speed up the search. Do we really need it?)  
-`[?]` Allow to search only in nodes with the same style than the currently selected node. Or provide a style selector.
+`[?]` Allow to search only in nodes with the same style than the currently selected node. Or provide a style selector.  
+`[?]` Use a search library (ElasticSearch for example) to improve performances. This seems really interesting, but a lot of work.
 
 ---
 
