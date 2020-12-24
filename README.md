@@ -45,9 +45,8 @@ Jumper has got many options that control where it searches, how it searches, and
 
 ## Installation
 
-- Download `jumper-vX.X.X.addon.mm` from [the last release](https://github.com/lilive/Freeplane-Jumper/releases)
-- Open this file with Freeplane and follow the instructions
-- Jumper require some permissions to works. At menu `Tools > Preferences > Scripts`:
+- First, Jumper require some permissions to works.  
+  Open the Freeplane preferences (menu `Tools > Preferences`), go to the tab `Plugins`, section `Scripting`, then:
 
   - Set "script execution enabled" to Yes
   - Check "Permit file read operations"
@@ -56,8 +55,14 @@ Jumper has got many options that control where it searches, how it searches, and
   Jumper need the file permissions because it save its settings in the Freeplane user directory. The name of the file is `lilive_jumper.json`.  
   Jumper do not modify your maps, there is no risk to loose informations.
   
+- Download `jumper-vX.X.X.addon.mm` from [the last release](https://github.com/lilive/Freeplane-Jumper/releases)
+
+- Open this file with Freeplane and follow the instructions
+
 - The installer propose you to use the keyboard shortcut `Ctrl+Shift+J` to start Jumper. If you already use this shortcut for another thing, you are asked if you want to use it for Jumper. If you answer "no" you are asked for another shortcut you want instead.
+
 - Restart Freeplane
+
 - You can now use Jumper.
 
 ## TODO - Ideas
@@ -76,11 +81,14 @@ Jumper has got many options that control where it searches, how it searches, and
 `[ ]` Warn when restrictives options are on (transversal with no clones, beginning of text)  
 `[ ]` Option to search entire words only, or only at the beginning of the words  
 `[ ]` Quotes to find exact phrase when not using regular expressions  
+`[?]` Option to search under the anchor link node ? Or provide an option to remember the currently selected node as root for the later searches ?
 `[?]` Option to order results by level  
 `[?]` Option to not search before N characters are typed  
 `[?]` Don't buffer node content (The plain text for each node is buffered to speed up the search. Do we really need it?)  
 `[?]` Allow to search only in nodes with the same style than the currently selected node. Or provide a style selector.  
 `[?]` Use a search library (ElasticSearch for example) to improve performances. This seems really interesting, but a lot of work.
+`[?]` A new menu entry "Search similar nodes" that will call Jumper with the search field set to the text of the currently selected node
+`[?]` A new menu entry "Resume last search" that will call Jumper with the previous search terms and that will select the last selected node in the results list
 
 ---
 
