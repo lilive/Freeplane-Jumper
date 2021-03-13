@@ -77,10 +77,13 @@ Jumper has got many options that control where it searches, how it searches, and
 
 `[1]` [Improve performances with very big maps](https://sourceforge.net/p/freeplane/discussion/758437/thread/e7b4594c02/?page=1&limit=25#d3aa)  
 `[1]` Solve [font size issue](https://sourceforge.net/p/freeplane/discussion/758437/thread/e7b4594c02/?page=1&limit=25#b0c3)  
-`[ ]` Update code comments  
+`[1]` Add an option for the maximum results number  
+`[1]` Update code comments  
+`[1]` Sélectionner un résultat, de préférence le noeud actif. Gérer cette sélection quand les résultats arriveront progressivement.  
 `[ ]` Warn when restrictives options are on (transversal with no clones, beginning of text)  
 `[ ]` Option to search entire words only, or only at the beginning of the words  
 `[ ]` Quotes to find exact phrase when not using regular expressions  
+`[ ]` Interactive tips. For example a warning when transversal search is checked, but keep only one clone is also checked  
 `[?]` Option to search under the anchor link node ? Or provide an option to remember the currently selected node as root for the later searches ?
 `[?]` Option to order results by level  
 `[?]` Option to not search before N characters are typed  
