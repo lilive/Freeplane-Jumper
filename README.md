@@ -2,6 +2,10 @@
 
 A search box for quick navigation in maps. It filters the nodes on-the-fly as the user types the search terms, and allows to jump to one of the results.
 
+## Maintenance
+
+2021/11/04: I do not maintain Jumper since a few month, and I don't know if I will start again in the future.
+
 ## Presentation
 
 This Freeplane add-on provides an easy and quick way to search for nodes in Freeplane maps. Press Jumper keyboard shortcut, type some text snippets, and you will instantly see all the nodes (or branches !) that contain them in the Jumper window. Select one of these nodes to select it in the map.
