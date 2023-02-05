@@ -16,10 +16,10 @@ repositories {
 }
 
 dependencies {
-    compile name: 'freeplanelauncher'
-    compile name: 'freeplaneviewer'
-	compile group: 'org.freeplane.script', name: 'plugin', version: '+'
-	compile ('org.codehaus.groovy:groovy-all:3.0.8') {
+    implementation name: 'freeplanelauncher'
+    implementation name: 'freeplaneviewer'
+	implementation group: 'org.freeplane.script', name: 'plugin', version: '+'
+	implementation platform ('org.apache.groovy:groovy-all:4.0.1') {
 		exclude group:'org.codehaus.groovy', module:'groovy-test'
 		exclude group:'org.codehaus.groovy', module:'groovy-test-junit5'
 		exclude group:'org.codehaus.groovy', module:'groovy-testng'
@@ -29,6 +29,5 @@ dependencies {
 		exclude group:'org.codehaus.groovy', module:'groovy-cli-commons'
 		exclude group:'org.codehaus.groovy', module:'groovy-cli-picocli'
 	}
-	compile 'org.codehaus.groovy:groovy-dateutil:3.0.8'
+	implementation 'org.apache.groovy:groovy-dateutil:4.0.1'
 }
-
