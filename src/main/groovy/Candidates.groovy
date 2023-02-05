@@ -264,6 +264,6 @@ class Candidates extends DefaultListModel<SNode>{
     private void update( SNodes newResults ){
         if( getSize() > 0 ) fireIntervalRemoved( this, 0, getSize() - 1 )
         results = newResults.collect()
-        if( getSize() > 0 ) fireIntervalAdded( this, 0, getSize() - 1 )
+        if( getSize() > 0 ) fireIntervalAdded( (DefaultListModel<String>) this, 0, getSize() - 1 )
     }
 }
