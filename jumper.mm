@@ -1,15 +1,16 @@
-<map version="freeplane 1.8.0">
-<!--To view this file, download free mind mapping software Freeplane from http://freeplane.sourceforge.net -->
-<node TEXT="jumper" LOCALIZED_STYLE_REF="styles.topic" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1593196655849" LINK="https://github.com/lilive/Freeplane-Jumper" BORDER_WIDTH="3.0 px" BORDER_COLOR_LIKE_EDGE="false" BORDER_COLOR="#192441" BORDER_DASH="CLOSE_DOTS" BACKGROUND_COLOR="#97c7dc" STYLE="rectangle" SHAPE_HORIZONTAL_MARGIN="6.0 pt" SHAPE_VERTICAL_MARGIN="6.0 pt">
+<map version="freeplane 1.9.13">
+<!--To view this file, download free mind mapping software Freeplane from https://www.freeplane.org -->
+<node TEXT="jumper" LOCALIZED_STYLE_REF="styles.topic" ID="ID_1723255651" LINK="https://github.com/lilive/Freeplane-Jumper" BORDER_WIDTH="3 px" BORDER_COLOR_LIKE_EDGE="false" BORDER_COLOR="#192441" BORDER_DASH="CLOSE_DOTS" BACKGROUND_COLOR="#97c7dc" STYLE="rectangle" SHAPE_HORIZONTAL_MARGIN="6 pt" SHAPE_VERTICAL_MARGIN="6 pt">
 <font SIZE="16" BOLD="true" ITALIC="true"/>
 <hook NAME="MapStyle" background="#cccccc">
-    <properties show_icon_for_attributes="true" fit_to_viewport="false" show_note_icons="true" show_notes_in_map="true" edgeColorConfiguration="#353535ff,#353535ff,#353535ff,#353535ff,#353535ff"/>
+    <properties show_icon_for_attributes="true" edgeColorConfiguration="#353535ff,#353535ff,#353535ff,#353535ff,#353535ff" show_notes_in_map="true" show_note_icons="true" fit_to_viewport="false"/>
 
 <map_styles>
-<stylenode LOCALIZED_TEXT="styles.root_node" STYLE="oval" UNIFORM_SHAPE="true" VGAP_QUANTITY="24.0 pt">
+<stylenode LOCALIZED_TEXT="styles.root_node" STYLE="oval" UNIFORM_SHAPE="true" VGAP_QUANTITY="24 pt">
 <font SIZE="24"/>
 <stylenode LOCALIZED_TEXT="styles.predefined" POSITION="right" STYLE="bubble">
-<stylenode LOCALIZED_TEXT="default" ICON_SIZE="14.0 pt" MAX_WIDTH="600.0 px" COLOR="#000000" BACKGROUND_COLOR="#ffffff" BACKGROUND_ALPHA="76" STYLE="bubble" SHAPE_HORIZONTAL_MARGIN="4.0 pt" BORDER_WIDTH="0.0 px" BORDER_COLOR_LIKE_EDGE="false" BORDER_COLOR="#808080" BORDER_COLOR_ALPHA="0">
+<stylenode LOCALIZED_TEXT="default" ID="ID_988530978" ICON_SIZE="14 pt" MAX_WIDTH="600 px" COLOR="#000000" BACKGROUND_COLOR="#ffffff" BACKGROUND_ALPHA="76" STYLE="bubble" SHAPE_HORIZONTAL_MARGIN="4 pt" BORDER_WIDTH="0 px" BORDER_COLOR_LIKE_EDGE="false" BORDER_COLOR="#808080" BORDER_COLOR_ALPHA="0">
+<arrowlink SHAPE="CUBIC_CURVE" COLOR="#000000" WIDTH="2" TRANSPARENCY="100" DASH="" FONT_SIZE="9" FONT_FAMILY="Raleway" DESTINATION="ID_988530978" STARTARROW="NONE" ENDARROW="DEFAULT"/>
 <font NAME="Candara" SIZE="14"/>
 <edge STYLE="horizontal" COLOR="#192441" WIDTH="thin"/>
 </stylenode>
@@ -22,9 +23,10 @@
 <edge STYLE="hide_edge"/>
 <cloud COLOR="#f0f0f0" SHAPE="ROUND_RECT"/>
 </stylenode>
+<stylenode LOCALIZED_TEXT="defaultstyle.selection" BACKGROUND_COLOR="#ffffe6" BORDER_COLOR_LIKE_EDGE="false" BORDER_COLOR="#4a75dd"/>
 </stylenode>
 <stylenode LOCALIZED_TEXT="styles.user-defined" POSITION="right" STYLE="bubble">
-<stylenode LOCALIZED_TEXT="styles.topic" STYLE="oval" SHAPE_HORIZONTAL_MARGIN="6.0 pt" SHAPE_VERTICAL_MARGIN="6.0 pt" UNIFORM_SHAPE="true" BORDER_WIDTH="4.0 px" BORDER_DASH="DASHES">
+<stylenode LOCALIZED_TEXT="styles.topic" STYLE="oval" SHAPE_HORIZONTAL_MARGIN="6 pt" SHAPE_VERTICAL_MARGIN="6 pt" UNIFORM_SHAPE="true" BORDER_WIDTH="4 px" BORDER_DASH="DASHES">
 <font NAME="Raleway" SIZE="14" BOLD="true"/>
 </stylenode>
 <stylenode LOCALIZED_TEXT="styles.subtopic" COLOR="#cc3300" STYLE="fork">
@@ -36,38 +38,38 @@
 <stylenode LOCALIZED_TEXT="styles.important">
 <icon BUILTIN="yes"/>
 </stylenode>
-<stylenode TEXT="Ligne 1" BACKGROUND_COLOR="#cccccc" STYLE="bubble" SHAPE_HORIZONTAL_MARGIN="4.0 pt" MAX_WIDTH="600.0 px" BORDER_WIDTH="3.0 px" BORDER_COLOR_LIKE_EDGE="true" BORDER_COLOR="#808080">
+<stylenode TEXT="Ligne 1" BACKGROUND_COLOR="#cccccc" STYLE="bubble" SHAPE_HORIZONTAL_MARGIN="4 pt" MAX_WIDTH="600 px" BORDER_WIDTH="3 px" BORDER_COLOR_LIKE_EDGE="true" BORDER_COLOR="#808080">
 <font NAME="Raleway" SIZE="14"/>
 <edge COLOR="#ff4a4a" WIDTH="3"/>
 </stylenode>
-<stylenode TEXT="Ligne 2" BACKGROUND_COLOR="#cccccc" STYLE="bubble" SHAPE_HORIZONTAL_MARGIN="4.0 pt" MAX_WIDTH="600.0 px" BORDER_WIDTH="3.0 px" BORDER_COLOR_LIKE_EDGE="true" BORDER_COLOR="#ffc265">
+<stylenode TEXT="Ligne 2" BACKGROUND_COLOR="#cccccc" STYLE="bubble" SHAPE_HORIZONTAL_MARGIN="4 pt" MAX_WIDTH="600 px" BORDER_WIDTH="3 px" BORDER_COLOR_LIKE_EDGE="true" BORDER_COLOR="#ffc265">
 <font NAME="Raleway" SIZE="14"/>
 <edge COLOR="#ffa14a" WIDTH="3"/>
 </stylenode>
-<stylenode TEXT="Ligne 3" BACKGROUND_COLOR="#cccccc" STYLE="bubble" SHAPE_HORIZONTAL_MARGIN="4.0 pt" MAX_WIDTH="600.0 px" BORDER_WIDTH="3.0 px" BORDER_COLOR_LIKE_EDGE="true" BORDER_COLOR="#feff62">
+<stylenode TEXT="Ligne 3" BACKGROUND_COLOR="#cccccc" STYLE="bubble" SHAPE_HORIZONTAL_MARGIN="4 pt" MAX_WIDTH="600 px" BORDER_WIDTH="3 px" BORDER_COLOR_LIKE_EDGE="true" BORDER_COLOR="#feff62">
 <font NAME="Raleway" SIZE="14"/>
 <edge COLOR="#fff24a" WIDTH="3"/>
 </stylenode>
-<stylenode TEXT="Ligne 4" BACKGROUND_COLOR="#cccccc" STYLE="bubble" SHAPE_HORIZONTAL_MARGIN="4.0 pt" MAX_WIDTH="600.0 px" BORDER_WIDTH="3.0 px" BORDER_COLOR_LIKE_EDGE="true" BORDER_COLOR="#7dff72">
+<stylenode TEXT="Ligne 4" BACKGROUND_COLOR="#cccccc" STYLE="bubble" SHAPE_HORIZONTAL_MARGIN="4 pt" MAX_WIDTH="600 px" BORDER_WIDTH="3 px" BORDER_COLOR_LIKE_EDGE="true" BORDER_COLOR="#7dff72">
 <font NAME="Raleway" SIZE="14"/>
 <edge COLOR="#69ff4a" WIDTH="3"/>
 </stylenode>
-<stylenode TEXT="Ligne 5" BACKGROUND_COLOR="#cccccc" STYLE="bubble" SHAPE_HORIZONTAL_MARGIN="4.0 pt" MAX_WIDTH="600.0 px" BORDER_WIDTH="3.0 px" BORDER_COLOR_LIKE_EDGE="true" BORDER_COLOR="#61fff2">
+<stylenode TEXT="Ligne 5" BACKGROUND_COLOR="#cccccc" STYLE="bubble" SHAPE_HORIZONTAL_MARGIN="4 pt" MAX_WIDTH="600 px" BORDER_WIDTH="3 px" BORDER_COLOR_LIKE_EDGE="true" BORDER_COLOR="#61fff2">
 <font NAME="Raleway" SIZE="14"/>
 <edge COLOR="#4affe4" WIDTH="3"/>
 </stylenode>
-<stylenode TEXT="Ligne 6" BACKGROUND_COLOR="#cccccc" STYLE="bubble" SHAPE_HORIZONTAL_MARGIN="4.0 pt" MAX_WIDTH="600.0 px" BORDER_WIDTH="3.0 px" BORDER_COLOR_LIKE_EDGE="true" BORDER_COLOR="#6973ff">
+<stylenode TEXT="Ligne 6" BACKGROUND_COLOR="#cccccc" STYLE="bubble" SHAPE_HORIZONTAL_MARGIN="4 pt" MAX_WIDTH="600 px" BORDER_WIDTH="3 px" BORDER_COLOR_LIKE_EDGE="true" BORDER_COLOR="#6973ff">
 <font NAME="Raleway" SIZE="14"/>
 <edge COLOR="#6973ff" WIDTH="3"/>
 </stylenode>
-<stylenode TEXT="Ligne 7" BACKGROUND_COLOR="#cccccc" STYLE="bubble" SHAPE_HORIZONTAL_MARGIN="4.0 pt" MAX_WIDTH="600.0 px" BORDER_WIDTH="3.0 px" BORDER_COLOR_LIKE_EDGE="true" BORDER_COLOR="#ff6df2">
+<stylenode TEXT="Ligne 7" BACKGROUND_COLOR="#cccccc" STYLE="bubble" SHAPE_HORIZONTAL_MARGIN="4 pt" MAX_WIDTH="600 px" BORDER_WIDTH="3 px" BORDER_COLOR_LIKE_EDGE="true" BORDER_COLOR="#ff6df2">
 <font NAME="Raleway" SIZE="14"/>
 <edge COLOR="#ff4af8" WIDTH="3"/>
 </stylenode>
-<stylenode TEXT="Code" BACKGROUND_COLOR="#ffffff" BACKGROUND_ALPHA="0" STYLE="rectangle" SHAPE_HORIZONTAL_MARGIN="4.0 pt" MAX_WIDTH="2000.0 px" BORDER_WIDTH="1.0 px" BORDER_COLOR_LIKE_EDGE="true" BORDER_COLOR="#000000" BORDER_COLOR_ALPHA="50">
+<stylenode TEXT="Code" BACKGROUND_COLOR="#ffffff" BACKGROUND_ALPHA="0" STYLE="rectangle" SHAPE_HORIZONTAL_MARGIN="4 pt" MAX_WIDTH="2000 px" BORDER_WIDTH="1 px" BORDER_COLOR_LIKE_EDGE="true" BORDER_COLOR="#000000" BORDER_COLOR_ALPHA="50">
 <font NAME="Source Code Pro" SIZE="12"/>
 </stylenode>
-<stylenode TEXT="Raccourci clavier" BACKGROUND_COLOR="#ffffff" BACKGROUND_ALPHA="0" STYLE="rectangle" SHAPE_HORIZONTAL_MARGIN="4.0 pt" MAX_WIDTH="2000.0 px" BORDER_WIDTH="2.0 px" BORDER_COLOR="#000000" BORDER_COLOR_ALPHA="129" BORDER_DASH="CLOSE_DOTS">
+<stylenode TEXT="Raccourci clavier" BACKGROUND_COLOR="#ffffff" BACKGROUND_ALPHA="0" STYLE="rectangle" SHAPE_HORIZONTAL_MARGIN="4 pt" MAX_WIDTH="2000 px" BORDER_WIDTH="2 px" BORDER_COLOR="#000000" BORDER_COLOR_ALPHA="129" BORDER_DASH="CLOSE_DOTS">
 <font NAME="Source Code Pro" SIZE="12" BOLD="false" ITALIC="true"/>
 </stylenode>
 </stylenode>
@@ -93,15 +95,14 @@
 </hook>
 <hook NAME="AutomaticEdgeColor" COUNTER="140" RULE="ON_BRANCH_CREATION"/>
 <edge WIDTH="thin"/>
-<attribute_layout NAME_WIDTH="119.24999644607315 pt" VALUE_WIDTH="303.74999094754486 pt"/>
+<attribute_layout NAME_WIDTH="119.25 pt" VALUE_WIDTH="303.74999 pt"/>
 <attribute NAME="name" VALUE="jumper"/>
-<attribute NAME="version" VALUE="v1.0.1"/>
+<attribute NAME="version" VALUE="v1.0.2"/>
 <attribute NAME="author" VALUE="lilive"/>
-<attribute NAME="freeplaneVersionFrom" VALUE="1.8.5"/>
+<attribute NAME="freeplaneVersionFrom" VALUE="1.10.6"/>
 <attribute NAME="freeplaneVersionTo" VALUE=""/>
 <attribute NAME="updateUrl" VALUE="https://github.com/lilive/Freeplane-Jumper/raw/master/version.properties"/>
-<richcontent TYPE="NOTE">
-
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
 <html>
   <head>
     
@@ -134,12 +135,10 @@
       </li>
     </ul>
   </body>
-</html>
-</richcontent>
-<node TEXT="description" POSITION="left" ID="ID_971223094" CREATED="1592410105126" MODIFIED="1593125703584" TEXT_SHORTENED="true">
+</html></richcontent>
+<node TEXT="description" POSITION="left" ID="ID_971223094" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
-<richcontent TYPE="NOTE">
-
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
 <html>
   <head>
     
@@ -155,14 +154,13 @@
       To translate the description you have to define a translation for the key 'addons.${name}.description'.
     </p>
   </body>
-</html>
-</richcontent>
-<node TEXT="A fully keyboard driven search box for quick navigation in maps. It filters the nodes on-the-fly as the user types the search terms, and allows to jump to one of the results.&#xa;&#xa;Jumper, the Jumping Filter, provides an easy and quick way to search for nodes in Freeplane maps. Press Jumper keyboard shortcut, type some text snippets, and you will instantly see all the nodes (or branches !) that contain them in the Jumper window. Select one of these nodes to select it in the map.&#xa;&#xa;Main features:&#xa;- Search results updated as you type&#xa;- Matching text is highlighted in the results list&#xa;- Regular search or transversal search (find words or text snippets across a branch)&#xa;- Words or text snippets can be searched in any order&#xa;- Search in any part of the nodes (core text, details, notes, attributes)&#xa;- Plain text or regular expressions search, case sensitive or insensitive&#xa;- Can focus the map view on the node selected in the results list&#xa;- Search the whole map, only the siblings of the selected node, or its descendants&#xa;- Search history&#xa;- Keyboard shortcuts for all the search options&#xa;- Persistent search settings&#xa;- Many options to customize the results appearence" ID="ID_414073752" CREATED="1592410703269" MODIFIED="1593299144524"/>
+</html></richcontent>
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+<node TEXT="A fully keyboard driven search box for quick navigation in maps. It filters the nodes on-the-fly as the user types the search terms, and allows to jump to one of the results.&#xa;&#xa;Jumper, the Jumping Filter, provides an easy and quick way to search for nodes in Freeplane maps. Press Jumper keyboard shortcut, type some text snippets, and you will instantly see all the nodes (or branches !) that contain them in the Jumper window. Select one of these nodes to select it in the map.&#xa;&#xa;Main features:&#xa;- Search results updated as you type&#xa;- Matching text is highlighted in the results list&#xa;- Regular search or transversal search (find words or text snippets across a branch)&#xa;- Words or text snippets can be searched in any order&#xa;- Search in any part of the nodes (core text, details, notes, attributes)&#xa;- Plain text or regular expressions search, case sensitive or insensitive&#xa;- Can focus the map view on the node selected in the results list&#xa;- Search the whole map, only the siblings of the selected node, or its descendants&#xa;- Search history&#xa;- Keyboard shortcuts for all the search options&#xa;- Persistent search settings&#xa;- Many options to customize the results appearence" ID="ID_414073752"/>
 </node>
-<node TEXT="changes" POSITION="left" ID="ID_465882181" CREATED="1592410105189" MODIFIED="1593125703586" TEXT_SHORTENED="true">
+<node TEXT="changes" POSITION="left" ID="ID_465882181" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
-<richcontent TYPE="NOTE">
-
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
 <html>
   <head>
     
@@ -172,34 +170,45 @@
       Change log of this add-on: append one node for each noteworthy version and put the details for each version into a child node.
     </p>
   </body>
-</html>
-</richcontent>
-<node TEXT="v0.5.0" ID="ID_607298643" CREATED="1592411201957" MODIFIED="1592411205113">
-<node TEXT="Package the Jumper script into an add-on" ID="ID_603689072" CREATED="1592411206917" MODIFIED="1592411230809"/>
+</html></richcontent>
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+<node TEXT="v0.5.0" ID="ID_607298643">
+<node TEXT="Package the Jumper script into an add-on" ID="ID_603689072"/>
 </node>
-<node TEXT="v0.5.1" ID="ID_130951037" CREATED="1592433119030" MODIFIED="1592433123945">
-<node TEXT="Fix the problem when there are formulas error in the map" ID="ID_17306513" CREATED="1592433125558" MODIFIED="1592433170905"/>
+<node TEXT="v0.5.1" ID="ID_130951037">
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+<node TEXT="Fix the problem when there are formulas error in the map" ID="ID_17306513"/>
 </node>
-<node TEXT="v0.5.2" ID="ID_227076356" CREATED="1592434638152" MODIFIED="1592434642367">
-<node TEXT="Fix bad string in v0.5.1" ID="ID_1008839979" CREATED="1592434643367" MODIFIED="1592434655068"/>
+<node TEXT="v0.5.2" ID="ID_227076356">
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+<node TEXT="Fix bad string in v0.5.1" ID="ID_1008839979"/>
 </node>
-<node TEXT="v0.6.0" ID="ID_389362358" CREATED="1592694411204" MODIFIED="1592697093943">
-<node TEXT="Option to focus the map view on the node selected in the results list.&#xa;Option to bring back the window with the previous search pattern." ID="ID_1318343405" CREATED="1592694417076" MODIFIED="1592697499828"/>
+<node TEXT="v0.6.0" ID="ID_389362358">
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+<node TEXT="Option to focus the map view on the node selected in the results list.&#xa;Option to bring back the window with the previous search pattern." ID="ID_1318343405"/>
 </node>
-<node TEXT="v0.7.0" ID="ID_1452905977" CREATED="1592925483405" MODIFIED="1592925488838">
-<node TEXT="More reactive graphical user interface when typing.&#xa;Add an option to not bring back the previous search terms after some time.&#xa;Don&apos;t use the root node for transversal searches (this was silly).&#xa;Fix a bug for long texts in results list." ID="ID_1170535742" CREATED="1592925520893" MODIFIED="1592925787399"/>
+<node TEXT="v0.7.0" ID="ID_1452905977">
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+<node TEXT="More reactive graphical user interface when typing.&#xa;Add an option to not bring back the previous search terms after some time.&#xa;Don&apos;t use the root node for transversal searches (this was silly).&#xa;Fix a bug for long texts in results list." ID="ID_1170535742"/>
 </node>
-<node TEXT="v1.0.0" ID="ID_1143582783" CREATED="1593091078042" MODIFIED="1593091081365">
-<node TEXT="All the planned features are now implemented. It seems that Jumper deserves a version number 1.0.0 !&#xa;In this version:&#xa;- Icons for the add-on package and for the Freeplane menu entry&#xa;- New option to search or not in nodes hidden by Freeplane filter&#xa;- New buttons to quickly change details search options" ID="ID_571347316" CREATED="1593091083306" MODIFIED="1593110399514"/>
+<node TEXT="v1.0.0" ID="ID_1143582783">
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+<node TEXT="All the planned features are now implemented. It seems that Jumper deserves a version number 1.0.0 !&#xa;In this version:&#xa;- Icons for the add-on package and for the Freeplane menu entry&#xa;- New option to search or not in nodes hidden by Freeplane filter&#xa;- New buttons to quickly change details search options" ID="ID_571347316"/>
 </node>
-<node TEXT="v1.0.1" ID="ID_1185990293" CREATED="1593196660921" MODIFIED="1593196664503">
-<node TEXT="- Fix problem with AltGr key&#xa;- By default, search also in details, notes and attributes" ID="ID_1010136158" CREATED="1593196666137" MODIFIED="1593196726541"/>
+<node TEXT="v1.0.1" ID="ID_1185990293">
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+<node TEXT="- Fix problem with AltGr key&#xa;- By default, search also in details, notes and attributes" ID="ID_1010136158"/>
+</node>
+<node TEXT="v1.0.2" ID="ID_95386197">
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+<node TEXT="- Fix incompatibility with latest Freeplane version" ID="ID_538562363">
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
 </node>
 </node>
-<node TEXT="license" FOLDED="true" POSITION="left" ID="ID_1975958535" CREATED="1592410105197" MODIFIED="1593125703591" TEXT_SHORTENED="true">
+</node>
+<node TEXT="license" POSITION="left" ID="ID_1975958535" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
-<richcontent TYPE="NOTE">
-
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
 <html>
   <head>
     
@@ -215,14 +224,13 @@
       The License text has to be entered as a child of the <i>'license'</i>&nbsp;node, either as plain text or as HTML.
     </p>
   </body>
-</html>
-</richcontent>
-<node TEXT="&#xa;This add-on is free software: you can redistribute it and/or modify&#xa;it under the terms of the GNU General Public License as published by&#xa;the Free Software Foundation, either version 2 of the License, or&#xa;(at your option) any later version.&#xa;&#xa;This program is distributed in the hope that it will be useful,&#xa;but WITHOUT ANY WARRANTY; without even the implied warranty of&#xa;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the&#xa;GNU General Public License for more details.&#xa;" ID="ID_1223814638" CREATED="1592410105205" MODIFIED="1592410105209"/>
+</html></richcontent>
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+<node TEXT="&#xa;This add-on is free software: you can redistribute it and/or modify&#xa;it under the terms of the GNU General Public License as published by&#xa;the Free Software Foundation, either version 2 of the License, or&#xa;(at your option) any later version.&#xa;&#xa;This program is distributed in the hope that it will be useful,&#xa;but WITHOUT ANY WARRANTY; without even the implied warranty of&#xa;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the&#xa;GNU General Public License for more details.&#xa;" ID="ID_1223814638"/>
 </node>
-<node TEXT="preferences.xml" POSITION="left" ID="ID_739746249" CREATED="1592410105216" MODIFIED="1593125703594" TEXT_SHORTENED="true">
+<node TEXT="preferences.xml" POSITION="left" ID="ID_739746249" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
-<richcontent TYPE="NOTE">
-
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
 <html>
   <head>
     
@@ -235,13 +243,12 @@
       <font color="#000000" face="SansSerif, sans-serif">Every property in the configuration should receive a default value in <i>default.properties</i>&nbsp;node.</font>
     </p>
   </body>
-</html>
-</richcontent>
+</html></richcontent>
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
 </node>
-<node TEXT="default.properties" POSITION="left" ID="ID_1995339540" CREATED="1592410105244" MODIFIED="1593125703597">
+<node TEXT="default.properties" POSITION="left" ID="ID_1995339540">
 <edge COLOR="#353535"/>
-<richcontent TYPE="NOTE">
-
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
 <html>
   <head>
     
@@ -259,15 +266,13 @@
       </li>
     </ul>
   </body>
-</html>
-</richcontent>
-<attribute_layout NAME_WIDTH="171.74999488145127 pt" VALUE_WIDTH="194.9999941885473 pt"/>
+</html></richcontent>
+<attribute_layout NAME_WIDTH="171.74999 pt" VALUE_WIDTH="194.99999 pt"/>
 <attribute NAME="addons.jumper.run_on_single_node.icon" VALUE="/images/jumper-icon.svg"/>
 </node>
-<node TEXT="translations" POSITION="left" ID="ID_1981447827" CREATED="1592410105250" MODIFIED="1593125703601" TEXT_SHORTENED="true">
+<node TEXT="translations" POSITION="left" ID="ID_1981447827" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
-<richcontent TYPE="NOTE">
-
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
 <html>
   <head>
     
@@ -288,18 +293,16 @@
       </li>
     </ul>
   </body>
-</html>
-</richcontent>
-<node TEXT="en" ID="ID_1840514888" CREATED="1592410105258" MODIFIED="1593003206920">
-<attribute_layout NAME_WIDTH="128.99999615550053 pt" VALUE_WIDTH="257.2499923333528 pt"/>
+</html></richcontent>
+<node TEXT="en" ID="ID_1840514888">
+<attribute_layout NAME_WIDTH="129 pt" VALUE_WIDTH="257.24999 pt"/>
 <attribute NAME="addons.${name}" VALUE="Jumper"/>
 <attribute NAME="addons.${name}.run" VALUE="Jumper"/>
 </node>
 </node>
-<node TEXT="deinstall" POSITION="left" ID="ID_1559387002" CREATED="1592410105280" MODIFIED="1593125703603">
+<node TEXT="deinstall" POSITION="left" ID="ID_1559387002">
 <edge COLOR="#353535"/>
-<richcontent TYPE="NOTE">
-
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
 <html>
   <head>
     
@@ -309,9 +312,8 @@
       List of files and/or directories to remove on uninstall
     </p>
   </body>
-</html>
-</richcontent>
-<attribute_layout VALUE_WIDTH="238.4999928921463 pt"/>
+</html></richcontent>
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="238.49999 pt"/>
 <attribute NAME="delete" VALUE="${installationbase}/addons/${name}.script.xml"/>
 <attribute NAME="delete" VALUE="${installationbase}/addons/${name}/scripts/run.groovy"/>
 <attribute NAME="delete" VALUE="${installationbase}/addons/${name}/lib/jumper.jar"/>
@@ -320,10 +322,9 @@
 <attribute NAME="delete" VALUE="${installationbase}/resources/images/jumper-screenshot-1.png"/>
 <attribute NAME="delete" VALUE="${installationbase}/resources/images/jumper-icon.svg"/>
 </node>
-<node TEXT="scripts" POSITION="right" ID="ID_1102722640" CREATED="1592410105291" MODIFIED="1593125703609" TEXT_SHORTENED="true">
+<node TEXT="scripts" POSITION="right" ID="ID_1102722640" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
-<richcontent TYPE="NOTE">
-
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
 <html>
   <head>
     
@@ -438,10 +439,9 @@
       &nbsp;&nbsp;- In any case set execute_scripts_without_asking to true unless you want to annoy users.
     </p>
   </body>
-</html>
-</richcontent>
-<node TEXT="run.groovy" ID="ID_1411088832" CREATED="1592410873205" MODIFIED="1593003277382">
-<attribute_layout NAME_WIDTH="193.4999942332508 pt" VALUE_WIDTH="168.74999497085824 pt"/>
+</html></richcontent>
+<node TEXT="run.groovy" ID="ID_1411088832">
+<attribute_layout NAME_WIDTH="193.49999 pt" VALUE_WIDTH="168.74999 pt"/>
 <attribute NAME="menuTitleKey" VALUE="addons.${name}.run"/>
 <attribute NAME="menuLocation" VALUE="/menu_bar/edit/find"/>
 <attribute NAME="executionMode" VALUE="on_single_node"/>
@@ -453,10 +453,9 @@
 <attribute NAME="execute_scripts_without_network_restriction" VALUE="false"/>
 </node>
 </node>
-<node TEXT="lib" POSITION="right" ID="ID_1567385455" CREATED="1592410105314" MODIFIED="1593125703644" TEXT_SHORTENED="true">
+<node TEXT="lib" POSITION="right" ID="ID_1567385455" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
-<richcontent TYPE="NOTE">
-
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
 <html>
   <head>
     
@@ -490,14 +489,12 @@
       &nbsp;- The files will be processed in the sequence as seen in the map.
     </p>
   </body>
-</html>
-</richcontent>
-<node TEXT="jumper.jar" ID="ID_1699451871" CREATED="1592740425847" MODIFIED="1592740425849"/>
+</html></richcontent>
+<node TEXT="jumper.jar" ID="ID_1699451871"/>
 </node>
-<node TEXT="zips" POSITION="right" ID="ID_493457497" CREATED="1592410105338" MODIFIED="1593125703652" TEXT_SHORTENED="true">
+<node TEXT="zips" POSITION="right" ID="ID_493457497" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
-<richcontent TYPE="NOTE">
-
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
 <html>
   <head>
     
@@ -531,13 +528,11 @@
       &nbsp;- The files will be processed in the sequence as seen in the map.
     </p>
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 </node>
-<node TEXT="images" POSITION="right" ID="ID_1159861672" CREATED="1592410105346" MODIFIED="1593125703655">
+<node TEXT="images" POSITION="right" ID="ID_1159861672">
 <edge COLOR="#353535"/>
-<richcontent TYPE="NOTE">
-
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
 <html>
   <head>
     
@@ -567,11 +562,11 @@
       Images can be added automatically by releaseAddOn.groovy or must be uploaded into the map via the script <i>Tools-&gt;Scripts-&gt;Insert Binary</i>&nbsp;since they have to be (base64) encoded as simple strings.
     </p>
   </body>
-</html>
-</richcontent>
-<node TEXT="jumper.png" ID="ID_1206323572" CREATED="1592991516201" MODIFIED="1592991633902"/>
-<node TEXT="jumper-screenshot-1.png" ID="ID_624984387" CREATED="1592995661805" MODIFIED="1592995663561"/>
-<node TEXT="jumper-icon.svg" ID="ID_1635251901" CREATED="1592991279113" MODIFIED="1593083153808"/>
+</html></richcontent>
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+<node TEXT="jumper.png" ID="ID_1206323572"/>
+<node TEXT="jumper-screenshot-1.png" ID="ID_624984387"/>
+<node TEXT="jumper-icon.svg" ID="ID_1635251901"/>
 </node>
 </node>
 </map>
