@@ -80,6 +80,8 @@ Jumper has got many options that control where it searches, how it searches, and
 `[1]` Add an option for the maximum results number  
 `[1]` Update code comments  
 `[1]` Sélectionner un résultat, de préférence le noeud actif. Gérer cette sélection quand les résultats arriveront progressivement.  
+`[2]` Allow to explore hierarchy, while browsing results, with the left and right keys
+`[3]` Option to switch to spotlight view when Jumper start
 `[ ]` Warn when restrictives options are on (transversal with no clones, beginning of text)  
 `[ ]` Option to search entire words only, or only at the beginning of the words  
 `[ ]` Quotes to find exact phrase when not using regular expressions  
