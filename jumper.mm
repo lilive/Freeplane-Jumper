@@ -97,7 +97,7 @@
 <edge WIDTH="thin"/>
 <attribute_layout NAME_WIDTH="119.25 pt" VALUE_WIDTH="303.74999 pt"/>
 <attribute NAME="name" VALUE="jumper"/>
-<attribute NAME="version" VALUE="v1.0.2"/>
+<attribute NAME="version" VALUE="v1.0.3"/>
 <attribute NAME="author" VALUE="lilive"/>
 <attribute NAME="freeplaneVersionFrom" VALUE="1.10.6"/>
 <attribute NAME="freeplaneVersionTo" VALUE=""/>
@@ -205,6 +205,12 @@
 <attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
 </node>
 </node>
+<node TEXT="v1.0.3" ID="ID_460031498">
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+<node TEXT="- Fix to work with undocked maps and secondary monitor" ID="ID_234227197">
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+</node>
+</node>
 </node>
 <node TEXT="license" POSITION="left" ID="ID_1975958535" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
@@ -294,6 +300,7 @@
     </ul>
   </body>
 </html></richcontent>
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
 <node TEXT="en" ID="ID_1840514888">
 <attribute_layout NAME_WIDTH="129 pt" VALUE_WIDTH="257.24999 pt"/>
 <attribute NAME="addons.${name}" VALUE="Jumper"/>
