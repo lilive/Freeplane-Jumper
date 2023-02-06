@@ -9,8 +9,8 @@ This Freeplane add-on provides an easy and quick way to search for nodes in Free
 [![link to video](doc/demo-link.png)](https://vimeo.com/432653512)
 
 > :bell: I will really appreciate any feedback. They will help to keep me motivated to improve or maintain the add-on.  
-> Do you use it ? Just let me know :smile:. You can write to me in [this github thread](https://github.com/lilive/Freeplane-Jumper/issues/1) or in this [dedicated discussion](https://sourceforge.net/p/freeplane/discussion/758437/thread/8ea365816c/) in the Freeplane forum.  
-> Do you feel that something may be improved ? Have you found something that do not seems to work as expected ? Tell me !
+> Do you use it ? Just let me know :smile:. You can write to me in [this github thread](https://github.com/lilive/Freeplane-Jumper/issues/1).  
+> Do you feel that something may be improved ? Have you found something that do not seem to work as expected ? Tell me ! [Open a new issue](https://github.com/lilive/Freeplane-Jumper/issues/new) to report errors and problems, to suggest development ideas or ask for new features.
 
 > :bell: Jumper doesn't modify your maps, you can use it without fear of data loss.
 
