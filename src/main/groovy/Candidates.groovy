@@ -262,7 +262,7 @@ class Candidates extends DefaultListModel<SNode>{
     // for the GUI update.
     // @return true if newResults is bigger than numMax.
     private void update( SNodes newResults ){
-        if( getSize() > 0 ) fireIntervalRemoved( this, 0, getSize() - 1 )
+        if( getSize() > 0 ) fireIntervalRemoved( (DefaultListModel<String>) this, 0, getSize() - 1 )
         results = newResults.collect()
         if( getSize() > 0 ) fireIntervalAdded( (DefaultListModel<String>) this, 0, getSize() - 1 )
     }
