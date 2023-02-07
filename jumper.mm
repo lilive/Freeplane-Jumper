@@ -211,6 +211,12 @@
 <attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
 </node>
 </node>
+<node TEXT="v1.0.4" ID="ID_688543953">
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+<node TEXT="- Remove the fix required by Groovy &lt; 4" ID="ID_1706331504">
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+</node>
+</node>
 </node>
 <node TEXT="license" POSITION="left" ID="ID_1975958535" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
