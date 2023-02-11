@@ -1,7 +1,9 @@
 package lilive.jumper.search
 
-
-class SearchOptions {
+/**
+ * The settings that drive the search.
+ */
+class SearchOptions implements Cloneable {
     
     boolean useRegex = false
     boolean caseSensitive = false
@@ -20,4 +22,10 @@ class SearchOptions {
     public boolean allDetailsFalse(){
         return ! ( useDetails || useNote || useAttributesName || useAttributesValue )
     }
+
+    @Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone()
+	}
+
 }
