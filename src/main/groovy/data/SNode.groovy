@@ -326,7 +326,7 @@ class SNode {
 
         SNode node = this.parent
         while( node && node.parent ){
-            if( ! node.coreMatch ) node.singleCoreSearch( regexps )
+            if( ! node.coreMatch ) node.coreSearch( regexes )
             if( ! stackMatch.isMatch ){
                 stackMatch.matches.addAll( node.coreMatch.matches )
                 stackMatch.isMatch = ( stackMatch.matches.size() == numPatterns )
