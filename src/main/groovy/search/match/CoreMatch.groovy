@@ -1,9 +1,12 @@
-package lilive.jumper
+package lilive.jumper.search.match
 
-import java.util.regex.Pattern
+import lilive.jumper.search.Pattern
 import java.util.regex.Matcher
 
-// Handle the result of a search over the core text of a SNode
+// Handle the result of a search over the core text of a SNode.
+// Do not care about transversal search, only deal with the matches
+// between the patterns and the node core text.
+
 class CoreMatch {
     
     // Do the search succeed ?
@@ -18,8 +21,8 @@ class CoreMatch {
     ArrayList<Matcher> matchers
 
     CoreMatch(){
-        matches = new LinkedHashSet<Pattern>()
-        rejected = new LinkedHashSet<Pattern>()
+        matches = new HashSet<Pattern>()
+        rejected = new HashSet<Pattern>()
         matchers = new ArrayList<Matcher>()
     }
 }

@@ -1,59 +1,63 @@
-package lilive.jumper
+package lilive.jumper.data
 
 import java.lang.IllegalArgumentException
 import java.util.regex.Matcher
-import java.util.regex.Pattern
 import org.freeplane.api.Node
 import org.freeplane.core.util.HtmlUtils
-import lilive.jumper.Jumper
 import org.freeplane.api.Convertible
+import lilive.jumper.Jumper
+import lilive.jumper.search.SearchOptions
+import lilive.jumper.search.Pattern
+import lilive.jumper.search.Interval
+import lilive.jumper.search.match.CoreMatch
+import lilive.jumper.search.match.FullMatch
+import lilive.jumper.search.match.StackMatch
+import lilive.jumper.display.components.Highlight
 
 // A node that can be found
 class SNode {
 
-    Node node                // node in the map
-    String text              // node core text (without html format)
-    String details           // node details text (without html format)
-    String note              // node note text (without html format)
-    ArrayList<String> names  // node attributes names
-    ArrayList<String> values // node attributes values
-    String coreDisplay       // text to display in GUI for node core text
-    String shortCoreDisplay  // text to display in GUI, short version
-    String detailsDisplay    // text to display in GUI for node details text
-    String noteDisplay       // text to display in GUI for node note text
-    String attributesDisplay // text to display in GUI for node note text
+    private Node node                // node in the map
+    private String text              // node core text (without html format)
+    private String details           // node details text (without html format)
+    private String note              // node note text (without html format)
+    private ArrayList<String> names  // node attributes names
+    private ArrayList<String> values // node attributes values
+    private String coreDisplay       // text to display in GUI for node core text
+    private String shortCoreDisplay  // text to display in GUI, short version
+    private String detailsDisplay    // text to display in GUI for node details text
+    private String noteDisplay       // text to display in GUI for node note text
+    private String attributesDisplay // text to display in GUI for node note text
 
-    SMap sMap                // A reference to the sMap
-    SNode parent             // The SNode for node.parent
-    SNodes children          // The SNodes for node.children
+    private SMap sMap                // A reference to the sMap
+    private SNode parent             // The SNode for node.parent
+    private SNodes children          // The SNodes for node.children
 
-    CoreMatch coreMatch                           // Result of the last search over this core text node
-    FullMatch fullMatch                           // Result of the last search over this node (core, details, note, attributes)
-    StackMatch stackMatch                         // Result of the last search over this node and its ancestors
+    private Boolean isMatch          // Result of the last match() call
+    private CoreMatch coreMatch      // Result of the last search over this core text node
+    private FullMatch fullMatch      // Result of the last search over this node (core, details, note, attributes)
+    private StackMatch stackMatch    // Result of the last search over this node and its ancestors
+
+    private boolean plainTextReady = false
+    
     private Highlight textHighlight               // Core text highlighting
     private Highlight detailsHighlight            // Details text highlighting
     private Highlight noteHighlight               // Note text highlighting
     private ArrayList<Highlight> namesHighlights  // Attributes names highlighting
     private ArrayList<Highlight> valuesHighlights // Attributes values highlighting
     private boolean highlightInvalidated          // Is highlight up to date ?
+    
     private boolean coreDisplayInvalidated        // Is core display text up to date ?
     private boolean shortCoreDisplayInvalidated
     private boolean detailsDisplayInvalidated
     private boolean noteDisplayInvalidated
     private boolean attributesDisplayInvalidated
     
-    SNode( Node node, SNode parent ){
+    public SNode( Node node, SNode parent ){
         this.node = node
         this.parent = parent
         children = []
         if( parent ) parent.children << this
-        text = getNodePlainText( node )
-        if( node.details ) details = node.details.plain.replaceAll("\n", " ")
-        if( node.note    ) note    = node.note.plain.replaceAll("\n", " ")
-        if( node.attributes ){
-            names  = node.attributes.names.collect()
-            values = getNodeValues( node, names.size() )
-        }
         highlightInvalidated = true
         coreDisplay       = ""
         detailsDisplay    = ""
@@ -62,6 +66,21 @@ class SNode {
         invalidateDisplay()
     }
 
+    public void init(){
+        
+        if( plainTextReady ) return
+        
+        text = getNodePlainText( node )
+        if( node.details ) details = node.details.plain.replaceAll("\n", " ")
+        if( node.note    ) note    = node.note.plain.replaceAll("\n", " ")
+        if( node.attributes ){
+            names  = node.attributes.names.clone()
+            values = getNodeValues( node, names.size() )
+        }
+        
+        plainTextReady = true
+    }
+    
     private String getNodePlainText( Node node ){
         try{
             return node.plainText.replaceAll("\n", " ")
@@ -83,90 +102,113 @@ class SNode {
     private String getNodeDetails( Node node ){
     }
 
-    String toString(){
+    public String toString(){
         return text
     }
 
-    String getCoreDisplay(){
+    public String getCoreDisplay(){
         if( highlightInvalidated ) updateHighlight()
         if( coreDisplayInvalidated ) updateCoreDisplayText()
         return coreDisplay
     }
     
-    String getDetailsDisplay(){
+    public String getDetailsDisplay(){
         if( highlightInvalidated ) updateHighlight()
         if( detailsDisplayInvalidated ) updateDetailsDisplayText()
         return detailsDisplay
     }
 
-    String getNoteDisplay(){
+    public String getNoteDisplay(){
         if( highlightInvalidated ) updateHighlight()
         if( noteDisplayInvalidated ) updateNoteDisplayText()
         return noteDisplay
     }
 
-    String getAttributesDisplay(){
+    public String getAttributesDisplay(){
         if( highlightInvalidated ) updateHighlight()
         if( attributesDisplayInvalidated ) updateAttributesDisplayText()
         return attributesDisplay
     }
 
-    private getShortDisplayText(){
+    private String getShortDisplayText(){
         if( highlightInvalidated ) updateHighlight()
         if( shortCoreDisplayInvalidated ) updateShortCoreDisplayText()
         return shortCoreDisplay
     }
 
     // Level id of the node
-    String getId(){
+    public String getId(){
         if( ! node ) return ""
         return node.id
     }
 
     // Level (depth) of the node
-    int getLevel(){
+    public int getLevel(){
         if( ! node ) return 0
         return node.getNodeLevel( true )
     }
 
-    void clearPreviousSearch(){
+    public void clearPreviousSearch(){
+        isMatch = null
         coreMatch = null
         fullMatch = null
         stackMatch = null
         highlightInvalidated = true
     }
 
-    void invalidateDisplay(){
+    public void invalidateDisplay( boolean recursive = false ){
         coreDisplayInvalidated = true
         shortCoreDisplayInvalidated = true
         detailsDisplayInvalidated = true
         noteDisplayInvalidated = true
         attributesDisplayInvalidated = true
+        if( recursive && parent ) parent.invalidateDisplay( true )
     }
 
-    // Search if a node match
-    boolean search( Set<Pattern> regexps, SearchOptions options ){
+    public boolean getIsMatch(){
+        return isMatch
+    }
+    
+    /**
+     * Search if this node match
+     * 
+     * After this, the details about the search are stored in
+     * isMatch, coreMatch, fullMatch, stackMatch.
+     * You have to call clearPreviousSearch to clear these fields
+     * to be able to call match() again.
+     *
+     * @param regexes The patterns to look for
+     * @param options The search options that define the search type
+     * @return The result of the seach
+     */
+    public boolean match( Set<Pattern> regexes, SearchOptions options ){
 
-        if( fullMatch ) throw new Exception( "Don't search a same node twice. Call clearPreviousSearch() between searches." )
+        if( ! isMatch.equals( null ) ) throw new Exception( "Don't search a same node twice. Call clearPreviousSearch() between searches." )
 
+        init()
         highlightInvalidated = true
         
         if( options.transversal ){
-            if( stackMatch ) throw new Exception( "Don't search a same node twice. Call clearPreviousSearch() between searches." )
-            singleFullSearch( regexps, options )
+            fullSearch( regexes, options )
             if( fullMatch.isMatchOne ){
-                stackSearch( regexps )
-                return stackMatch.isMatch
+                stackSearch( regexes )
+                isMatch = stackMatch.isMatch
             } else {
-                return false
+                isMatch = false
             }
         } else {
-            singleFullSearch( regexps, options )
-            return fullMatch.isMatch
+            fullSearch( regexes, options )
+            isMatch = fullMatch.isMatch
         }
+
+        return isMatch
     }
 
-    private void singleCoreSearch( Set<Pattern> regexps ){
+    /**
+     * Search the node core text against the patterns,
+     * store the result in the field coreMatch.
+     */
+    private void coreSearch( Set<Pattern> regexes ){
 
         if( coreMatch ) return
         
@@ -174,9 +216,9 @@ class SNode {
         coreMatch = new CoreMatch()
         
         // Search all patterns
-        regexps.each{
+        regexes.each{
             regex ->
-            Matcher m = ( text =~ regex )
+            Matcher m = regex.match(text)
             if( m.find() && m.end() > m.start() ){
                 coreMatch.matchers << m
                 coreMatch.matches << regex
@@ -189,9 +231,14 @@ class SNode {
         coreMatch.isMatchOne = ( coreMatch.matches.size() > 0 )
     }
         
-    private void singleFullSearch( Set<Pattern> regexps, SearchOptions options ){
+    /**
+     * Search the whole node against the patterns,
+     * according to options,
+     * store the result in the fields coreMatch and fullMatch.
+     */
+    private void fullSearch( Set<Pattern> regexes, SearchOptions options ){
 
-        singleCoreSearch( regexps )
+        coreSearch( regexes )
         
         boolean searchNames = ( options?.useAttributesName && names )
         boolean searchValues = ( options?.useAttributesValue && values )
@@ -205,12 +252,12 @@ class SNode {
         fullMatch.coreMatchers = coreMatch.matchers
         
         // Search all patterns
-        regexps.each{ regex ->
+        regexes.each{ regex ->
             
             boolean isMatch = false
 
             if( options?.useDetails && details ){
-                Matcher m = ( details =~ regex )
+                Matcher m = regex.match(details)
                 if( m.find() && m.end() > m.start() ){
                     fullMatch.detailsMatchers << m
                     fullMatch.matches << regex
@@ -219,7 +266,7 @@ class SNode {
             }
             
             if( options?.useNote && note ){
-                Matcher m = ( note =~ regex )
+                Matcher m = regex.match(note)
                 if( m.find() && m.end() > m.start() ){
                     fullMatch.noteMatchers << m
                     fullMatch.matches << regex
@@ -231,7 +278,7 @@ class SNode {
                 names.eachWithIndex{
                     name, idx ->
                     ArrayList<Matcher> matchers = fullMatch.namesMatchers[ idx ]
-                    Matcher m = ( name =~ regex )
+                    Matcher m = regex.match(name)
                     if( m.find() && m.end() > m.start() ){
                         matchers << m
                         fullMatch.matches << regex
@@ -244,7 +291,7 @@ class SNode {
                 values.eachWithIndex{
                     value, idx ->
                     ArrayList<Matcher> matchers = fullMatch.valuesMatchers[ idx ]
-                    Matcher m = ( value =~ regex )
+                    Matcher m = regex.match(value)
                     if( m.find() && m.end() > m.start() ){
                         matchers << m
                         fullMatch.matches << regex
@@ -259,16 +306,23 @@ class SNode {
         fullMatch.isMatch = ( fullMatch.rejected.size() == 0 )
         fullMatch.isMatchOne = ( fullMatch.matches.size() > 0 )
     }
-        
-    private void stackSearch( Set<Pattern> regexps ){
+
+    /**
+     * Search the ancestors nodes core text against the patterns.
+     * If all the patterns are found amoung the ancestors core text and the
+     * fullSearch() of this node, the stackSearch is successful.
+     * Store the result in the field stackMatch.
+     * You have to call fullSearch() before stackSearch().
+     */
+    private void stackSearch( Set<Pattern> regexes ){
 
         if( stackMatch ) throw new Exception( "Do stackSearch() only once.")
-        if( ! fullMatch ) throw new Exception( "Do singleFullSearch() before stackSearch().")
+        if( ! fullMatch ) throw new Exception( "Do fullSearch() before stackSearch().")
 
-        int numPatterns = regexps.size()
+        int numPatterns = regexes.size()
         stackMatch = new StackMatch()
         stackMatch.matches = fullMatch.matches.clone()
-        stackMatch.isMatch = ( stackMatch.matches.size() == numPatterns )
+        stackMatch.isMatch = fullMatch.isMatch
 
         SNode node = this.parent
         while( node && node.parent ){

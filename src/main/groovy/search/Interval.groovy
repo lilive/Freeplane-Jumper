@@ -1,4 +1,4 @@
-package lilive.jumper
+package lilive.jumper.search
 
 import java.lang.IllegalArgumentException
 

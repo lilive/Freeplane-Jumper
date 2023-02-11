@@ -1,4 +1,4 @@
-package lilive.jumper
+package lilive.jumper.display.components
 
 
 class Color extends java.awt.Color {

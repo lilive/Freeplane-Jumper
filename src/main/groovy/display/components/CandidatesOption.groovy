@@ -1,4 +1,4 @@
-package lilive.jumper
+package lilive.jumper.display.components
 
 import javax.swing.JRadioButton
 

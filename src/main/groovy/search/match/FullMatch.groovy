@@ -1,9 +1,11 @@
-package lilive.jumper
+package lilive.jumper.search.match
 
-import java.util.regex.Pattern
+import lilive.jumper.search.Pattern
 import java.util.regex.Matcher
 
-// Handle the result of a search over a SNode (core text, details,
+// Handle the result of a search over a SNode.
+// Do not care about transversal search, only deal with the matches
+// between the patterns and the node contents (core text, details,
 // note, attributes)
 
 class FullMatch {
@@ -29,8 +31,8 @@ class FullMatch {
     ArrayList<ArrayList<Matcher>> valuesMatchers
 
     FullMatch( int namesSize, int valuesSize ){
-        matches = new LinkedHashSet<Pattern>()
-        rejected = new LinkedHashSet<Pattern>()
+        matches = new HashSet<Pattern>()
+        rejected = new HashSet<Pattern>()
         coreMatchers = new ArrayList<Matcher>()
         detailsMatchers = new ArrayList<Matcher>()
         noteMatchers = new ArrayList<Matcher>()

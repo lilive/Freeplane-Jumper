@@ -1,4 +1,4 @@
-package lilive.jumper
+package lilive.jumper.display.windows
 
 import groovy.swing.SwingBuilder
 import java.awt.BorderLayout
@@ -20,6 +20,8 @@ import javax.swing.border.Border
 import javax.swing.border.CompoundBorder
 import javax.swing.border.EmptyBorder
 import javax.swing.border.TitledBorder
+import lilive.jumper.display.components.ColorIcon
+import lilive.jumper.display.components.Color
 
 class DisplaySettingsGui {
 

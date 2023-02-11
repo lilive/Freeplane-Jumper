@@ -4,18 +4,28 @@ import groovy.json.JsonOutput
 import groovy.json.JsonGenerator
 import groovy.json.JsonSlurper
 import java.awt.Rectangle
+import javax.swing.SwingUtilities
 import org.freeplane.api.Node
 import org.freeplane.core.util.LogUtils
 import org.freeplane.plugin.script.proxy.Proxy
 import org.freeplane.plugin.script.proxy.ScriptUtils
-import org.freeplane.core.ui.components.UITools
+import lilive.jumper.data.SMap
+import lilive.jumper.data.SNode
+import lilive.jumper.data.SNodes
+import lilive.jumper.search.SearchOptions
+import lilive.jumper.search.SearchEngine
+import lilive.jumper.search.SearchResultsCollector
+import lilive.jumper.settings.LoadedSettings
+import lilive.jumper.settings.DisplayResultsSettings
+import lilive.jumper.display.components.Color
+import lilive.jumper.display.windows.Gui
 
 /**
  * The main class that control the application.
  * Usage: Jumper.start() create an instance and
  * display the GUI. Nothing else to do.
  */
-class Jumper {
+class Jumper implements SearchResultsCollector {
     
     private Proxy.Controller c
     private Node initialNode // Selected node in the map when Jumper starts
@@ -23,12 +33,15 @@ class Jumper {
     // Each node has a corresponding SNode:
     private SMap sMap             // Mimic the Freeplane map, made of SNode
     private SNode initialSNode    // SNode for initialNode
-    private Candidates candidates // The SNodes where to search
+    private SNodes candidates     // The SNodes where to search
+    private SNodes results        // The SNodes that match
+
+    SearchEngine searchEngine
     
     private Gui gui
     
-    // The last searched pattern
-    private String lastPattern
+    // The search pattern
+    private String searchPattern
     // The previously jumped patterns:
     private ArrayList<String> history = []
     private int historyIdx = 0
@@ -38,10 +51,10 @@ class Jumper {
     private SearchOptions searchOptions = new SearchOptions()
 
     // Control the nodes where to search:
-    public final int ALL_NODES = 0
-    public final int SIBLINGS = 1
-    public final int DESCENDANTS = 2
-    public final int SIBLINGS_AND_DESCENDANTS = 3
+    final int ALL_NODES = 0
+    final int SIBLINGS = 1
+    final int DESCENDANTS = 2
+    final int SIBLINGS_AND_DESCENDANTS = 3
     private int candidatesType = ALL_NODES
     private boolean discardClones = false
     private boolean discardHiddenNodes = true
@@ -56,28 +69,24 @@ class Jumper {
     // Class instance created by start()
     private static Jumper instance
     public static Jumper get(){ return instance }
+
     
-    private Jumper(){
-        initialNode = ScriptUtils.node()
-        c = ScriptUtils.c()
-    }
-
-
     
     //////////////////////////////////////////////////////////////////
     // Main public functions /////////////////////////////////////////
     //////////////////////////////////////////////////////////////////
 
     // Start Jumper. Display the GUI. Nothing else to do to start Jumper.
-    public static Jumper start(){
+    public static void start(){
         if( instance ) throw new Exception( "Jumper already started" )
         instance = new Jumper()
         instance.init()
-        return instance
     }
 
     // Jump to the user selected node (if any) and close the GUI
     public void end(){
+        searchEngine.stopSearch()
+        searchEngine.shutdown()
         saveSettings()
         gui.dispose()
         if( jumpToNode ) selectMapNode( jumpToNode )
@@ -85,23 +94,17 @@ class Jumper {
         clear()
     }
 
+    public void setSearchPattern( String pattern ){
+        if( pattern.equals( searchPattern ) ) return
+        searchPattern = pattern
+        search()
+    }
+        
     // Filter the candidates to find the pattern
-    public void search( String pattern ){
-        lastPattern = pattern
-        candidates.filter(
-            pattern,
-            searchOptions,
-            initialSNode,
-            {
-                isMore ->
-                selectDefaultResult()
-                gui.updateResultLabel(
-                    candidates.getSize(),
-                    candidates.getAllSize(),
-                    isMore
-                )
-            }
-        )
+    public void search(){
+        searchEngine.stopSearch()
+        clearResults()
+        searchEngine.startSearch( candidates, searchPattern, searchOptions, this )
     }
 
     public Gui getGui(){
@@ -125,8 +128,8 @@ class Jumper {
     
     // Try to select the initial selected node in the GUI nodes list.
     public void selectDefaultResult(){
-        if( ! candidates?.results ) return
-        int selectIdx = candidates.results.findIndexOf{ it == initialSNode }
+        if( ! results ) return
+        int selectIdx = results.findIndexOf{ it == initialSNode }
         if( selectIdx < 0 ) selectIdx = 0
         gui.setSelectedResult( selectIdx )
     }
@@ -153,6 +156,31 @@ class Jumper {
 
     
     //////////////////////////////////////////////////////////////////
+    // SearchResultsCollector functions //////////////////////////////
+    //////////////////////////////////////////////////////////////////
+
+    public void addResults( SNodes newResults, boolean done ){
+        results.addAll( newResults )
+        SwingUtilities.invokeLater( new Runnable(){
+            public void run() {
+                gui.addResults( newResults, candidates.size(), ! done )
+                // selectDefaultResult()
+            }
+        })
+    }
+    
+    public void clearResults(){
+        results.clear()
+        SwingUtilities.invokeLater( new Runnable(){
+            public void run() {
+                gui.clearResults()
+            }
+        })
+    }
+
+    
+    
+    //////////////////////////////////////////////////////////////////
     // Options functions /////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////
 
@@ -162,7 +190,10 @@ class Jumper {
         int previous = candidatesType
         candidatesType = type
         gui.updateOptions()
-        if( candidates != null && previous != type ) updateCandidates()
+        if( previous != type ){
+            updateCandidates()
+            search()
+        }
     }
 
     public int getCandidatesType(){
@@ -174,7 +205,7 @@ class Jumper {
         boolean previous = searchOptions.useRegex
         searchOptions.useRegex = value
         gui.updateOptions()
-        if( previous != value ) searchAgain()
+        if( previous != value ) search()
     }
 
     // Use case sentitive search ?
@@ -182,7 +213,7 @@ class Jumper {
         boolean previous = searchOptions.caseSensitive
         searchOptions.caseSensitive = value
         gui.updateOptions()
-        if( previous != value ) searchAgain()
+        if( previous != value ) search()
     }
 
     // Search patterns only at the beginning of the texts ?
@@ -190,7 +221,7 @@ class Jumper {
         boolean previous = searchOptions.fromStart
         searchOptions.fromStart = value
         gui.updateOptions()
-        if( previous != value ) searchAgain()
+        if( previous != value ) search()
     }
 
     // Break the search string into multiple units ?
@@ -198,7 +229,7 @@ class Jumper {
         boolean previous = searchOptions.splitPattern
         searchOptions.splitPattern = value
         gui.updateOptions()
-        if( previous != value ) searchAgain()
+        if( previous != value ) search()
     }
 
     // Search pattern units across branches ?
@@ -206,7 +237,7 @@ class Jumper {
         boolean previous = searchOptions.transversal
         searchOptions.transversal = value
         gui.updateOptions()
-        if( previous != value ) searchAgain()
+        if( previous != value ) search()
     }
 
     // Search in nodes details ?
@@ -214,7 +245,7 @@ class Jumper {
         boolean previous = searchOptions.useDetails
         searchOptions.useDetails = value
         gui.updateOptions()
-        if( previous != value ) searchAgain()
+        if( previous != value ) search()
     }
 
     // Search in nodes notes ?
@@ -222,7 +253,7 @@ class Jumper {
         boolean previous = searchOptions.useNote
         searchOptions.useNote = value
         gui.updateOptions()
-        if( previous != value ) searchAgain()
+        if( previous != value ) search()
     }
 
     // Search in nodes attributes names ?
@@ -230,7 +261,7 @@ class Jumper {
         boolean previous = searchOptions.useAttributesName
         searchOptions.useAttributesName = value
         gui.updateOptions()
-        if( previous != value ) searchAgain()
+        if( previous != value ) search()
     }
 
     // Search in nodes attributes values ?
@@ -238,7 +269,7 @@ class Jumper {
         boolean previous = searchOptions.useAttributesValue
         searchOptions.useAttributesValue = value
         gui.updateOptions()
-        if( previous != value ) searchAgain()
+        if( previous != value ) search()
     }
 
     // Search un all nodes details (details, notes, attributes) ?
@@ -251,7 +282,7 @@ class Jumper {
             useAttributesName  = check
             useAttributesValue = check
             gui.updateOptions()
-            searchAgain()
+            search()
         }
     }
 
@@ -265,7 +296,10 @@ class Jumper {
         boolean previous = discardClones
         discardClones = value
         gui.updateOptions()
-        if( candidates != null && previous != value ) updateCandidates()
+        if( previous != value ){
+            updateCandidates()
+            search()
+        }
     }
 
     public boolean getDiscardClones(){
@@ -277,7 +311,10 @@ class Jumper {
         boolean previous = discardHiddenNodes
         discardHiddenNodes = value
         gui.updateOptions()
-        if( candidates != null && previous != value ) updateCandidates()
+        if( previous != value ){
+            updateCandidates()
+            search()
+        }
     }
 
     public boolean getDiscardHiddenNodes(){
@@ -290,15 +327,39 @@ class Jumper {
     // Private functions /////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////
 
-    // Initialize a new instance of Jumper and display the GUI.
-    private void init(){
+    // Private constructor. The unique instance is created by start()
+    private Jumper(){
+
+        startTime = System.currentTimeMillis()
+        lastStepTime = startTime
         
+        Thread.setDefaultUncaughtExceptionHandler(
+            new Thread.UncaughtExceptionHandler(){
+                @Override
+                public void uncaughtException( Thread t, Throwable e ){
+                    LogUtils.warn( "Jumper error: ${e}")
+                    e.printStackTrace()
+                }
+            }
+        )
+        
+        initialNode = ScriptUtils.node()
+        c = ScriptUtils.c()
+
         sMap = new SMap( initialNode.map.root )
         initialSNode = sMap.find{ it.node == initialNode }
 
-        candidates = new Candidates()
+        candidates = new SNodes()
+        results = new SNodes()
+        searchEngine = new SearchEngine()
+    }
+    
+    // Initialize a new instance of Jumper and display the GUI.
+    private void init(){
+
         LoadedSettings settings = loadSettings()
-        gui = new Gui( UITools, candidates, settings )
+
+        gui = new Gui( settings )
         updateCandidates()
         if( gui.drs.recallLastPattern ){
             recallLastPattern(
@@ -322,7 +383,7 @@ class Jumper {
         
         DisplayResultsSettings drs = gui.drs
         
-        Map datas = [
+        Map data = [
             candidatesType     : candidatesType,
             discardClones      : discardClones,
             discardHiddenNodes : discardHiddenNodes,
@@ -344,7 +405,7 @@ class Jumper {
                 color.toString()
             }
             JsonGenerator generator = options.build()
-            String json = generator.toJson( datas )
+            String json = generator.toJson( data )
             file.write( JsonOutput.prettyPrint( json ) )
         } catch( Exception e){
             LogUtils.warn( "Jumper: unable to save the settings : $e")
@@ -400,37 +461,22 @@ class Jumper {
         if( ! initialSNode ) return
         if( sMap == null ) return
 
-        SNodes sNodes
         switch( candidatesType ){
             case ALL_NODES:
-                sNodes = sMap.getAllNodes()
+                candidates = sMap.getAllNodes()
                 break
             case SIBLINGS:
-                sNodes = sMap.getSiblingsNodes( initialSNode )
+                candidates = sMap.getSiblingsNodes( initialSNode )
                 break
             case DESCENDANTS:
-                sNodes = sMap.getDescendantsNodes( initialSNode )
+                candidates = sMap.getDescendantsNodes( initialSNode )
                 break
             case SIBLINGS_AND_DESCENDANTS:
-                sNodes = sMap.getSiblingsAndDescendantsNodes( initialSNode )
+                candidates = sMap.getSiblingsAndDescendantsNodes( initialSNode )
                 break
         }
-        if( discardClones      ) removeClones( sNodes )
-        if( discardHiddenNodes ) removeHiddenNodes( sNodes )
-        candidates.set(
-            sNodes,
-            gui.getPatternText(), searchOptions,
-            initialSNode,
-            {
-                isMore ->
-                selectDefaultResult()
-                gui.updateResultLabel(
-                    candidates.getSize(),
-                    candidates.getAllSize(),
-                    isMore
-                )
-            }
-        )
+        if( discardClones      ) removeClones( candidates )
+        if( discardHiddenNodes ) removeHiddenNodes( candidates )
     }
 
     /**
@@ -454,8 +500,9 @@ class Jumper {
         
         sNodes.removeAll{
             SNode sNode ->
-            ArrayList<Node> clones = sNode.node.getNodesSharingContent().collect()
+            ArrayList<Node> clones = sNode.node.getNodesSharingContent()
             if( clones.size() == 0 ) return false
+            clones = clones.clone()
             clones << sNode.node
             clones.sort( firstClone )
             if( sNode.node != clones[0] ) return true
@@ -502,12 +549,6 @@ class Jumper {
         else gui.setPatternText( pattern )
     }
 
-    // Refilter the candidates (useful when a search option change)
-    private void searchAgain(){
-        if( lastPattern == null ) return
-        search( lastPattern )
-    }
-
     // Restore folding state of the branch of selected node in the view,
     // before it was selected by selectMapNode()
     private void restoreFolding(){
@@ -522,7 +563,7 @@ class Jumper {
         int idx = gui.getSelectedResult()
         if( idx >= 0 ){
             addToHistory( gui.getPatternText() )
-            jumpToNode = candidates.results[ idx ].node
+            jumpToNode = results[ idx ].node
             end()
         }
     }

@@ -1,4 +1,4 @@
-package lilive.jumper
+package lilive.jumper.data
 
 import java.lang.IllegalArgumentException
 import org.freeplane.api.Node
@@ -18,7 +18,7 @@ class SMap extends SNodes {
     }
     
     SNodes getAllNodes(){
-        return collect()
+        return clone()
     }
     
     SNodes getSiblingsNodes( SNode sNode ){

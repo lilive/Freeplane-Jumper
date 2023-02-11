@@ -1,4 +1,4 @@
-package lilive.jumper
+package lilive.jumper.display.components
 
 import java.awt.Component
 import javax.swing.JLabel
@@ -9,6 +9,9 @@ import javax.swing.BoxLayout
 import javax.swing.JSeparator
 import java.awt.Font
 import javax.swing.border.EmptyBorder
+import lilive.jumper.Jumper
+import lilive.jumper.settings.DisplayResultsSettings
+import lilive.jumper.data.SNode
 
 
 class SNodeCellRenderer extends Box implements ListCellRenderer<SNode> {

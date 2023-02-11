@@ -1,4 +1,6 @@
-package lilive.jumper
+package lilive.jumper.display.components
+
+import lilive.jumper.search.Interval
 
 // Ranges of characters to highlight in a string.
 class Highlight {

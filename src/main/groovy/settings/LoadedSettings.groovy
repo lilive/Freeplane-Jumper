@@ -1,4 +1,4 @@
-package lilive.jumper
+package lilive.jumper.settings
 
 import java.awt.Rectangle
 

@@ -1,10 +1,9 @@
-package lilive.jumper
+package lilive.jumper.settings
 
 import java.awt.Rectangle
-import groovy.json.JsonSlurper
-import groovy.json.JsonGenerator
 import java.awt.Font
 import groovy.swing.SwingBuilder
+import lilive.jumper.display.components.Color
 
 class DisplayResultsSettings {
     
@@ -111,7 +110,6 @@ class DisplayResultsSettings {
             "selectedDetailsForegroundColor" : selectedDetailsForegroundColor,
             "selectedDetailsBackgroundColor" : selectedDetailsBackgroundColor
         ]
-
 
         return result
     }
