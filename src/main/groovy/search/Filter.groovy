@@ -8,7 +8,8 @@ class Filter implements Cloneable {
 
     private Set<String> regexes
     private SearchOptions options
-
+    static private int numMaxMatches = 30 
+    
     /**
      * @param pattern The search string.
      * @param options Settings for the search strategy.
@@ -42,29 +43,14 @@ class Filter implements Cloneable {
         
         // Get the candidates that match the regular expressions.
         SNodes results = []
-        candidates.each{
-            if( it.match( patterns, options ) ) results << it
+        int num = 0
+        for( it in candidates ){
+            if( it.match( patterns, options ) ){
+                results << it
+                num ++
+                if( num >= numMaxMatches ) break
+            }
             if( Thread.currentThread().isInterrupted() ) throw new InterruptedException()
-        }
-        return results
-    }
-
-    public SNodes filter( SNodes candidates, int start, int end ) throws InterruptedException {
-
-        // Return all the nodes if search pattern is empty
-        if( ! regexes ) return []
-        Set< Pattern > patterns = makePatterns( regexes )
-        if( ! patterns ) return []
-        
-        // Get the candidates that match the regular expressions.
-        SNodes results = []
-        
-        int i = start
-        while( i < end){
-            SNode node = candidates[ i ]
-            if( node.match( patterns, options ) ) results << node
-            if( Thread.currentThread().isInterrupted() ) throw new InterruptedException()
-            i++
         }
         return results
     }
