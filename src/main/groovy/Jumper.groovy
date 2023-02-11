@@ -86,7 +86,6 @@ class Jumper implements SearchResultsCollector {
     // Jump to the user selected node (if any) and close the GUI
     public void end(){
         searchEngine.stopSearch()
-        searchEngine.shutdown()
         saveSettings()
         gui.dispose()
         if( jumpToNode ) selectMapNode( jumpToNode )

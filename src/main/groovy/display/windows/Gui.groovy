@@ -152,7 +152,7 @@ class Gui {
         win.pack()
         fixComponentWidth( scrollPane )
         setMinimumSizeToCurrentSize()
-        setLocation( ui.currentFrame, settings.winBounds )
+        setLocation( UITools.currentFrame, settings.winBounds )
 
         if( ! settings.showOptions ) toggleOptionsDisplay()
     }
@@ -204,7 +204,7 @@ class Gui {
         win = swing.dialog(
             title: "Jumper - The Jumping Filter",
             modal: true,
-            owner: ui.currentFrame,
+            owner: UITools.currentFrame,
             defaultCloseOperation: JFrame.DO_NOTHING_ON_CLOSE
         ){
             borderLayout()
