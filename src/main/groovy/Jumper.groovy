@@ -330,9 +330,6 @@ class Jumper implements SearchResultsCollector {
     // Private constructor. The unique instance is created by start()
     private Jumper(){
 
-        startTime = System.currentTimeMillis()
-        lastStepTime = startTime
-        
         Thread.setDefaultUncaughtExceptionHandler(
             new Thread.UncaughtExceptionHandler(){
                 @Override
