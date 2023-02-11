@@ -9,6 +9,7 @@ import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import lilive.jumper.Jumper
 import lilive.jumper.data.SNodes
+import org.freeplane.core.util.LogUtils
 
 class SearchEngine {
 
