@@ -49,11 +49,11 @@ import org.freeplane.core.ui.components.UITools
 import lilive.jumper.Jumper
 import lilive.jumper.settings.DisplayResultsSettings
 import lilive.jumper.settings.LoadedSettings
-import lilive.jumper.data.SNodes
+import lilive.jumper.data.SNode
 import lilive.jumper.display.components.ResultsListModel
 import lilive.jumper.display.components.CandidatesOption
 import lilive.jumper.display.components.SNodeCellRenderer
-import javax.swing.SwingUtilities
+import java.util.List
 
 class Gui {
 
@@ -417,16 +417,24 @@ class Gui {
         return patternTF.text
     }
 
-    public void addResults( SNodes newResults, int numTotal, boolean inProgress ){
-
-        // Jumper.get().printStepTime("GUI addResults")
+    public void addResults( List<SNode> newResults, int numTotal, boolean inProgress ){
         resultsListModel.add( newResults )
         updateResultMessage( resultsListModel.getSize(), numTotal, inProgress )
+    }
+
+    public void onSearchCompleted( int numTotal ){
+        updateResultMessage( resultsListModel.getSize(), numTotal, false )
     }
 
     public void clearResults(){
         resultsListModel.clear()
         clearResultMessage()
+    }
+    
+    private void displaySearchInProgressMessage(){
+        if( ! resultLbl ) return
+        resultLbl.text ="<html>Search in progress...<html>"
+        resultLblIcon.visible = true
     }
     
     private void updateResultMessage( int numDisplayed, int numTotal, boolean inProgress ){

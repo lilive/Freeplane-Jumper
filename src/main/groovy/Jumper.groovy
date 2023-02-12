@@ -4,9 +4,7 @@ import groovy.json.JsonOutput
 import groovy.json.JsonGenerator
 import groovy.json.JsonSlurper
 import java.awt.Rectangle
-import javax.swing.SwingUtilities
 import org.freeplane.api.Node
-import org.freeplane.core.util.LogUtils
 import org.freeplane.plugin.script.proxy.Proxy
 import org.freeplane.plugin.script.proxy.ScriptUtils
 import lilive.jumper.data.SMap
@@ -19,6 +17,7 @@ import lilive.jumper.settings.LoadedSettings
 import lilive.jumper.settings.DisplayResultsSettings
 import lilive.jumper.display.components.Color
 import lilive.jumper.display.windows.Gui
+import lilive.jumper.utils.LogUtils
 
 /**
  * The main class that control the application.
@@ -103,7 +102,8 @@ class Jumper implements SearchResultsCollector {
     public void search(){
         searchEngine.stopSearch()
         clearResults()
-        searchEngine.startSearch( candidates, searchPattern, searchOptions, this )
+        boolean isSearching = searchEngine.startSearch( candidates, searchPattern, searchOptions )
+        if( isSearching ) gui.displaySearchInProgressMessage()
     }
 
     public Gui getGui(){
@@ -153,28 +153,22 @@ class Jumper implements SearchResultsCollector {
     }
 
 
-    
     //////////////////////////////////////////////////////////////////
     // SearchResultsCollector functions //////////////////////////////
     //////////////////////////////////////////////////////////////////
 
-    public void addResults( SNodes newResults, boolean done ){
+    public void addResults( List<SNode> newResults, boolean done ){
         results.addAll( newResults )
-        SwingUtilities.invokeLater( new Runnable(){
-            public void run() {
-                gui.addResults( newResults, candidates.size(), ! done )
-                // selectDefaultResult()
-            }
-        })
+        gui.addResults( newResults, candidates.size(), ! done )
+    }
+
+    public void onSearchCompleted(){
+        gui.onSearchCompleted( candidates.size() )
     }
     
     public void clearResults(){
         results.clear()
-        SwingUtilities.invokeLater( new Runnable(){
-            public void run() {
-                gui.clearResults()
-            }
-        })
+        gui.clearResults()
     }
 
     
@@ -329,15 +323,7 @@ class Jumper implements SearchResultsCollector {
     // Private constructor. The unique instance is created by start()
     private Jumper(){
 
-        Thread.setDefaultUncaughtExceptionHandler(
-            new Thread.UncaughtExceptionHandler(){
-                @Override
-                public void uncaughtException( Thread t, Throwable e ){
-                    LogUtils.warn( "Jumper error: ${e}")
-                    e.printStackTrace()
-                }
-            }
-        )
+        LogUtils.init()
         
         initialNode = ScriptUtils.node()
         c = ScriptUtils.c()
@@ -347,7 +333,7 @@ class Jumper implements SearchResultsCollector {
 
         candidates = new SNodes()
         results = new SNodes()
-        searchEngine = new SearchEngine()
+        searchEngine = new SearchEngine( this )
     }
     
     // Initialize a new instance of Jumper and display the GUI.
@@ -404,7 +390,7 @@ class Jumper implements SearchResultsCollector {
             String json = generator.toJson( data )
             file.write( JsonOutput.prettyPrint( json ) )
         } catch( Exception e){
-            LogUtils.warn( "Jumper: unable to save the settings : $e")
+            LogUtils.warn( "Unable to save the settings : $e")
         }
     }
 
@@ -437,7 +423,7 @@ class Jumper implements SearchResultsCollector {
                 settings.winBounds.height = rect?.height ?: 0
             }
         } catch( Exception e){
-            LogUtils.warn( "Jumper: unable to load the settings : $e")
+            LogUtils.warn( "Unable to load the settings : $e")
         }
 
         historyIdx = history.size()

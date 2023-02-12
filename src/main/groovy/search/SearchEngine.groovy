@@ -1,107 +1,96 @@
 package lilive.jumper.search
 
-import java.util.concurrent.Callable
-import java.util.concurrent.ExecutionException
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Future
-import java.util.concurrent.Executors
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
-import lilive.jumper.Jumper
+import lilive.jumper.data.SNode
 import lilive.jumper.data.SNodes
-import org.freeplane.core.util.LogUtils
+import javax.swing.SwingWorker
+import java.util.List
 
 class SearchEngine {
 
-    public class FilterTask implements Callable< Void > {
+    static private int numMax = 200
 
-        private Filter filter
+    class Worker extends SwingWorker< SNodes, SNode > {
+    
         private SNodes candidates
-        private int start
-        private int end
-
-        public FilterTask( Filter filter, SNodes candidates, int start, int end ){
-            this.filter = filter.clone()
+        private Filter filter
+        private SearchResultsCollector collector
+        
+        public Worker(
+            SNodes candidates,
+            Filter filter,
+            SearchResultsCollector collector
+        ){
             this.candidates = candidates
-            this.start = start
-            this.end = end
+            this.filter = filter
+            this.collector = collector
         }
 
         @Override
-        public Void call(){
-            // print "task start ${start}"
-            // print filter
+        protected SNodes doInBackground(){
             SNodes results = new SNodes()
-            try{
-                results = filter.filter( candidates, start, end )
-            } catch( InterruptedException e ) {
-                onTaskInterrupted()
-            } catch( Exception e ){
-                LogUtils.warn( "Jumper FilterTask.call() error: ${e}")
-                throw e
-            } finally {
-                // print "task end ${start}"
-                onTaskCompleted( results )
+            int num = 0
+            for( candidate in candidates ){
+                if( filter.match( candidate ) ){
+                    results << candidate
+                    publish( candidate )
+                    num ++
+                    if( num == numMax ) return results
+                }
+                if( isCancelled() ) return new SNodes()
             }
+            return results
+        }
+
+        @Override
+        protected void process( List<SNode> nodes ) {
+            collector.addResults( nodes, false )
+        }
+        
+        @Override
+        protected void done() {
+            collector.onSearchCompleted()
         }
     }
 
-    private Thread searchThread
     private SearchResultsCollector collector
-    private int numResults
-    private int numResultsMax = 100
+    private Worker worker
 
-    public SearchEngine(){
-    }
-
-    public boolean isRunning(){
-        return searchThread?.isAlive()
-    }
-
-    public void startSearch(
-        SNodes candidates,
-        String searchPattern, SearchOptions searchOptions,
-        SearchResultsCollector collector
-    ){
+    public SearchEngine( SearchResultsCollector collector ){
         this.collector = collector
+    }
+    
+    public boolean startSearch(
+        SNodes candidates,
+        String searchPattern, SearchOptions searchOptions
+    ){
         
         if( isRunning() ) stopSearch()
-        if( ! searchPattern ) return
-        if( ! candidates ) return
+        if( ! searchPattern ) return false
+        if( ! candidates ) return false
         
         // Reset the search results for all nodes in the map
         candidates[0].sMap.each{ it.clearPreviousSearch() }
 
         // Create the filter
         Filter filter = new Filter( searchPattern, searchOptions )
+        if( ! filter ) return false
 
         // Run the search with this filter
-        searchThread = new Thread( new Runnable(){
-            public void run(){
-                SNodes results = new SNodes()
-                try{
-                    results = filter.filter( candidates )
-                } catch (InterruptedException e) {
-                    onTaskInterrupted()
-                } catch( Exception e ){
-                    LogUtils.warn( "Jumper Filter.filter() error: ${e}")
-                    throw e
-                } finally {
-                    onTaskCompleted( results )
-                }
-            }
-        }, "filter thread" )
+        worker = new Worker( candidates, filter, collector )
+        worker.execute()
         
-        searchThread.start()
+        return true
     }
 
     public void stopSearch(){
-        if( ! isRunning() ) return
-        searchThread.interrupt()
-        searchThread.join()
+        if( ! worker ) return
+        worker.cancel( false )
+        worker = null
     }
 
-    private void onTaskCompleted( SNodes results ){
-        collector.addResults( results, true )
+    private boolean isRunning(){
+        if( !worker ) return false
+        return worker.getState() != SwingWorker.StateValue.DONE
     }
+    
 }

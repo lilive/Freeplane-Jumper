@@ -3,9 +3,9 @@ package lilive.jumper.display.components
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 import javax.swing.AbstractListModel
-import javax.swing.SwingUtilities
 import lilive.jumper.data.SNode
 import lilive.jumper.data.SNodes
+import java.util.List
 
 /**
  * Carry the result list of matching nodes for the GUI JList.
@@ -32,7 +32,7 @@ class ResultsListModel extends AbstractListModel<SNode>{
         add( results )
     }
 
-    public void add( SNodes results ){
+    public void add( List<SNode> results ){
         if( ! results || results.size() == 0 ) return
         int prevSize = getSize()
         nodes.addAll( results )

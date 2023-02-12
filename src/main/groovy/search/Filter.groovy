@@ -7,8 +7,8 @@ import lilive.jumper.data.SNodes
 class Filter implements Cloneable {
 
     private Set<String> regexes
+    private Set< Pattern > patterns
     private SearchOptions options
-    static private int numMaxMatches = 30 
     
     /**
      * @param pattern The search string.
@@ -22,6 +22,9 @@ class Filter implements Cloneable {
     ){
         // Create regular expressions from the pattern
         regexes = makeRegexes( pattern, options )
+        // Create a jumper.search.Pattern for each regex
+        patterns = makePatterns( regexes )
+        
         // Save search options
         this.options = options.clone()
     }
@@ -29,28 +32,43 @@ class Filter implements Cloneable {
     public String toString(){
         return "Filter " + regexes.join( "," )
     }
+
+    public boolean asBoolean(){
+        return regexes
+    }
+    
+    public boolean match( SNode candidate ){
+        return candidate.match( patterns, options )
+    }
     
     /**
      * Return the candidates that match the filter.
      * @param candidates The nodes to filter
      */
-    public SNodes filter( SNodes candidates ) throws InterruptedException {
+    public SNodes filter( SNodes candidates ){
 
         // Return all the nodes if search pattern is empty
         if( ! regexes ) return []
-        Set< Pattern > patterns = makePatterns( regexes )
-        if( ! patterns ) return []
+        
+        // Get the candidates that match the regular expressions.
+        return  candidates.findAll{
+            it.match( patterns, options )
+        }
+    }
+
+    public SNodes filter( SNodes candidates, int start, int end ){
+
+        // Return all the nodes if search pattern is empty
+        if( ! regexes ) return []
         
         // Get the candidates that match the regular expressions.
         SNodes results = []
-        int num = 0
-        for( it in candidates ){
-            if( it.match( patterns, options ) ){
-                results << it
-                num ++
-                if( num >= numMaxMatches ) break
-            }
-            if( Thread.currentThread().isInterrupted() ) throw new InterruptedException()
+        
+        int i = start
+        while( i < end){
+            SNode node = candidates[ i ]
+            if( node.match( patterns, options ) ) results << node
+            i++
         }
         return results
     }
