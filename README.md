@@ -65,6 +65,19 @@ Jumper has got many options that control where it searches, how it searches, and
 
 - You can now use Jumper.
 
+## Compilation from the sources
+
+If you want to build the add-on installation file `jumper-vX.X.X.addon.mm` yourself, you have to build the library before to package the addon.
+
+- Install Freeplane (of course !)
+- Download the source
+- Install gradle
+- Open `build.gradle` with a text editor and modify the paths in `repositories.dirs[]` to point to your Freeplane installation
+- Get a command prompt at the root of the sources folder
+- `gradle build` will create the file lib/bookmarks.jar
+
+Now you can open `jumper.mm` with Freeplane and package the addon with [Tools > Developer Tools > Package add-on for publication](https://docs.freeplane.org/scripting/Add-ons_(Develop).html#publish). This will create the file `jumper-vX.X.X.addon.mm`. Open this file with Freeplane to install the add-on.
+
 ## TODO - Ideas
 
 *Legend:  
@@ -74,10 +87,12 @@ Jumper has got many options that control where it searches, how it searches, and
 
 ---
 
+`[1]` Use IDLE time to cache plain text of the nodes  
 `[1]` [Improve performances with very big maps](https://sourceforge.net/p/freeplane/discussion/758437/thread/e7b4594c02/?page=1&limit=25#d3aa)  
 `[1]` Add an option for the maximum results number  
 `[1]` [Compatibility with new Freeplane feature Jump In / Jump Out](https://github.com/lilive/Freeplane-Jumper/issues/11)  
 `[1]` [Improve truncation method](https://github.com/lilive/Freeplane-Jumper/issues/12): better use of space when displaying the results  
+`[1]` Do not modify the Freeplane locations history, except by adding the selected node in the search results (currently Jumper modify this history when the user browse the results list). This way, it will be always possible to jump back to the previous node with one `Freeplane > Navigate > Go backward` command.  
 `[1]` Update code comments  
 `[1]` Mouse: click a result to see him (like up/dwn arrows), double click to select it and close Jumper. [Ref](https://sourceforge.net/p/freeplane/discussion/758437/thread/8ea365816c/#238d/a26a). Add an option to activate this behavior (selected by default). Add a tooltip that explain this behavior.  
 `[2]` Allow to explore hierarchy, while browsing results, with the left and right keys  
@@ -99,19 +114,6 @@ Jumper has got many options that control where it searches, how it searches, and
 `[?]` Use a search library (ElasticSearch for example) to improve performances. This seems really interesting, but a lot of work.  
 `[?]` A new menu entry "Search similar nodes" that will call Jumper with the search field set to the text of the currently selected node  
 `[?]` A new menu entry "Resume last search" that will call Jumper with the previous search terms and that will select the last selected node in the results list  
-
-## Compilation from the sources
-
-If you want to build the add-on installation file `jumper-vX.X.X.addon.mm` yourself, you have to build the library before to package the addon.
-
-- Install Freeplane (of course !)
-- Download the source
-- Install gradle
-- Open `build.gradle` with a text editor and modify the paths in `repositories.dirs[]` to point to your Freeplane installation
-- Get a command prompt at the root of the sources folder
-- `gradle build` will create the file lib/bookmarks.jar
-
-Now you can open `jumper.mm` with Freeplane and package the addon with [Tools > Developer Tools > Package add-on for publication](https://freeplane.sourceforge.io/wiki/index.php/Add-ons_(Develop)). This will create the file `jumper-vX.X.X.addon.mm`. Open this file with Freeplane to install the add-on.
 
 ## Credits
 
