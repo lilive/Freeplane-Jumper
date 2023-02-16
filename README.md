@@ -71,39 +71,34 @@ Jumper has got many options that control where it searches, how it searches, and
 `[ ]` = To do  
 `[?]` = To do, but is it a good idea ?  
 `[n]` = (n is a number) To do, lower number means higher priority*  
-`[X]` = Done
 
 ---
 
 `[1]` [Improve performances with very big maps](https://sourceforge.net/p/freeplane/discussion/758437/thread/e7b4594c02/?page=1&limit=25#d3aa)  
-`[1]` Solve [font size issue](https://sourceforge.net/p/freeplane/discussion/758437/thread/e7b4594c02/?page=1&limit=25#b0c3)  
 `[1]` Add an option for the maximum results number  
+`[1]` [Compatibility with new Freeplane feature Jump In / Jump Out](#11)  
+`[1]` [Improve truncation method](#12): better use of space when displaying the results  
 `[1]` Update code comments  
-`[1]` Sélectionner un résultat, de préférence le noeud actif. Gérer cette sélection quand les résultats arriveront progressivement.  
+`[1]` Mouse: click a result to see him (like up/dwn arrows), double click to select it and close Jumper. [Ref](https://sourceforge.net/p/freeplane/discussion/758437/thread/8ea365816c/#238d/a26a). Add an option to activate this behavior (selected by default). Add a tooltip that explain this behavior.  
 `[2]` Allow to explore hierarchy, while browsing results, with the left and right keys  
+`[2]` [Option to ignore diacritics (accents)](#7)  
 `[3]` Option to switch to spotlight view when Jumper start  
 `[ ]` Warn when restrictives options are on (transversal with no clones, beginning of text)  
+`[ ]` Interactive tips. For example a warning when transversal search is checked, but keep only one clone is also checked  
 `[ ]` Option to search entire words only, or only at the beginning of the words  
 `[ ]` Quotes to find exact phrase when not using regular expressions  
-`[ ]` Interactive tips. For example a warning when transversal search is checked, but keep only one clone is also checked  
+`[ ]` A way to return to the node that was selected before Jumper start. This happens if the user close the search without selecting any result. But what if he want to reach some result, than go back afterward ? Possible solution: a jump history that store the node selected at the time Jumper is started. Display this history in the result list ?  
+`[?]` Search within a branch that starts at a given node ID. Maintain a list of previous/most used ID. Or a feature to select a bookmark from the Bookmarks add-on.  
+`[?]` [Modeless window dialog](https://sourceforge.net/p/freeplane/discussion/758437/thread/8ea365816c/#238d/a26a)  
+`[?]` Is [this](https://sourceforge.net/p/freeplane/discussion/758437/thread/e7b4594c02/?page=1&limit=25#b0c3) still an issue ?  
 `[?]` Option to search under the anchor link node ? Or provide an option to remember the currently selected node as root for the later searches ?  
 `[?]` Option to order results by level  
 `[?]` Option to not search before N characters are typed  
-`[?]` Don't buffer node content (The plain text for each node is buffered to speed up the search. Do we really need it?)  
+`[?]` [Tags](https://sourceforge.net/p/freeplane/discussion/758437/thread/8ea365816c/?page=1#1be2/844c/e758) facilities.  
 `[?]` Allow to search only in nodes with the same style than the currently selected node. Or provide a style selector.  
 `[?]` Use a search library (ElasticSearch for example) to improve performances. This seems really interesting, but a lot of work.  
 `[?]` A new menu entry "Search similar nodes" that will call Jumper with the search field set to the text of the currently selected node  
-`[?]` A new menu entry "Resume last search" that will call Jumper with the previous search terms and that will select the last selected node in the results list
-
----
-
-`[X]` Option to search in nodes hidden by Freeplane filter  
-`[X]` Give the focus to the help window when it opens.  
-`[X]` Option to not bring back the last search pattern after some time  
-`[X]` Do not use the root node for transversal match  
-`[X]` Do the search in another thread to improve GUI reactivity  
-`[X]` Option to center the map on the selected result as the results list is browsed with the arrow keys  
-`[X]` Option to set the search string to the last one when the window open. Select this whole text in the text field, to make it be replaced as soon as the user type someting new.  
+`[?]` A new menu entry "Resume last search" that will call Jumper with the previous search terms and that will select the last selected node in the results list  
 
 ## Compilation from the sources
 
