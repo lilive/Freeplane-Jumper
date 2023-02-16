@@ -76,12 +76,12 @@ Jumper has got many options that control where it searches, how it searches, and
 
 `[1]` [Improve performances with very big maps](https://sourceforge.net/p/freeplane/discussion/758437/thread/e7b4594c02/?page=1&limit=25#d3aa)  
 `[1]` Add an option for the maximum results number  
-`[1]` [Compatibility with new Freeplane feature Jump In / Jump Out](#11)  
-`[1]` [Improve truncation method](#12): better use of space when displaying the results  
+`[1]` [Compatibility with new Freeplane feature Jump In / Jump Out](https://github.com/lilive/Freeplane-Jumper/issues/11)  
+`[1]` [Improve truncation method](https://github.com/lilive/Freeplane-Jumper/issues/12): better use of space when displaying the results  
 `[1]` Update code comments  
 `[1]` Mouse: click a result to see him (like up/dwn arrows), double click to select it and close Jumper. [Ref](https://sourceforge.net/p/freeplane/discussion/758437/thread/8ea365816c/#238d/a26a). Add an option to activate this behavior (selected by default). Add a tooltip that explain this behavior.  
 `[2]` Allow to explore hierarchy, while browsing results, with the left and right keys  
-`[2]` [Option to ignore diacritics (accents)](#7)  
+`[2]` [Option to ignore diacritics (accents)](https://github.com/lilive/Freeplane-Jumper/issues/7)  
 `[3]` Option to switch to spotlight view when Jumper start  
 `[ ]` Warn when restrictives options are on (transversal with no clones, beginning of text)  
 `[ ]` Interactive tips. For example a warning when transversal search is checked, but keep only one clone is also checked  
