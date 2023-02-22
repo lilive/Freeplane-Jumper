@@ -88,13 +88,21 @@ Now you can open `jumper.mm` with Freeplane and package the addon with [Tools > 
 ---
 
 `[1]` Use IDLE time to cache plain text of the nodes  
-`[1]` [Improve performances with very big maps](https://sourceforge.net/p/freeplane/discussion/758437/thread/e7b4594c02/?page=1&limit=25#d3aa)  
+- Done at startup
+- Have to do it when user clear whole pattern
+`[1]` Select the first result  
+`[1]` Check if the root map is excluded from the search  
+`[1]` Keep GUI in RAM  
+`[1]` [Improve performances with very big maps](https://github.com/lilive/Freeplane-Jumper/issues/16)  
+- Multithreading
+- Cache plain text in RAM
+- Cache plain text on disk
 `[1]` Add an option for the maximum results number  
 `[1]` [Compatibility with new Freeplane feature Jump In / Jump Out](https://github.com/lilive/Freeplane-Jumper/issues/11)  
 `[1]` [Improve truncation method](https://github.com/lilive/Freeplane-Jumper/issues/12): better use of space when displaying the results  
 `[1]` Do not modify the Freeplane locations history, except by adding the selected node in the search results (currently Jumper modify this history when the user browse the results list). This way, it will be always possible to jump back to the previous node with one `Freeplane > Navigate > Go backward` command.  
 `[1]` Update code comments  
-`[1]` Mouse: click a result to see him (like up/dwn arrows), double click to select it and close Jumper. [Ref](https://sourceforge.net/p/freeplane/discussion/758437/thread/8ea365816c/#238d/a26a). Add an option to activate this behavior (selected by default). Add a tooltip that explain this behavior.  
+`[1]` Mouse: click a result to see him (like up/dwn arrows), double click to select it and close Jumper. [See #15](https://github.com/lilive/Freeplane-Jumper/issues/15). Add an option to activate this behavior (selected by default). Add a tooltip that explain this behavior.  
 `[2]` Allow to explore hierarchy, while browsing results, with the left and right keys  
 `[2]` [Option to ignore diacritics (accents)](https://github.com/lilive/Freeplane-Jumper/issues/7)  
 `[3]` Option to switch to spotlight view when Jumper start  
