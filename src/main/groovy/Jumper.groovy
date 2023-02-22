@@ -89,7 +89,7 @@ class Jumper implements SearchResultsCollector {
         gui.dispose()
         if( jumpToNode ) selectMapNode( jumpToNode )
         else selectMapNode( initialNode )
-        clear()
+        instance = null
     }
 
     public void setSearchPattern( String pattern ){
@@ -321,7 +321,10 @@ class Jumper implements SearchResultsCollector {
     //////////////////////////////////////////////////////////////////
 
     // Private constructor. The unique instance is created by start()
-    private Jumper(){
+    private Jumper(){}
+
+    // Initialize and display the GUI.
+    private void init(){
 
         LogUtils.init()
         
@@ -334,10 +337,6 @@ class Jumper implements SearchResultsCollector {
         candidates = new SNodes()
         results = new SNodes()
         searchEngine = new SearchEngine( this )
-    }
-    
-    // Initialize a new instance of Jumper and display the GUI.
-    private void init(){
 
         LoadedSettings settings = loadSettings()
 
@@ -353,11 +352,7 @@ class Jumper implements SearchResultsCollector {
 
         gui.show()
     }
-
-    private void clear(){
-        instance = null
-    }
-
+    
     // Save all options and state for the new Jumper.start()
     private void saveSettings(){
         
