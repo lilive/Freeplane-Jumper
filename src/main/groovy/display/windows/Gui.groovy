@@ -418,7 +418,9 @@ class Gui {
     }
 
     public void addResults( List<SNode> newResults, int numTotal, boolean inProgress ){
+        boolean select = resultsListModel.getSize() == 0
         resultsListModel.add( newResults )
+        if( select ) setSelectedResult( 0 )
         updateResultMessage( resultsListModel.getSize(), numTotal, inProgress )
     }
 
