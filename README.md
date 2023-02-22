@@ -90,7 +90,6 @@ Now you can open `jumper.mm` with Freeplane and package the addon with [Tools > 
 `[1]` Use IDLE time to cache plain text of the nodes  
 - Done at startup
 - Have to do it when user clear whole pattern
-`[1]` Select the first result  
 `[1]` Check if the root map is excluded from the search  
 `[1]` Keep GUI in RAM  
 `[1]` [Improve performances with very big maps](https://github.com/lilive/Freeplane-Jumper/issues/16)  
