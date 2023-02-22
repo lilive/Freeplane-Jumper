@@ -459,6 +459,7 @@ class Jumper implements SearchResultsCollector {
         }
         if( discardClones      ) removeClones( candidates )
         if( discardHiddenNodes ) removeHiddenNodes( candidates )
+        searchEngine.startCache( candidates, sMap.getAllNodes() )
     }
 
     /**
