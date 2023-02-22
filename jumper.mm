@@ -97,7 +97,7 @@
 <edge WIDTH="thin"/>
 <attribute_layout NAME_WIDTH="119.25 pt" VALUE_WIDTH="303.74999 pt"/>
 <attribute NAME="name" VALUE="jumper"/>
-<attribute NAME="version" VALUE="v1.0.3"/>
+<attribute NAME="version" VALUE="v1.0.4"/>
 <attribute NAME="author" VALUE="lilive"/>
 <attribute NAME="freeplaneVersionFrom" VALUE="1.10.6"/>
 <attribute NAME="freeplaneVersionTo" VALUE=""/>
@@ -213,7 +213,7 @@
 </node>
 <node TEXT="v1.0.4" ID="ID_688543953">
 <attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
-<node TEXT="- Remove the fix required by Groovy &lt; 4" ID="ID_1706331504">
+<node TEXT="New features:&#xa;- Search in progress indicator&#xa;- First results appear before the search end&#xa;Under the hood:&#xa;- Remove the fix required by Groovy &lt; 4&#xa;- Better code architecture" ID="ID_1706331504">
 <attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
 </node>
 </node>
@@ -453,6 +453,7 @@
     </p>
   </body>
 </html></richcontent>
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
 <node TEXT="run.groovy" ID="ID_1411088832">
 <attribute_layout NAME_WIDTH="193.49999 pt" VALUE_WIDTH="168.74999 pt"/>
 <attribute NAME="menuTitleKey" VALUE="addons.${name}.run"/>
