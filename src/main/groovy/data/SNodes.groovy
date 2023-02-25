@@ -1,7 +1,7 @@
 package lilive.jumper.data
 
 
-class SNodes extends ArrayList<SNode> {
+class SNodes extends ArrayList<SNode> implements Cloneable {
     SNodes(){
         super()
     }
@@ -10,5 +10,8 @@ class SNodes extends ArrayList<SNode> {
     }
     String toString(){
         return "SNodes[size:${size()}]"
+    }
+    SNodes clone(){
+        return new SNodes( this )
     }
 }
