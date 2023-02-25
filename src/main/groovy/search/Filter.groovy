@@ -109,9 +109,10 @@ class Filter implements Cloneable {
             if( ! options.useRegex) exp = java.util.regex.Pattern.quote( exp )
             if( options.fromStart ) exp = "^$exp"
             if( ! options.caseSensitive ) exp = "(?i)$exp"
-            try { Pattern test = new Pattern( exp, 0 ) }
-            catch ( PatternSyntaxException e){}
-            finally { regexes << exp }
+            try {
+                Pattern test = new Pattern( exp, 0 )
+                regexes << exp
+            } catch ( PatternSyntaxException e){}
         }
 
         return regexes
