@@ -6,35 +6,36 @@ import org.freeplane.api.Node
 class SMap extends SNodes {
 
     private SNode root
+    private int size = 0
     
-    SMap( Node root ){
+    public SMap( Node root ){
         super()
-        if( ! root ) throw new IllegalArgumentException("root is not defined")
+        if( ! root ) throw new IllegalArgumentException( "root is not defined" )
         this.root = addNode( root, null )
     }
 
-    SNode getRoot(){
+    public SNode getRoot(){
         return root
     }
     
-    SNodes getAllNodes(){
+    public SNodes getNodes(){
         return clone()
     }
     
-    SNodes getSiblingsNodes( SNode sNode ){
+    public SNodes getSiblingsNodes( SNode sNode ){
         if( ! sNode ) return []
         if( sNode.parent ) return sNode.parent.children
         else return [ sNode ]
     }
     
-    SNodes getDescendantsNodes( SNode sNode ){
+    public SNodes getDescendantsNodes( SNode sNode ){
         if( ! sNode ) return []
         SNodes sNodes = []
         appendNodeAndDescendants( sNode, sNodes )
         return sNodes
     }
     
-    SNodes getSiblingsAndDescendantsNodes( SNode sNode ){
+    public SNodes getSiblingsAndDescendantsNodes( SNode sNode ){
         if( ! sNode ) return []
         SNodes sNodes = []
         getSiblingsNodes( sNode ).each{ appendNodeAndDescendants( it, sNodes ) }
@@ -45,6 +46,7 @@ class SMap extends SNodes {
         SNode sNode = new SNode( node, parent )
         sNode.sMap = this
         this << sNode
+        size ++
         node.children.each{ addNode( it, sNode ) }
         return sNode
     }
