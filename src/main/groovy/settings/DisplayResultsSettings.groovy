@@ -11,6 +11,7 @@ class DisplayResultsSettings {
     boolean followSelected    = true
     boolean recallLastPattern = true
     int lastPatternDuration = 60
+    int numMaxResults = 10
     Color highlightColor                 = new Color( "#ffff99" )
     Color levelMarkColor                 = new Color( "#990000" )
     Color attributesMarkColor            = new Color( "#ff0066" )
@@ -92,6 +93,7 @@ class DisplayResultsSettings {
             "followSelected"                 : followSelected,
             "recallLastPattern"              : recallLastPattern,
             "lastPatternDuration"            : lastPatternDuration,
+            "numMaxResults"                  : numMaxResults,
             "coreFontSize"                   : coreFontSize,
             "detailsFontSize"                : detailsFontSize,
             "nodeDisplayLength"              : nodeDisplayLength,
