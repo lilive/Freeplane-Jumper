@@ -4,6 +4,7 @@ import java.awt.Rectangle
 import java.awt.Font
 import groovy.swing.SwingBuilder
 import lilive.jumper.display.components.Color
+import javax.swing.UIManager
 
 class DisplayResultsSettings {
     
@@ -42,7 +43,7 @@ class DisplayResultsSettings {
 
         if( fontsInitialized ) return
         
-        coreFont           = new SwingBuilder().label().getFont()
+        coreFont           = UIManager.getFont("Label.font")
         coreFontSize       = coreFont.getSize()
         detailsFontSize    = Math.round( coreFontSize * 0.85 )
         baseFontSize       = coreFontSize
