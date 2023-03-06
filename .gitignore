@@ -5,6 +5,7 @@ lib
 *.temp
 *.bak
 *.mp4
+*.psd
 emacs-edition-macros.el
 display-downloads.bat
 Big test map 2.mm
