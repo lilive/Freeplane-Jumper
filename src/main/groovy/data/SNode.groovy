@@ -177,27 +177,28 @@ class SNode {
      * You have to call clearPreviousSearch to clear these fields
      * to be able to call match() again.
      *
-     * @param regexes The patterns to look for
+     * @param patterns The patterns to look for
      * @param options The search options that define the search type
      * @return The result of the seach
      */
-    public boolean match( Set<Pattern> regexes, SearchOptions options ){
+    public boolean match( Set<Pattern> patterns, SearchOptions options ){
 
         if( ! isMatch.equals( null ) ) throw new Exception( "Don't search a same node twice. Call clearPreviousSearch() between searches." )
+        if( ! patterns ) throw new Exception( "Don't search with an empty Pattern Set." )
 
         init()
         highlightInvalidated = true
         
         if( options.transversal ){
-            fullSearch( regexes, options )
+            fullSearch( patterns, options )
             if( fullMatch.isMatchOne ){
-                stackSearch( regexes )
+                stackSearch( patterns )
                 isMatch = stackMatch.isMatch
             } else {
                 isMatch = false
             }
         } else {
-            fullSearch( regexes, options )
+            fullSearch( patterns, options )
             isMatch = fullMatch.isMatch
         }
 
@@ -208,7 +209,7 @@ class SNode {
      * Search the node core text against the patterns,
      * store the result in the field coreMatch.
      */
-    private void coreSearch( Set<Pattern> regexes ){
+    private void coreSearch( Set<Pattern> patterns ){
 
         if( coreMatch ) return
         
@@ -216,7 +217,7 @@ class SNode {
         coreMatch = new CoreMatch()
         
         // Search all patterns
-        regexes.each{
+        patterns.each{
             regex ->
             Matcher m = regex.match(text)
             if( m.find() && m.end() > m.start() ){
@@ -236,9 +237,9 @@ class SNode {
      * according to options,
      * store the result in the fields coreMatch and fullMatch.
      */
-    private void fullSearch( Set<Pattern> regexes, SearchOptions options ){
+    private void fullSearch( Set<Pattern> patterns, SearchOptions options ){
 
-        coreSearch( regexes )
+        coreSearch( patterns )
         
         boolean searchNames = ( options?.useAttributesName && names )
         boolean searchValues = ( options?.useAttributesValue && values )
@@ -252,7 +253,7 @@ class SNode {
         fullMatch.coreMatchers = coreMatch.matchers
         
         // Search all patterns
-        regexes.each{ regex ->
+        patterns.each{ regex ->
             
             boolean isMatch = false
 
@@ -314,19 +315,19 @@ class SNode {
      * Store the result in the field stackMatch.
      * You have to call fullSearch() before stackSearch().
      */
-    private void stackSearch( Set<Pattern> regexes ){
+    private void stackSearch( Set<Pattern> patterns ){
 
         if( stackMatch ) throw new Exception( "Do stackSearch() only once.")
         if( ! fullMatch ) throw new Exception( "Do fullSearch() before stackSearch().")
 
-        int numPatterns = regexes.size()
+        int numPatterns = patterns.size()
         stackMatch = new StackMatch()
         stackMatch.matches = fullMatch.matches.clone()
         stackMatch.isMatch = fullMatch.isMatch
 
         SNode node = this.parent
         while( node && node.parent ){
-            if( ! node.coreMatch ) node.coreSearch( regexes )
+            if( ! node.coreMatch ) node.coreSearch( patterns )
             if( ! stackMatch.isMatch ){
                 stackMatch.matches.addAll( node.coreMatch.matches )
                 stackMatch.isMatch = ( stackMatch.matches.size() == numPatterns )
