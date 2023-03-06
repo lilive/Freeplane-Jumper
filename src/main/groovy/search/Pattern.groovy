@@ -9,8 +9,8 @@ class Pattern {
     private int idx
 
     public Pattern( String regex, int idx ){
-        pattern = RegexPattern.compile( regex )
         this.idx = idx
+        pattern = RegexPattern.compile( regex )
     }
 
     public Matcher match( String str ){

@@ -18,6 +18,8 @@ import lilive.jumper.settings.DisplayResultsSettings
 import lilive.jumper.display.components.Color
 import lilive.jumper.display.windows.Gui
 import lilive.jumper.utils.LogUtils
+import javax.swing.SwingUtilities
+import org.freeplane.core.ui.components.UITools
 
 /**
  * The main class that control the application.
@@ -58,6 +60,9 @@ class Jumper implements SearchResultsCollector {
     private boolean discardClones = false
     private boolean discardHiddenNodes = true
 
+    // Settings loaded during initialization
+    LoadedSettings loadedSettings
+    
     // Used to select a node in the map as the user select one of the results:
     private Node mapSelectedNode // The node to select (and center) in the map
     private ArrayList<Boolean> ancestorsFolding // The folding state of its ancestors
@@ -84,7 +89,7 @@ class Jumper implements SearchResultsCollector {
 
     // Jump to the user selected node (if any) and close the GUI
     public void end(){
-        searchEngine.stopSearch()
+        searchEngine.turnOff()
         saveSettings()
         gui.dispose()
         if( jumpToNode ) selectMapNode( jumpToNode )
@@ -92,22 +97,9 @@ class Jumper implements SearchResultsCollector {
         instance = null
     }
 
-    public void setSearchPattern( String pattern ){
-        if( pattern.equals( searchPattern ) ) return
-        searchPattern = pattern
-        search()
-    }
-        
     // Filter the candidates to find the pattern
     public void search(){
-        searchEngine.stopSearch()
-        clearResults()
-        boolean isSearching = searchEngine.startSearch( candidates, searchPattern, searchOptions )
-        if( isSearching ) gui.displaySearchInProgressMessage()
-    }
-
-    public Gui getGui(){
-        return gui
+        searchEngine.startSearch()
     }
 
     // One step backward in patterns history. Update the GUI.
@@ -137,7 +129,6 @@ class Jumper implements SearchResultsCollector {
     public void selectMapNode( Node node ){
 
         if( mapSelectedNode && node == mapSelectedNode ) return
-
         // Restore folding state of the branch of the previously selected node  
         restoreFolding()
 
@@ -152,29 +143,41 @@ class Jumper implements SearchResultsCollector {
         mapSelectedNode = node
     }
 
-
     //////////////////////////////////////////////////////////////////
-    // SearchResultsCollector functions //////////////////////////////
+    // Accessors /////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////
 
-    public void addResults( List<SNode> newResults, boolean done ){
-        results.addAll( newResults )
-        gui.addResults( newResults, candidates.size(), ! done )
+    public Gui getGui(){
+        return gui
     }
 
-    public void onSearchCompleted(){
-        gui.onSearchCompleted( candidates.size() )
+    // Return the whole SMap
+    public SMap getSMap(){
+        return sMap
     }
     
-    public void clearResults(){
-        results.clear()
-        gui.clearResults()
+    // Return the nodes to search
+    public SNodes getCandidates(){
+        return candidates
+    }
+    
+    public String getSearchPattern(){
+        return searchPattern
+    }
+    
+    public void setSearchPattern( String pattern ){
+        if( pattern.equals( searchPattern ) ) return
+        searchPattern = pattern
+        search()
+    }
+    
+    public SearchOptions getSearchOptions(){
+        return searchOptions
     }
 
-    
-    
+
     //////////////////////////////////////////////////////////////////
-    // Options functions /////////////////////////////////////////////
+    // Search options accessors //////////////////////////////////////
     //////////////////////////////////////////////////////////////////
 
     // Define which nodes to search in
@@ -279,10 +282,6 @@ class Jumper implements SearchResultsCollector {
         }
     }
 
-    public SearchOptions getSearchOptions(){
-        return searchOptions
-    }
-
     // Search only once in clones.
     // (not such a good choice  with transversal search)
     public void setDiscardClones( boolean value ){
@@ -317,6 +316,26 @@ class Jumper implements SearchResultsCollector {
 
     
     //////////////////////////////////////////////////////////////////
+    // SearchResultsCollector functions //////////////////////////////
+    //////////////////////////////////////////////////////////////////
+
+    public void addResults( List<SNode> newResults, boolean unfiltered, boolean done ){
+        results.addAll( newResults )
+        gui.addResults( newResults, candidates.size(), unfiltered, ! done )
+    }
+
+    public void onSearchCompleted( boolean unfiltered, boolean maxReached ){
+        gui.onSearchCompleted( candidates.size(), unfiltered, maxReached )
+    }
+    
+    public void onSearchStarted( boolean unfiltered ){
+        results.clear()
+        gui.clearResults()
+        if( ! unfiltered ) gui.displaySearchInProgressMessage()
+    }
+
+    
+    //////////////////////////////////////////////////////////////////
     // Private functions /////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////
 
@@ -328,6 +347,17 @@ class Jumper implements SearchResultsCollector {
 
         LogUtils.init()
         
+        Thread.setDefaultUncaughtExceptionHandler(
+            new Thread.UncaughtExceptionHandler(){
+                @Override
+                public void uncaughtException( Thread t, Throwable e ){
+                    LogUtils.warn( "Error: ${e}")
+                    UITools.informationMessage( "Sorry ! Jumper internal error.")
+                    end()
+                }
+            }
+        )
+
         initialNode = ScriptUtils.node()
         c = ScriptUtils.c()
 
@@ -336,20 +366,25 @@ class Jumper implements SearchResultsCollector {
 
         candidates = new SNodes()
         results = new SNodes()
-        searchEngine = new SearchEngine( this )
+        searchEngine = new SearchEngine()
 
-        LoadedSettings settings = loadSettings()
+        loadedSettings = loadSettings()
 
-        gui = new Gui( settings )
+        gui = new Gui( loadedSettings, { onGUIReady() } )
         updateCandidates()
+        searchEngine.turnOn( this )
+    }
+
+    private void onGUIReady(){
+
         if( gui.drs.recallLastPattern ){
             recallLastPattern(
-                settings.currentPattern,
-                settings.saveTime,
+                loadedSettings.currentPattern,
+                loadedSettings.saveTime,
                 gui.drs.lastPatternDuration
             )
         }
-
+        
         gui.show()
     }
     
@@ -440,7 +475,7 @@ class Jumper implements SearchResultsCollector {
 
         switch( candidatesType ){
             case ALL_NODES:
-                candidates = sMap.getAllNodes()
+                candidates = sMap.nodes
                 break
             case SIBLINGS:
                 candidates = sMap.getSiblingsNodes( initialSNode )
@@ -454,8 +489,30 @@ class Jumper implements SearchResultsCollector {
         }
         if( discardClones      ) removeClones( candidates )
         if( discardHiddenNodes ) removeHiddenNodes( candidates )
-        searchEngine.startCache( candidates, sMap.getAllNodes() )
     }
+
+    /**
+     * Return a clone of the candidates list, possibly shortened to 
+     * fit the maximal number of search result.
+     * If the initialSNode is a candidate, it will be the first
+     * element of the returned list.
+     */
+    private SNodes getTruncatedCandidates(){
+        SNodes sNodes = new SNodes()
+        if( candidates.size() <= SearchEngine.numResultsMax ){
+            sNodes = candidates.clone()
+        } else {
+            sNodes = candidates[ 0..( SearchEngine.numResultsMax ) ]
+            if(
+                initialSNode in candidates
+                && !( initialSNode in sNodes )
+            ){
+                sNodes = sNodes[0..-2].plus( 0, initialSNode )
+            }
+        }
+        return sNodes
+    }
+
 
     /**
      * Keep only one clone for each node.
@@ -509,22 +566,25 @@ class Jumper implements SearchResultsCollector {
      * @param patternTime The time in seconds when Jumper was closed.
      * @param patternDuration Do not touch the text field if more than this number
      *        of seconds has past since Jumper was closed.
+     * @return False if the last pattern was not recalled for some reason,
+     *         true otherwise.    
      */
-    private void recallLastPattern(
+    private boolean recallLastPattern(
         String pattern,
         Integer patternTime,
         int patternDuration
     ){
-        if( ! pattern ) return
+        if( ! pattern ) return false
         if(
             patternTime != null
             && patternDuration != 0
             && System.currentTimeMillis() / 1000 > patternTime + patternDuration
         ){
-            return
+            return false
         }
         if( history && history.last() == pattern ) selectPreviousPattern()
         else gui.setPatternText( pattern )
+        return true
     }
 
     // Restore folding state of the branch of selected node in the view,

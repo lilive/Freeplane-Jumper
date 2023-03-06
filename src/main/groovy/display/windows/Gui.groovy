@@ -54,6 +54,8 @@ import lilive.jumper.display.components.ResultsListModel
 import lilive.jumper.display.components.CandidatesOption
 import lilive.jumper.display.components.SNodeCellRenderer
 import java.util.List
+import javax.swing.SwingUtilities
+import org.freeplane.plugin.script.proxy.ScriptUtils
 
 class Gui {
 
@@ -136,7 +138,7 @@ class Gui {
     int historyPreviousKey = KeyEvent.VK_UP
     int historyNextKey = KeyEvent.VK_DOWN
 
-    public Gui( LoadedSettings settings ){
+    public Gui( LoadedSettings settings, Closure onGUIReady ){
 
         // long startTime = System.currentTimeMillis()
         
@@ -155,6 +157,12 @@ class Gui {
         setLocation( UITools.currentFrame, settings.winBounds )
 
         if( ! settings.showOptions ) toggleOptionsDisplay()
+
+        SwingUtilities.invokeLater( new Runnable() {
+            public void run() {
+                onGUIReady();
+            }
+        });
     }
 
     public Map getSaveMap(){
@@ -238,8 +246,12 @@ class Gui {
                     border: emptyBorder( 8, 0, 0, 0 ),
                     constraints: gbc( gridx:0, gridy:y++, weighty:0, fill:GBC.HORIZONTAL )
                 ){
+                    iconPath = ScriptUtils.c()
+                        .getUserDirectory()
+                        .toPath().resolve( 'resources/images/jumper-search-in-progress.gif' )
+                        .toString()
                     resultLblIcon = label(
-                        icon: new ImageIcon("C:/Users/devine/AppData/Roaming/Freeplane/1.9.x/resources/images/wait2.gif", "searching" ),
+                        icon: new ImageIcon( iconPath, "searching" ),
                         visible: false
                     )
                     hstrut()
@@ -417,29 +429,49 @@ class Gui {
         return patternTF.text
     }
 
-    public void addResults( List<SNode> newResults, int numTotal, boolean inProgress ){
+    public void displayNodes( List<SNode> sNodes ){
+        resultsListModel.clear()
+        resultsListModel.add( sNodes )
+        setSelectedResult( 0 )
+        displayInitialMessage()
+    }
+
+    public void addResults( List<SNode> newResults, int numTotal, boolean unfiltered, boolean inProgress ){
         boolean select = resultsListModel.getSize() == 0
         resultsListModel.add( newResults )
         if( select ) setSelectedResult( 0 )
-        updateResultMessage( resultsListModel.getSize(), numTotal, inProgress )
+        if( unfiltered ) displayUnfilteredMessage( resultsListModel.getSize(), numTotal, resultsListModel.getSize() != numTotal )
+        else displayResultMessage( resultsListModel.getSize(), numTotal, inProgress )
     }
 
-    public void onSearchCompleted( int numTotal ){
-        updateResultMessage( resultsListModel.getSize(), numTotal, false )
+    public void onSearchCompleted( int numTotal, boolean unfiltered, boolean maxReached ){
+        if( unfiltered ) displayUnfilteredMessage( resultsListModel.getSize(), numTotal, maxReached )
+        else displayResultMessage( resultsListModel.getSize(), numTotal, false, maxReached )
     }
 
     public void clearResults(){
         resultsListModel.clear()
         clearResultMessage()
     }
-    
+
     private void displaySearchInProgressMessage(){
         if( ! resultLbl ) return
-        resultLbl.text ="<html>Search in progress...<html>"
+        resultLbl.text ="Search in progress..."
         resultLblIcon.visible = true
     }
     
-    private void updateResultMessage( int numDisplayed, int numTotal, boolean inProgress ){
+    private void displayUnfilteredMessage( int numDisplayed, int numTotal, boolean truncated ){
+        String text = "<html>"
+        if( truncated ){
+            text += "${numDisplayed} node${numDisplayed!=1 ? 's':''} displayed over ${numTotal} node${numTotal!=1 ? 's':''}. "
+        }
+        text += "<b>Type to find nodes...</b>"
+        text += "</html>"
+        resultLbl.text = text
+        resultLblIcon.visible = false
+    }
+
+    private void displayResultMessage( int numDisplayed, int numTotal, boolean inProgress, boolean maxReached = false ){
         if( ! resultLbl ) return
         String text = "<html><b>${numDisplayed}</b> node${numDisplayed!=1 ? 's':''} found amoung <b>${numTotal}</b> node${numTotal!=1 ? 's':''}."
         if( inProgress ){
@@ -447,6 +479,7 @@ class Gui {
             resultLblIcon.visible = true
         } else {
             resultLblIcon.visible = false
+            if( maxReached ) text += " It may be more matches than this."
         }
         text += "<html>"
         resultLbl.text = text
