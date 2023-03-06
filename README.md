@@ -87,15 +87,20 @@ Now you can open `jumper.mm` with Freeplane and package the addon with [Tools > 
 
 ---
 
-`[1]` Use IDLE time to cache plain text of the nodes  
-- Done at startup
-- Have to do it when user clear whole pattern
-`[1]` Check if the root map is excluded from the search  
+`[1]` Toujours besoin de turn on the engine ?  
+`[1]` Check if history still works  
+`[1]` Check cache process when options change  
+`[1]` Ensure threads consistency. Are they problems between main thread and swing thread ?  
+`[1]` fix: Search in descendants do not works when multiples nodes are selected  
 `[1]` Keep GUI in RAM  
-`[1]` [Improve performances with very big maps](https://github.com/lilive/Freeplane-Jumper/issues/16)  
+`[1]` [Improve performances](https://github.com/lilive/Freeplane-Jumper/issues/16). There are problems with very big maps. Ideas:  
+- Read about groovy optimization
+- Replace some groovy classes with java classes ?
+- Use fixed size array instead of ArrayList for nodes ?
 - Multithreading
 - Cache plain text in RAM
 - Cache plain text on disk
+
 `[1]` Add an option for the maximum results number  
 `[1]` [Compatibility with new Freeplane feature Jump In / Jump Out](https://github.com/lilive/Freeplane-Jumper/issues/11)  
 `[1]` [Improve truncation method](https://github.com/lilive/Freeplane-Jumper/issues/12): better use of space when displaying the results  
