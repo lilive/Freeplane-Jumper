@@ -6,7 +6,6 @@ import lilive.jumper.data.SNodes
 
 class Filter implements Cloneable {
 
-    private Set<String> regexes
     private Set< Pattern > patterns
     private SearchOptions options
     
@@ -21,7 +20,7 @@ class Filter implements Cloneable {
         SearchOptions options
     ){
         // Create regular expressions from the pattern
-        regexes = makeRegexes( pattern, options )
+        Set<String> regexes = makeRegexes( pattern, options )
         // Create a jumper.search.Pattern for each regex
         patterns = makePatterns( regexes )
         
@@ -30,15 +29,16 @@ class Filter implements Cloneable {
     }
 
     public String toString(){
-        return "Filter " + regexes.join( "," )
+        return "Filter " + patters.collect{ it.toString() }.join( "," )
     }
 
     public boolean asBoolean(){
-        return regexes
+        return patterns
     }
     
     public boolean match( SNode candidate ){
-        return candidate.match( patterns, options )
+        if( patterns ) return candidate.match( patterns, options )
+        else return true
     }
     
     /**
@@ -48,7 +48,7 @@ class Filter implements Cloneable {
     public SNodes filter( SNodes candidates ){
 
         // Return all the nodes if search pattern is empty
-        if( ! regexes ) return []
+        if( ! patterns ) return candidates
         
         // Get the candidates that match the regular expressions.
         return  candidates.findAll{
@@ -59,7 +59,7 @@ class Filter implements Cloneable {
     public SNodes filter( SNodes candidates, int start, int end ){
 
         // Return all the nodes if search pattern is empty
-        if( ! regexes ) return []
+        if( ! patterns ) return candidates[ start..(end-1) ]
         
         // Get the candidates that match the regular expressions.
         SNodes results = []
@@ -80,7 +80,8 @@ class Filter implements Cloneable {
      *                returned list will contains only one element:
      *                the whole pattern.
      * @return The pattern splitted by whitespaces or a single element Set,
-     *         according to options.
+     *         according to options. Return an empty list id pattern is null
+     *         or empty.
      */
     private Set<String> splitPattern( String pattern, SearchOptions options ){
         
@@ -98,7 +99,18 @@ class Filter implements Cloneable {
         }
     }
 
-    // Create the regular expressions for the pattern, according to options
+    /**
+     * Create the regular expressions strings for the pattern,
+     * according to options.
+     *
+     * @param pattern The search string.
+     * @param options The search options that determine how to build the
+     *                regexes from the pattern.
+     * @return The strings for the regexes, that you may use to build
+     *         java.util.regex.Pattern (and so jumper.search.Pattern ).
+     *         Return an empty set if no regex can be build from the
+     *         parameters.
+     */
     private Set<String> makeRegexes( String pattern, SearchOptions options ){
 
         Set<String> units = splitPattern( pattern, options )
@@ -117,7 +129,11 @@ class Filter implements Cloneable {
 
         return regexes
     }
-    
+
+    /**
+     * Create a Pattern Set from regexes strings.
+     * Return an empty set if regexes is empty. 
+     */
     private Set< Pattern > makePatterns( Set< String > regexes ){
         int i = 0
         return regexes.collect{ new Pattern( it, i++ ) }
