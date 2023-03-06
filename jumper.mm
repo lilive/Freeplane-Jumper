@@ -578,9 +578,18 @@
   </body>
 </html></richcontent>
 <attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
-<node TEXT="jumper.png" ID="ID_1206323572"/>
-<node TEXT="jumper-screenshot-1.png" ID="ID_624984387"/>
-<node TEXT="jumper-icon.svg" ID="ID_1635251901"/>
+<node TEXT="jumper.png" ID="ID_1206323572">
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+</node>
+<node TEXT="jumper-screenshot-1.png" ID="ID_624984387">
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+</node>
+<node TEXT="jumper-icon.svg" ID="ID_1635251901">
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+</node>
+<node TEXT="jumper-search-in-progress.gif" ID="ID_1923160426">
+<attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
+</node>
 </node>
 </node>
 </map>
