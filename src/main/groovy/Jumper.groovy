@@ -122,7 +122,7 @@ class Jumper implements SearchResultsCollector {
         if( ! results ) return
         int selectIdx = results.findIndexOf{ it == initialSNode }
         if( selectIdx < 0 ) selectIdx = 0
-        gui.setSelectedResult( selectIdx )
+        gui.setSelectedResult( selectIdx, true )
     }
 
     // Select a node in the Freeplane map, and center the view around it.
@@ -319,6 +319,12 @@ class Jumper implements SearchResultsCollector {
     // SearchResultsCollector functions //////////////////////////////
     //////////////////////////////////////////////////////////////////
 
+    public void onSearchStarted( boolean unfiltered ){
+        results.clear()
+        gui.clearResults()
+        if( ! unfiltered ) gui.displaySearchInProgressMessage()
+    }
+
     public void addResults( List<SNode> newResults, boolean unfiltered, boolean done ){
         results.addAll( newResults )
         gui.addResults( newResults, candidates.size(), unfiltered, ! done )
@@ -326,14 +332,9 @@ class Jumper implements SearchResultsCollector {
 
     public void onSearchCompleted( boolean unfiltered, boolean maxReached ){
         gui.onSearchCompleted( candidates.size(), unfiltered, maxReached )
+        selectDefaultResult()
     }
     
-    public void onSearchStarted( boolean unfiltered ){
-        results.clear()
-        gui.clearResults()
-        if( ! unfiltered ) gui.displaySearchInProgressMessage()
-    }
-
     
     //////////////////////////////////////////////////////////////////
     // Private functions /////////////////////////////////////////////

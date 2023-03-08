@@ -76,6 +76,7 @@ class Gui {
     int showNodesLevelCBMnemonic    = KeyEvent.VK_L
     int followSelectedCBMnemonic    = KeyEvent.VK_F
     int recallLastPatternCBMnemonic = KeyEvent.VK_P
+    boolean hasUserSelectResult
 
     // Container for all search options
     private JPanel searchOptionsPanel
@@ -437,9 +438,7 @@ class Gui {
     }
 
     public void addResults( List<SNode> newResults, int numTotal, boolean unfiltered, boolean inProgress ){
-        boolean select = resultsListModel.getSize() == 0
         resultsListModel.add( newResults )
-        if( select ) setSelectedResult( 0 )
         if( unfiltered ) displayUnfilteredMessage( resultsListModel.getSize(), numTotal, resultsListModel.getSize() != numTotal )
         else displayResultMessage( resultsListModel.getSize(), numTotal, inProgress )
     }
@@ -450,6 +449,7 @@ class Gui {
     }
 
     public void clearResults(){
+        hasUserSelectResult = false
         resultsListModel.clear()
         clearResultMessage()
     }
@@ -495,12 +495,14 @@ class Gui {
      * Select a node in the results list.
      * @param idx The index of the list entry to select.
      */
-    public void setSelectedResult( int idx ){
+    public void setSelectedResult( int idx, boolean ignoreIfUserSelection = false ){
+        if( hasUserSelectResult && ignoreIfUserSelection ) return
         if( resultsListModel.getSize() == 0 ) return
         if( idx < 0 ) idx = 0
         if( idx >= resultsListModel.getSize() ) idx = resultsListModel.getSize() - 1
         resultsJList.setSelectedIndex( idx )
         resultsJList.ensureIndexIsVisible( idx )
+        hasUserSelectResult = true
         if( drs.followSelected && patternTF.text ){
             Node node = resultsJList.selectedValue.node
             Jumper.get().selectMapNode( node )
