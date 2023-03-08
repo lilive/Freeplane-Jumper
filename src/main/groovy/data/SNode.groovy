@@ -489,11 +489,10 @@ class SNode {
         Jumper J = Jumper.get()
         if( textHighlight ){
             coreDisplay = getHighlightedText( text, textHighlight, J.gui.drs.nodeDisplayLength, true )
-            coreDisplay = "<html><nobr>${getAncestorsDisplayText()}$coreDisplay</nobr></html>"
         } else {
             coreDisplay = getTruncatedText( text, J.gui.drs.nodeDisplayLength, J.gui.drs.showNodesLevel )
-            coreDisplay = "<html><nobr>$coreDisplay</nobr></html>"
         }
+        coreDisplay = "<html><nobr>${getAncestorsDisplayText()}$coreDisplay</nobr></html>"
         coreDisplayInvalidated = false
     }
 
