@@ -378,13 +378,16 @@ class Jumper implements SearchResultsCollector {
 
     private void onGUIReady(){
 
+        boolean showUnfilteredList = true
         if( gui.drs.recallLastPattern ){
-            recallLastPattern(
+            showUnfilteredList = ! recallLastPattern(
                 loadedSettings.currentPattern,
                 loadedSettings.saveTime,
                 gui.drs.lastPatternDuration
             )
         }
+
+        if( showUnfilteredList ) search()
         
         gui.show()
     }
@@ -563,7 +566,9 @@ class Jumper implements SearchResultsCollector {
 
     /**
      * Fill the pattern text field with its value when Jumper was closed.
-     * @param pattern The text that was in the text field when Jumper was closed.
+     * Do nothing if too much time passed since Jumper was closed.
+     *
+     * @param lastPattern The text that was in the text field when Jumper was closed.
      * @param patternTime The time in seconds when Jumper was closed.
      * @param patternDuration Do not touch the text field if more than this number
      *        of seconds has past since Jumper was closed.
@@ -571,11 +576,11 @@ class Jumper implements SearchResultsCollector {
      *         true otherwise.    
      */
     private boolean recallLastPattern(
-        String pattern,
+        String lastPattern,
         Integer patternTime,
         int patternDuration
     ){
-        if( ! pattern ) return false
+        if( ! lastPattern ) return false
         if(
             patternTime != null
             && patternDuration != 0
@@ -583,8 +588,8 @@ class Jumper implements SearchResultsCollector {
         ){
             return false
         }
-        if( history && history.last() == pattern ) selectPreviousPattern()
-        else gui.setPatternText( pattern )
+        if( history && history.last() == lastPattern ) selectPreviousPattern()
+        else gui.setPatternText( lastPattern )
         return true
     }
 

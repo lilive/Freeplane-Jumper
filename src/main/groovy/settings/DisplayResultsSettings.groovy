@@ -2,7 +2,6 @@ package lilive.jumper.settings
 
 import java.awt.Rectangle
 import java.awt.Font
-import groovy.swing.SwingBuilder
 import lilive.jumper.display.components.Color
 import javax.swing.UIManager
 
