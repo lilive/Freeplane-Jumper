@@ -141,26 +141,25 @@ class Gui {
 
     public Gui( LoadedSettings settings, Closure onGUIReady ){
 
-        // long startTime = System.currentTimeMillis()
-        
-        initCandidatesOptions()
-        if( settings.drs ) drs = settings.drs
-        drs.initFonts()
-        build()
-        addKeyListeners( win, patternTF )
-        addEditPatternListeners( patternTF )
-        addMouseListeners( resultsJList  )
-        addWindowCloseListener( win )
-        
-        win.pack()
-        fixComponentWidth( scrollPane )
-        setMinimumSizeToCurrentSize()
-        setLocation( UITools.currentFrame, settings.winBounds )
-
-        if( ! settings.showOptions ) toggleOptionsDisplay()
-
         SwingUtilities.invokeLater( new Runnable() {
             public void run() {
+                
+                initCandidatesOptions()
+                if( settings.drs ) drs = settings.drs
+                drs.initFonts()
+                build()
+                addKeyListeners( win, patternTF )
+                addEditPatternListeners( patternTF )
+                addMouseListeners( resultsJList  )
+                addWindowCloseListener( win )
+                
+                win.pack()
+                fixComponentWidth( scrollPane )
+                setMinimumSizeToCurrentSize()
+                setLocation( UITools.currentFrame, settings.winBounds )
+
+                if( ! settings.showOptions ) toggleOptionsDisplay()
+
                 onGUIReady();
             }
         });

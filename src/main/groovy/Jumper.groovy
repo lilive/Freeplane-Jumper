@@ -371,9 +371,9 @@ class Jumper implements SearchResultsCollector {
 
         loadedSettings = loadSettings()
 
-        gui = new Gui( loadedSettings, { onGUIReady() } )
         updateCandidates()
         searchEngine.turnOn( this )
+        gui = new Gui( loadedSettings, { onGUIReady() } )
     }
 
     private void onGUIReady(){
