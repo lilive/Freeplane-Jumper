@@ -87,10 +87,11 @@ Now you can open `jumper.mm` with Freeplane and package the addon with [Tools > 
 
 ---
 
-`[1]` Toujours besoin de turn on the engine ?  
-`[1]` Check if history still works  
+`[1]` Select current node in results (for search continuation)  
+`[1]` Check search gif installation  
 `[1]` Check cache process when options change  
 `[1]` Ensure threads consistency. Are they problems between main thread and swing thread ?  
+I use `new SwingBuilder().dialog` to create the GUI, but I read [here](https://uberconf.com/blog/andres_almiray/2009/11/building_rich_swing_applications_with_groovy__part_i) that this not do the work in the EDT. I may use [`new SwingBuilder().edt`](new SwingBuilder().edt) instead.  
 `[1]` fix: Search in descendants do not works when multiples nodes are selected  
 `[1]` Keep GUI in RAM  
 `[1]` [Improve performances](https://github.com/lilive/Freeplane-Jumper/issues/16). There are problems with very big maps. Ideas:  
