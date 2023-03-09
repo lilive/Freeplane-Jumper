@@ -170,7 +170,7 @@ class SNode {
     }
     
     /**
-     * Search if this node match
+     * Search if this node match.
      * 
      * After this, the details about the search are stored in
      * isMatch, coreMatch, fullMatch, stackMatch.
@@ -310,8 +310,8 @@ class SNode {
 
     /**
      * Search the ancestors nodes core text against the patterns.
-     * If all the patterns are found amoung the ancestors core text and the
-     * fullSearch() of this node, the stackSearch is successful.
+     * If all the patterns are found amoung the ancestors core text
+     * and the fullSearch() of this node, the stackSearch is successful.
      * Store the result in the field stackMatch.
      * You have to call fullSearch() before stackSearch().
      */
@@ -380,12 +380,15 @@ class SNode {
     
     /**
      * Create an Highlight from some matchers.
-     * @param matchers The Matchers that match the string to be highlighted
-     * @precondition matchers is not null
-     * @precondition The matchers are in their 1st position,
-     *               meaning that their find() method has been called only once,
-     *               and have returned true.
-     * @return The Highlight, or null if no Highlight can be built.
+     *
+     * @param matchers The Matchers that match the string to be
+     *                 highlighted
+     * @precondition   Matchers is not null
+     * @precondition   The matchers are in their 1st position,
+     *                 meaning that their find() method has been called
+     *                 only once, and have returned true.
+     * @return         The Highlight, or null if no Highlight can be
+     *                 built.
      */
     private Highlight buildHightlight( ArrayList<Matcher> matchers ){
         
@@ -406,9 +409,13 @@ class SNode {
 
     /**
      * Create a Highlight for each Matchers list.
-     * Build the Highlights by calling buildHightlight() for each sublist.
-     * @precondition Each sublist fulfill the buildHightlight() method preconditions.
-     * @return The list of Highlights. Some of them can be null. Return null if all of them are null.
+     * Build the Highlights by calling buildHightlight() for each
+     * sublist.
+     *
+     * @precondition Each sublist fulfill the buildHightlight() 
+     *               method preconditions.
+     * @return       The list of Highlights. Some of them can be null.
+     *               Return null if all of them are null.
      */
     private ArrayList<Highlight> buildHightlights( ArrayList<ArrayList<Matcher>> matchers ){
 
@@ -424,15 +431,22 @@ class SNode {
     }
     
     /**
-     * Check if a Highlight can be applied to a text, and invalidate the displayed texts accordingly.
-     * If the Highlight is null and the previous applied one is not, then invalidate the displayed texts.
-     * If the Highlight can be appiled, and if it is different from the previous one, then invalidate the displayed texts.
-     * @param prev The Highlight previously applied to the text. Can be null.
-     * @param text The text to highlight
-     * @param next The Highlight to check. Can be null.
-     * @param invalidate The function to call to invalidate the displayed text.
-     * @return Allways return the next paramater.
-     * @exception Throw an exception if the Highlight is not appropriate for this text.
+     * Check if a Highlight can be applied to a text, and invalidate
+     * the displayed texts accordingly.
+     * If the Highlight is null and the previous applied one is not,
+     * then invalidate the displayed texts.
+     * If the Highlight can be appiled, and if it is different from 
+     * the previous one, then invalidate the displayed texts.
+     *
+     * @param prev       The Highlight previously applied to the text.
+     *                   Can be null.
+     * @param text       The text to highlight
+     * @param next       The Highlight to check. Can be null.
+     * @param invalidate The function to call to invalidate the
+     *                   displayed text.
+     * @return           Allways return the next paramater.
+     * @exception        Throw an exception if the Highlight is not
+     *                   appropriate for this text.
      */
     private Highlight checkHighlight( Highlight prev, String text, Highlight next, Closure invalidate ){
 
@@ -449,17 +463,22 @@ class SNode {
     }
 
     /**
-     * Check if a list of Highlights can be applied to a list of texts, and invalidate the displayed texts accordingly.
+     * Check if a list of Highlights can be applied to a list of texts,
+     * and invalidate the displayed texts accordingly.
      * Basically, call checkHighlight() for each triplet.
-     * @param prevs The list of Highlights previously applied to the list of text. Can be null.
-     * @param texts The texts to highlight
-     * @param nexts The list of Highlights to check. Can be null.
-     * @param invalidate The function to call to invalidate the displayed texts.
-     * @precondition Each list is either null or non empty.
-     * @precondition Each non empty list has the same size.
-     * @precondition Texts is not null if prevs or nexts are not.
-     * @return Allways return the nexts parameter
-     * @exception Throw an IllegalArgumentException if a Highlight is not appropriate for a text.
+     *
+     * @param prevs      The list of Highlights previously applied to
+     *                   the list of text. Can be null.
+     * @param texts      The texts to highlight
+     * @param nexts      The list of Highlights to check. Can be null.
+     * @param invalidate The function to call to invalidate the 
+     *                   displayed texts.
+     * @precondition     Each list is either null or non empty.
+     * @precondition     Each non empty list has the same size.
+     * @precondition     Texts is not null if prevs or nexts are not.
+     * @return           Allways return the nexts parameter
+     * @exception        Throw an IllegalArgumentException if a
+     *                   Highlight is not appropriate for a text.
      */
     private ArrayList<Highlight> checkHighlights(
         ArrayList<Highlight> prevs,
@@ -606,8 +625,8 @@ class SNode {
     }
 
     /**
-     * Return the text, HTML escaped,
-     * and truncated at maxLength with an ellipsis at the end if necessary.
+     * Return the text, HTML escaped, and truncated at maxLength with
+     * an ellipsis at the end if necessary.
      */
     private String getTruncatedText( String text, int maxLength, boolean addLevel = false ){
         if( ! text ) return ""

@@ -80,7 +80,10 @@ class Jumper implements SearchResultsCollector {
     // Main public functions /////////////////////////////////////////
     //////////////////////////////////////////////////////////////////
 
-    // Start Jumper. Display the GUI. Nothing else to do to start Jumper.
+    /**
+     * Start Jumper. Display the GUI. Nothing else to do to start Jumper.
+     * Thread: FST (see CODE_OVERVIEW.md)
+     */
     public static void start(){
         if( instance ) throw new Exception( "Jumper already started" )
         instance = new Jumper()
@@ -343,11 +346,18 @@ class Jumper implements SearchResultsCollector {
     // Private constructor. The unique instance is created by start()
     private Jumper(){}
 
-    // Initialize and display the GUI.
+    /**
+     * Initialize and display the GUI.
+     * Thread: FST
+     */
     private void init(){
 
         LogUtils.init()
-        
+
+        /* Development only feature.
+         Throw java.security.AccessControlException  when used in
+         packaged addon. Probably because this is shared with
+         Freeplane.
         Thread.setDefaultUncaughtExceptionHandler(
             new Thread.UncaughtExceptionHandler(){
                 @Override
@@ -357,7 +367,7 @@ class Jumper implements SearchResultsCollector {
                     end()
                 }
             }
-        )
+        )*/
 
         initialNode = ScriptUtils.node()
         c = ScriptUtils.c()
@@ -376,6 +386,10 @@ class Jumper implements SearchResultsCollector {
         gui = new Gui( loadedSettings, { onGUIReady() } )
     }
 
+    /**
+     * Called after GUI creation.
+     * Thread: EDT
+     */
     private void onGUIReady(){
 
         boolean showUnfilteredList = true
@@ -468,7 +482,11 @@ class Jumper implements SearchResultsCollector {
 
     // Return the file used to load and save the settings
     private File getSettingsFile(){
-        File file = new File( c.getUserDirectory().toString() + File.separator + 'lilive_jumper.json' )
+        File file = new File(
+            c.getUserDirectory().toString()
+            + File.separator
+            + 'lilive_jumper.json'
+        )
     }
 
     // Update the candidates, according to the selected options.
@@ -497,9 +515,8 @@ class Jumper implements SearchResultsCollector {
 
     /**
      * Return a clone of the candidates list, possibly shortened to 
-     * fit the maximal number of search result.
-     * If the initialSNode is a candidate, it will be the first
-     * element of the returned list.
+     * fit the maximal number of search result. If the initialSNode is
+     * a candidate, it will be the first element of the returned list.
      */
     private SNodes getTruncatedCandidates(){
         SNodes sNodes = new SNodes()
@@ -565,15 +582,18 @@ class Jumper implements SearchResultsCollector {
     }
 
     /**
-     * Fill the pattern text field with its value when Jumper was closed.
-     * Do nothing if too much time passed since Jumper was closed.
+     * Fill the pattern text field with its value when Jumper was
+     * closed. Do nothing if too much time passed since Jumper was
+     * closed.
      *
-     * @param lastPattern The text that was in the text field when Jumper was closed.
-     * @param patternTime The time in seconds when Jumper was closed.
-     * @param patternDuration Do not touch the text field if more than this number
-     *        of seconds has past since Jumper was closed.
-     * @return False if the last pattern was not recalled for some reason,
-     *         true otherwise.    
+     * @param lastPattern     The text that was in the text field when
+     *                        Jumper was closed.
+     * @param patternTime     The time in seconds when Jumper was closed.
+     * @param patternDuration Do not touch the text field if more than
+     *                        this number of seconds has past since
+     *                        Jumper was closed.
+     * @return False if the last pattern was not recalled for some
+     *         reason, true otherwise.    
      */
     private boolean recallLastPattern(
         String lastPattern,
@@ -593,8 +613,10 @@ class Jumper implements SearchResultsCollector {
         return true
     }
 
-    // Restore folding state of the branch of selected node in the view,
-    // before it was selected by selectMapNode()
+    /**
+     * Restore folding state of the branch of selected node in the
+     * view, before it was selected by selectMapNode()
+     */
     private void restoreFolding(){
         if( mapSelectedNode ){
             Node n = mapSelectedNode
@@ -602,7 +624,9 @@ class Jumper implements SearchResultsCollector {
         }
     }
 
-    // Select jumpToNode, center the view around it, and close Jumper.
+    /**
+     * Select jumpToNode, center the view around it, and close Jumper.
+     */
     private void jumpToSelectedResult(){
         int idx = gui.getSelectedResult()
         if( idx >= 0 ){

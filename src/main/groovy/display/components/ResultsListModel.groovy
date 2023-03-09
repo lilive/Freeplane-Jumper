@@ -47,9 +47,9 @@ class ResultsListModel extends AbstractListModel<SNode>{
     }
     
     /**
-     * Call this to trigger the GUI update when the already displayed results
-     * must be redraw. For exemple when the highlight color change, or when
-     * the font size change.
+     * Call this to trigger the GUI update when the already displayed
+     * results must be redraw. For exemple when the highlight color
+     * change, or when the font size change.
      */
     public void triggerRepaint(){
         if( getSize() > 0){

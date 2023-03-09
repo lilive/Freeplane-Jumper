@@ -57,6 +57,9 @@ import java.util.List
 import javax.swing.SwingUtilities
 import org.freeplane.plugin.script.proxy.ScriptUtils
 
+/**
+ * The main Jumper dialog.
+ */
 class Gui {
 
     JDialog win
@@ -139,6 +142,16 @@ class Gui {
     int historyPreviousKey = KeyEvent.VK_UP
     int historyNextKey = KeyEvent.VK_DOWN
 
+    /**
+     * Create the main Jumper swing dialog.
+     *
+     * Thread: All happens in the EDT.
+     *
+     * @param settings The settings recorded last time Jumper was
+     *                 closed.
+     * @param onGUIReady A closure to call when the GUI is ready. This
+     *                   closure will be executed in the EDT.
+     */
     public Gui( LoadedSettings settings, Closure onGUIReady ){
 
         SwingUtilities.invokeLater( new Runnable() {

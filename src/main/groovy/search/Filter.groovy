@@ -12,8 +12,8 @@ class Filter implements Cloneable {
     /**
      * @param pattern The search string.
      * @param options Settings for the search strategy.
-     *          Regex or not ? Case sensitive ? Etc.
-     *          @see SearchOptions
+     *                Regex or not ? Case sensitive ? Etc.
+     *                @see SearchOptions
      */
     public Filter(
         String pattern,
@@ -74,14 +74,16 @@ class Filter implements Cloneable {
     }
 
     /**
-     * Split the search string by whitespaces, to get units to search in nodes.
+     * Split the search string by whitespaces, to get units to search
+     * in nodes.
+     *
      * @param pattern The search string.
-     * @param options In some cases the pattern is not splitted, and the
-     *                returned list will contains only one element:
+     * @param options In some cases the pattern is not splitted, and 
+     *                the returned list will contains only one element:
      *                the whole pattern.
-     * @return The pattern splitted by whitespaces or a single element Set,
-     *         according to options. Return an empty list id pattern is null
-     *         or empty.
+     * @return        The pattern splitted by whitespaces or a single
+     *                element Set, according to options. Return an
+     *                empty list id pattern is null or empty.
      */
     private Set<String> splitPattern( String pattern, SearchOptions options ){
         
@@ -106,10 +108,11 @@ class Filter implements Cloneable {
      * @param pattern The search string.
      * @param options The search options that determine how to build the
      *                regexes from the pattern.
-     * @return The strings for the regexes, that you may use to build
-     *         java.util.regex.Pattern (and so jumper.search.Pattern ).
-     *         Return an empty set if no regex can be build from the
-     *         parameters.
+     * @return        The strings for the regexes, that you may use to
+     *                build java.util.regex.Pattern (and so
+     *                jumper.search.Pattern ).
+     *                Return an empty set if no regex can be build
+     *                from the parameters.
      */
     private Set<String> makeRegexes( String pattern, SearchOptions options ){
 
@@ -132,7 +135,7 @@ class Filter implements Cloneable {
 
     /**
      * Create a Pattern Set from regexes strings.
-     * Return an empty set if regexes is empty. 
+     * @return an empty set if regexes is empty. 
      */
     private Set< Pattern > makePatterns( Set< String > regexes ){
         int i = 0

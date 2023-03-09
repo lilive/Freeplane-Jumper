@@ -3,9 +3,7 @@ package lilive.jumper.search
 import java.util.List
 import lilive.jumper.data.SNode
 
-/**
- * Object that can receive the results of a search.
- */
+/** Object that can receive the results of a search. */
 interface SearchResultsCollector {
     
     /**
@@ -17,7 +15,7 @@ interface SearchResultsCollector {
      * Add this results to the list of results.
      * @param newResults The results to add.
      * @param unfiltered True if results are not filtered.
-     * @param done True if the search is complete.
+     * @param done       True if the search is complete.
      */
     void addResults( List<SNode> newResults, boolean unfiltered, boolean done )
 

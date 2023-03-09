@@ -16,17 +16,13 @@ class SearchEngine {
 
     static final public int numResultsMax = 200
 
-    /**
-     * Initialize SNodes task. May be cancelled.
-     */
+    /** Initialize SNodes task. May be cancelled. */
     class CacheWorker extends SwingWorker< Void, Void > {
     
         private SNodes sNodes1
         private SNodes sNodes2
         
-        /**
-         * Call init() for each SNode in sNodes1, then for sNodes2.
-         */
+        /** Call init() for each SNode in sNodes1, then for sNodes2. */
         public CacheWorker( SNodes sNodes1, SNodes sNodes2 = null ){
             this.sNodes1 = sNodes1
             this.sNodes2 = sNodes2
@@ -54,7 +50,8 @@ class SearchEngine {
     }
 
     /**
-     * Search over nodes and send the results gradually to a SearchResultsCollector.
+     * Search over nodes and send the results gradually to a 
+     * SearchResultsCollector.
      */
     class SearchWorker extends SwingWorker< SNodes, SNode > {
     

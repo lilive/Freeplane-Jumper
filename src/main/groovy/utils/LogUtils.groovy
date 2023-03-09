@@ -10,7 +10,8 @@ class LogUtils {
     private static long lastLogTime
 
     /**
-     * Call this when program starts to use ellapsed time messages later.
+     * Call this when program starts to use ellapsed time messages
+     * later.
      */
     public static void init(){
         startTime = System.currentTimeMillis()
@@ -18,17 +19,20 @@ class LogUtils {
     }
 
     /**
-     * Print a Jumper message at info level in Freeplane log, with optional
-     * ellapsed time information.
+     * Print a Jumper message at info level in Freeplane log, with 
+     * optional ellapsed time information.
      *
-     * @param message The message to print. It will be prefixed with "JUMPER:"
-     * @param printTime True to display ellapsed time information before
-     *                  the message. The rest of the parameters are only
-     *                  relevants if this parameter is true.
-     * @param timeInSeconds True to display the ellapsed time in seconds,
-     *                      false to display it in milliseconds.
-     * @param printTotalTime True to display also the time ellapsed from the
-     *                       start.
+     * @param message        The message to print. It will be prefixed
+     *                       with "JUMPER:"
+     * @param printTime      True to display ellapsed time information
+     *                       before the message. The rest of the
+     *                       parameters are only relevants if this
+     *                       parameter is true.
+     * @param timeInSeconds  True to display the ellapsed time in
+     *                       seconds, false to display it in
+     *                       milliseconds.
+     * @param printTotalTime True to display also the time ellapsed
+     *                       from the start.
      */
     public static void info(
         String message,
@@ -42,9 +46,9 @@ class LogUtils {
         org.freeplane.core.util.LogUtils.info( message )
     }
 
-    /*
-     * Print a Jumper message at warn level in Freeplane log, with optional
-     * ellapsed time information.
+    /**
+     * Print a Jumper message at warn level in Freeplane log,
+     * with optional ellapsed time information.
      * @see info() for parameters documentation.
      */
     public static void warn(
@@ -59,9 +63,9 @@ class LogUtils {
         org.freeplane.core.util.LogUtils.warn( message )
     }
 
-    /*
-     * Print a Jumper message at severe level in Freeplane log, with optional
-     * ellapsed time information.
+    /**
+     * Print a Jumper message at severe level in Freeplane log,
+     * with optional ellapsed time information.
      * @see info() for parameters documentation.
      */
     public static void severe(
@@ -78,7 +82,6 @@ class LogUtils {
     
     /**
      * Print the ellapsed time in Jumper at info level in Freeplane log.
-     *
      * @see info() for parameters documentation.
      */
     private static void ellapsed(
