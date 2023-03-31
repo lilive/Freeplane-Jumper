@@ -135,7 +135,8 @@
       </li>
     </ul>
   </body>
-</html></richcontent>
+</html>
+</richcontent>
 <node TEXT="description" POSITION="left" ID="ID_971223094" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
 <richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
@@ -154,7 +155,8 @@
       To translate the description you have to define a translation for the key 'addons.${name}.description'.
     </p>
   </body>
-</html></richcontent>
+</html>
+</richcontent>
 <attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
 <node TEXT="A fully keyboard driven search box for quick navigation in maps. It filters the nodes on-the-fly as the user types the search terms, and allows to jump to one of the results.&#xa;&#xa;Jumper, the Jumping Filter, provides an easy and quick way to search for nodes in Freeplane maps. Press Jumper keyboard shortcut, type some text snippets, and you will instantly see all the nodes (or branches !) that contain them in the Jumper window. Select one of these nodes to select it in the map.&#xa;&#xa;Main features:&#xa;- Search results updated as you type&#xa;- Matching text is highlighted in the results list&#xa;- Regular search or transversal search (find words or text snippets across a branch)&#xa;- Words or text snippets can be searched in any order&#xa;- Search in any part of the nodes (core text, details, notes, attributes)&#xa;- Plain text or regular expressions search, case sensitive or insensitive&#xa;- Can focus the map view on the node selected in the results list&#xa;- Search the whole map, only the siblings of the selected node, or its descendants&#xa;- Search history&#xa;- Keyboard shortcuts for all the search options&#xa;- Persistent search settings&#xa;- Many options to customize the results appearence" ID="ID_414073752"/>
 </node>
@@ -170,7 +172,8 @@
       Change log of this add-on: append one node for each noteworthy version and put the details for each version into a child node.
     </p>
   </body>
-</html></richcontent>
+</html>
+</richcontent>
 <attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
 <node TEXT="v0.5.0" ID="ID_607298643">
 <node TEXT="Package the Jumper script into an add-on" ID="ID_603689072"/>
@@ -236,7 +239,8 @@
       The License text has to be entered as a child of the <i>'license'</i>&nbsp;node, either as plain text or as HTML.
     </p>
   </body>
-</html></richcontent>
+</html>
+</richcontent>
 <attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
 <node TEXT="&#xa;This add-on is free software: you can redistribute it and/or modify&#xa;it under the terms of the GNU General Public License as published by&#xa;the Free Software Foundation, either version 2 of the License, or&#xa;(at your option) any later version.&#xa;&#xa;This program is distributed in the hope that it will be useful,&#xa;but WITHOUT ANY WARRANTY; without even the implied warranty of&#xa;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the&#xa;GNU General Public License for more details.&#xa;" ID="ID_1223814638"/>
 </node>
@@ -255,7 +259,8 @@
       <font color="#000000" face="SansSerif, sans-serif">Every property in the configuration should receive a default value in <i>default.properties</i>&nbsp;node.</font>
     </p>
   </body>
-</html></richcontent>
+</html>
+</richcontent>
 <attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
 </node>
 <node TEXT="default.properties" POSITION="left" ID="ID_1995339540">
@@ -278,7 +283,8 @@
       </li>
     </ul>
   </body>
-</html></richcontent>
+</html>
+</richcontent>
 <attribute_layout NAME_WIDTH="171.74999 pt" VALUE_WIDTH="194.99999 pt"/>
 <attribute NAME="addons.jumper.run_on_single_node.icon" VALUE="/images/jumper-icon.svg"/>
 </node>
@@ -305,7 +311,8 @@
       </li>
     </ul>
   </body>
-</html></richcontent>
+</html>
+</richcontent>
 <attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
 <node TEXT="en" ID="ID_1840514888">
 <attribute_layout NAME_WIDTH="129 pt" VALUE_WIDTH="257.24999 pt"/>
@@ -325,7 +332,8 @@
       List of files and/or directories to remove on uninstall
     </p>
   </body>
-</html></richcontent>
+</html>
+</richcontent>
 <attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="238.49999 pt"/>
 <attribute NAME="delete" VALUE="${installationbase}/addons/${name}.script.xml"/>
 <attribute NAME="delete" VALUE="${installationbase}/addons/${name}/scripts/run.groovy"/>
@@ -334,6 +342,7 @@
 <attribute NAME="delete" VALUE="${installationbase}/resources/images/jumper.png"/>
 <attribute NAME="delete" VALUE="${installationbase}/resources/images/jumper-screenshot-1.png"/>
 <attribute NAME="delete" VALUE="${installationbase}/resources/images/jumper-icon.svg"/>
+<attribute NAME="delete" VALUE="${installationbase}/resources/images/jumper-search-in-progress.gif"/>
 </node>
 <node TEXT="scripts" POSITION="right" ID="ID_1102722640" TEXT_SHORTENED="true">
 <edge COLOR="#353535"/>
@@ -452,7 +461,8 @@
       &nbsp;&nbsp;- In any case set execute_scripts_without_asking to true unless you want to annoy users.
     </p>
   </body>
-</html></richcontent>
+</html>
+</richcontent>
 <attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
 <node TEXT="run.groovy" ID="ID_1411088832">
 <attribute_layout NAME_WIDTH="193.49999 pt" VALUE_WIDTH="168.74999 pt"/>
@@ -503,7 +513,8 @@
       &nbsp;- The files will be processed in the sequence as seen in the map.
     </p>
   </body>
-</html></richcontent>
+</html>
+</richcontent>
 <node TEXT="jumper.jar" ID="ID_1699451871"/>
 </node>
 <node TEXT="zips" POSITION="right" ID="ID_493457497" TEXT_SHORTENED="true">
@@ -542,7 +553,8 @@
       &nbsp;- The files will be processed in the sequence as seen in the map.
     </p>
   </body>
-</html></richcontent>
+</html>
+</richcontent>
 </node>
 <node TEXT="images" POSITION="right" ID="ID_1159861672">
 <edge COLOR="#353535"/>
@@ -576,7 +588,8 @@
       Images can be added automatically by releaseAddOn.groovy or must be uploaded into the map via the script <i>Tools-&gt;Scripts-&gt;Insert Binary</i>&nbsp;since they have to be (base64) encoded as simple strings.
     </p>
   </body>
-</html></richcontent>
+</html>
+</richcontent>
 <attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
 <node TEXT="jumper.png" ID="ID_1206323572">
 <attribute_layout NAME_WIDTH="80 pt" VALUE_WIDTH="120 pt"/>
