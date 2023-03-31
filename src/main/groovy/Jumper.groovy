@@ -567,9 +567,10 @@ class Jumper implements SearchResultsCollector {
 
     // Keep only visibles nodes.
     private void removeHiddenNodes( SNodes sNodes ){
+        Node viewRoot = c.viewRoot
         sNodes.removeAll{
             SNode sNode ->
-            ! sNode.node.isVisible()
+            ! sNode.node.isVisibleOnViewsWithRoot( c.viewRoot )
         }
     }
 
