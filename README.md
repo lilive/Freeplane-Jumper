@@ -102,7 +102,7 @@ I use `new SwingBuilder().dialog` to create the GUI, but I read [here](https://u
 - Cache plain text in RAM
 - Cache plain text on disk
 
-`[1]` Add an option for the maximum results number  
+`[1]` Add an option for the maximum results number (WIP: see numResultsMax in SearchEngine and numMaxResults in DisplayResultsSettings)   
 `[1]` [Compatibility with new Freeplane feature Jump In / Jump Out](https://github.com/lilive/Freeplane-Jumper/issues/11)  
 `[1]` [Improve truncation method](https://github.com/lilive/Freeplane-Jumper/issues/12): better use of space when displaying the results  
 `[1]` Do not modify the Freeplane locations history, except by adding the selected node in the search results (currently Jumper modify this history when the user browse the results list). This way, it will be always possible to jump back to the previous node with one `Freeplane > Navigate > Go backward` command.  
